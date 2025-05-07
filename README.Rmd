@@ -1,0 +1,31 @@
+---
+title: "Multi-component Bayesian endpoints (MBEs)"
+subtitle: "version 1"
+author: "Hyejung Lee <hyejung.lee@utah.edu>"
+date: "`r format(Sys.time(), '%a %b %d, %Y %X')`"
+output:
+  github_document:
+    toc: true
+    toc_depth: 3
+    html_preview: true
+   # bookdown::html_document2:
+   #  self-contained: true
+   #  embed-resources: true
+   #  code-fold: true
+   #  toc: true
+   #  theme: united
+   #  toc_float: true
+   #  number-sections: true
+# bibliography: references.bib
+# csl: nature.csl
+editor_options: 
+  chunk_output_type: console
+  markdown: 
+    wrap: 72
+---
+
+<!-- Now write your README content in Markdown, plus R chunks if you like: -->
+
+# Overview
+
+This repository houses the multi-component Bayesian endpoints (MBEs) my team is working on.
