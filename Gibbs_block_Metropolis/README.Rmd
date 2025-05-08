@@ -8,6 +8,7 @@ output:
     toc: true
     toc_depth: 3
     html_preview: true
+    math_method: webtex
    # bookdown::html_document2:
    #  self-contained: true
    #  embed-resources: true

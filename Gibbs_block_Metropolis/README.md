@@ -1,7 +1,7 @@
 Gibbs sampling with block Metropolis
 ================
 Hyejung Lee <hyejung.lee@utah.edu>
-Wed May 07, 2025 18:20:01
+Wed May 07, 2025 18:23:44
 
 - [Overview](#overview)
 - [Setup](#setup)
@@ -23,17 +23,44 @@ highly correlated to each other.
 
 Let:
 
-- $\hat{\theta}_i$ = (observed) treatment effect on the clinical
-  endpoint from $i^{th}$ study
-- $\hat{\gamma}_{1i}$ = (observed) treatment effect on the chronic slope
-  from $i^{th}$ study
-- $\hat{\gamma}_{2i}$ = (observed) treatment effect on the acute slope
-  from $i^{th}$ study
+- ![\hat{\theta}\_i](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Chat%7B%5Ctheta%7D_i "\hat{\theta}_i")
+  = (observed) treatment effect on the clinical endpoint from
+  ![i^{th}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;i%5E%7Bth%7D "i^{th}")
+  study
+- ![\hat{\gamma}\_{1i}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Chat%7B%5Cgamma%7D_%7B1i%7D "\hat{\gamma}_{1i}")
+  = (observed) treatment effect on the chronic slope from
+  ![i^{th}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;i%5E%7Bth%7D "i^{th}")
+  study
+- ![\hat{\gamma}\_{2i}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Chat%7B%5Cgamma%7D_%7B2i%7D "\hat{\gamma}_{2i}")
+  = (observed) treatment effect on the acute slope from
+  ![i^{th}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;i%5E%7Bth%7D "i^{th}")
+  study
 
 First stage model
 
-$$
+![\begin{bmatrix} 
+\hat{\theta}\_{i} \\ 
+\hat{\gamma}\_{1i} \\ 
+\hat{\gamma}\_{2i} 
+\end{bmatrix} 
+\bigg\| 
 \begin{bmatrix} 
+\theta\_{i} \\ 
+\gamma\_{1i} \\ 
+\gamma\_{2i}
+\end{bmatrix} 
+\sim 
+N\left(
+\begin{bmatrix} 
+\theta\_{i} \\ 
+\gamma\_{1i} \\ 
+\gamma\_{2i}
+\end{bmatrix}, 
+\begin{bmatrix}
+\sigma^2\_{i} & r\_{\theta, 1i} \sigma\_{i} \delta\_{1i} & r\_{\theta, 2i} \sigma\_{i} \delta\_{2i} \\
+r\_{\theta, 1i} \sigma\_{i} \delta\_{1i} & \delta^2\_{1i} & r\_{1i, 2i} \delta\_{1i} \delta\_{2i} \\
+r\_{\theta, 2i} \sigma\_{i} \delta\_{2i} & r\_{1i, 2i} \delta\_{1i} \delta\_{2i} & \delta^2\_{2i} \end{bmatrix} 
+\right)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Cbegin%7Bbmatrix%7D%20%0A%5Chat%7B%5Ctheta%7D_%7Bi%7D%20%5C%5C%20%0A%5Chat%7B%5Cgamma%7D_%7B1i%7D%20%5C%5C%20%0A%5Chat%7B%5Cgamma%7D_%7B2i%7D%20%0A%5Cend%7Bbmatrix%7D%20%0A%5Cbigg%7C%20%0A%5Cbegin%7Bbmatrix%7D%20%0A%5Ctheta_%7Bi%7D%20%5C%5C%20%0A%5Cgamma_%7B1i%7D%20%5C%5C%20%0A%5Cgamma_%7B2i%7D%0A%5Cend%7Bbmatrix%7D%20%0A%5Csim%20%0AN%5Cleft%28%0A%5Cbegin%7Bbmatrix%7D%20%0A%5Ctheta_%7Bi%7D%20%5C%5C%20%0A%5Cgamma_%7B1i%7D%20%5C%5C%20%0A%5Cgamma_%7B2i%7D%0A%5Cend%7Bbmatrix%7D%2C%20%0A%5Cbegin%7Bbmatrix%7D%0A%5Csigma%5E2_%7Bi%7D%20%26%20r_%7B%5Ctheta%2C%201i%7D%20%5Csigma_%7Bi%7D%20%5Cdelta_%7B1i%7D%20%26%20r_%7B%5Ctheta%2C%202i%7D%20%5Csigma_%7Bi%7D%20%5Cdelta_%7B2i%7D%20%5C%5C%0Ar_%7B%5Ctheta%2C%201i%7D%20%5Csigma_%7Bi%7D%20%5Cdelta_%7B1i%7D%20%26%20%5Cdelta%5E2_%7B1i%7D%20%26%20r_%7B1i%2C%202i%7D%20%5Cdelta_%7B1i%7D%20%5Cdelta_%7B2i%7D%20%5C%5C%0Ar_%7B%5Ctheta%2C%202i%7D%20%5Csigma_%7Bi%7D%20%5Cdelta_%7B2i%7D%20%26%20r_%7B1i%2C%202i%7D%20%5Cdelta_%7B1i%7D%20%5Cdelta_%7B2i%7D%20%26%20%5Cdelta%5E2_%7B2i%7D%20%5Cend%7Bbmatrix%7D%20%0A%5Cright%29 "\begin{bmatrix} 
 \hat{\theta}_{i} \\ 
 \hat{\gamma}_{1i} \\ 
 \hat{\gamma}_{2i} 
@@ -55,46 +82,58 @@ N\left(
 \sigma^2_{i} & r_{\theta, 1i} \sigma_{i} \delta_{1i} & r_{\theta, 2i} \sigma_{i} \delta_{2i} \\
 r_{\theta, 1i} \sigma_{i} \delta_{1i} & \delta^2_{1i} & r_{1i, 2i} \delta_{1i} \delta_{2i} \\
 r_{\theta, 2i} \sigma_{i} \delta_{2i} & r_{1i, 2i} \delta_{1i} \delta_{2i} & \delta^2_{2i} \end{bmatrix} 
-\right)$$
+\right)")
 
 The second stage model:
 
-$$
-\begin{bmatrix} \theta_{i} \\ \gamma_{1i} \\ \gamma_{2i}\end{bmatrix}, \sim N\left(\begin{bmatrix} \mu_{\theta} \\ \mu_{\gamma 1} \\ \mu_{\gamma 2}\end{bmatrix}, \begin{bmatrix}
+![\begin{bmatrix} \theta\_{i} \\ \gamma\_{1i} \\ \gamma\_{2i}\end{bmatrix}, \sim N\left(\begin{bmatrix} \mu\_{\theta} \\ \mu\_{\gamma 1} \\ \mu\_{\gamma 2}\end{bmatrix}, \begin{bmatrix}
+\sigma^2\_{\theta} & R\_{\theta, \gamma 1} \sigma\_{\theta} \sigma\_{\gamma 1} & R\_{\theta, \gamma 2} \sigma\_{i} \sigma\_{\gamma 1} \\
+R\_{\theta, \gamma 1} \sigma\_{\theta} \sigma\_{\gamma 1} & \sigma^2\_{\gamma 1} & R\_{\gamma 1, \gamma 2} \sigma\_{\gamma 1} \sigma\_{\gamma 2}  \\
+R\_{\theta, \gamma 2} \sigma\_{i} \sigma\_{\gamma 2} & R\_{\gamma 1, \gamma 2} \sigma\_{\gamma 1} \sigma\_{\gamma 2} & \sigma^2\_{\gamma 2} 
+\end{bmatrix}\right), i=1,...,m](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Cbegin%7Bbmatrix%7D%20%5Ctheta_%7Bi%7D%20%5C%5C%20%5Cgamma_%7B1i%7D%20%5C%5C%20%5Cgamma_%7B2i%7D%5Cend%7Bbmatrix%7D%2C%20%5Csim%20N%5Cleft%28%5Cbegin%7Bbmatrix%7D%20%5Cmu_%7B%5Ctheta%7D%20%5C%5C%20%5Cmu_%7B%5Cgamma%201%7D%20%5C%5C%20%5Cmu_%7B%5Cgamma%202%7D%5Cend%7Bbmatrix%7D%2C%20%5Cbegin%7Bbmatrix%7D%0A%5Csigma%5E2_%7B%5Ctheta%7D%20%26%20R_%7B%5Ctheta%2C%20%5Cgamma%201%7D%20%5Csigma_%7B%5Ctheta%7D%20%5Csigma_%7B%5Cgamma%201%7D%20%26%20R_%7B%5Ctheta%2C%20%5Cgamma%202%7D%20%5Csigma_%7Bi%7D%20%5Csigma_%7B%5Cgamma%201%7D%20%5C%5C%0AR_%7B%5Ctheta%2C%20%5Cgamma%201%7D%20%5Csigma_%7B%5Ctheta%7D%20%5Csigma_%7B%5Cgamma%201%7D%20%26%20%5Csigma%5E2_%7B%5Cgamma%201%7D%20%26%20R_%7B%5Cgamma%201%2C%20%5Cgamma%202%7D%20%5Csigma_%7B%5Cgamma%201%7D%20%5Csigma_%7B%5Cgamma%202%7D%20%20%5C%5C%0AR_%7B%5Ctheta%2C%20%5Cgamma%202%7D%20%5Csigma_%7Bi%7D%20%5Csigma_%7B%5Cgamma%202%7D%20%26%20R_%7B%5Cgamma%201%2C%20%5Cgamma%202%7D%20%5Csigma_%7B%5Cgamma%201%7D%20%5Csigma_%7B%5Cgamma%202%7D%20%26%20%5Csigma%5E2_%7B%5Cgamma%202%7D%20%0A%5Cend%7Bbmatrix%7D%5Cright%29%2C%20i%3D1%2C...%2Cm "\begin{bmatrix} \theta_{i} \\ \gamma_{1i} \\ \gamma_{2i}\end{bmatrix}, \sim N\left(\begin{bmatrix} \mu_{\theta} \\ \mu_{\gamma 1} \\ \mu_{\gamma 2}\end{bmatrix}, \begin{bmatrix}
 \sigma^2_{\theta} & R_{\theta, \gamma 1} \sigma_{\theta} \sigma_{\gamma 1} & R_{\theta, \gamma 2} \sigma_{i} \sigma_{\gamma 1} \\
 R_{\theta, \gamma 1} \sigma_{\theta} \sigma_{\gamma 1} & \sigma^2_{\gamma 1} & R_{\gamma 1, \gamma 2} \sigma_{\gamma 1} \sigma_{\gamma 2}  \\
 R_{\theta, \gamma 2} \sigma_{i} \sigma_{\gamma 2} & R_{\gamma 1, \gamma 2} \sigma_{\gamma 1} \sigma_{\gamma 2} & \sigma^2_{\gamma 2} 
-\end{bmatrix}\right), i=1,...,m 
-$$ {#eq:EQ2}
+\end{bmatrix}\right), i=1,...,m")
+
+{#eq:EQ2}
 
 The second stage model can also be expressed in terms of linear
 expression as below:
 
-$E(\theta_i | \gamma_{1i}, \gamma_{2i}) = \alpha_\theta + \beta_1 \gamma_{1i} + \beta_2 \gamma_{2i}$
+![E(\theta_i \| \gamma\_{1i}, \gamma\_{2i}) = \alpha\_\theta + \beta_1 \gamma\_{1i} + \beta_2 \gamma\_{2i}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;E%28%5Ctheta_i%20%7C%20%5Cgamma_%7B1i%7D%2C%20%5Cgamma_%7B2i%7D%29%20%3D%20%5Calpha_%5Ctheta%20%2B%20%5Cbeta_1%20%5Cgamma_%7B1i%7D%20%2B%20%5Cbeta_2%20%5Cgamma_%7B2i%7D "E(\theta_i | \gamma_{1i}, \gamma_{2i}) = \alpha_\theta + \beta_1 \gamma_{1i} + \beta_2 \gamma_{2i}")
 
-$Var(\theta_i | \gamma_{1i}, \gamma_{2i}) = \lambda^2_{\theta}$
+![Var(\theta_i \| \gamma\_{1i}, \gamma\_{2i}) = \lambda^2\_{\theta}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;Var%28%5Ctheta_i%20%7C%20%5Cgamma_%7B1i%7D%2C%20%5Cgamma_%7B2i%7D%29%20%3D%20%5Clambda%5E2_%7B%5Ctheta%7D "Var(\theta_i | \gamma_{1i}, \gamma_{2i}) = \lambda^2_{\theta}")
 
-$E(\gamma_{1i} | \gamma_{i2}) = \alpha_{\gamma_1} + \omega \gamma_{2i}$
+![E(\gamma\_{1i} \| \gamma\_{i2}) = \alpha\_{\gamma_1} + \omega \gamma\_{2i}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;E%28%5Cgamma_%7B1i%7D%20%7C%20%5Cgamma_%7Bi2%7D%29%20%3D%20%5Calpha_%7B%5Cgamma_1%7D%20%2B%20%5Comega%20%5Cgamma_%7B2i%7D "E(\gamma_{1i} | \gamma_{i2}) = \alpha_{\gamma_1} + \omega \gamma_{2i}")
 
-$Var(\gamma_{1i} | \gamma_{2i}) = \lambda^2_{\gamma 1}$
+![Var(\gamma\_{1i} \| \gamma\_{2i}) = \lambda^2\_{\gamma 1}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;Var%28%5Cgamma_%7B1i%7D%20%7C%20%5Cgamma_%7B2i%7D%29%20%3D%20%5Clambda%5E2_%7B%5Cgamma%201%7D "Var(\gamma_{1i} | \gamma_{2i}) = \lambda^2_{\gamma 1}")
 
-$E(\gamma_{2i} ) = \mu_{\gamma2}$
+![E(\gamma\_{2i} ) = \mu\_{\gamma2}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;E%28%5Cgamma_%7B2i%7D%20%29%20%3D%20%5Cmu_%7B%5Cgamma2%7D "E(\gamma_{2i} ) = \mu_{\gamma2}")
 
-$Var(\gamma_{2i} ) = \sigma^2_{\gamma2}$
+![Var(\gamma\_{2i} ) = \sigma^2\_{\gamma2}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;Var%28%5Cgamma_%7B2i%7D%20%29%20%3D%20%5Csigma%5E2_%7B%5Cgamma2%7D "Var(\gamma_{2i} ) = \sigma^2_{\gamma2}")
 
   
 
 The hyperparameters are called the following in the code:
 
-- `alphaCEonSur1Sur2` $= \alpha_\theta$
-- `b1CEonSur1Sur2` $= \beta_1$
-- `b2CEonSur1Sur2` $= \beta_2$
-- `SigSqCEonSur1Sur2` $= \lambda^2_{\theta}$
-- `alphaSur1onSur2`$= \alpha_{\gamma_1}$
-- `bSur1onSur2` $= \omega$
-- `SigSqSur1onSur2` $=\lambda^2_{\gamma 1}$
-- `muSur2` $=\mu_{\gamma2}$
-- `sigSqSur2` $=\sigma^2_{\gamma2}$
+- `alphaCEonSur1Sur2`
+  ![= \alpha\_\theta](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D%20%5Calpha_%5Ctheta "= \alpha_\theta")
+- `b1CEonSur1Sur2`
+  ![= \beta_1](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D%20%5Cbeta_1 "= \beta_1")
+- `b2CEonSur1Sur2`
+  ![= \beta_2](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D%20%5Cbeta_2 "= \beta_2")
+- `SigSqCEonSur1Sur2`
+  ![= \lambda^2\_{\theta}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D%20%5Clambda%5E2_%7B%5Ctheta%7D "= \lambda^2_{\theta}")
+- `alphaSur1onSur2`![= \alpha\_{\gamma_1}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D%20%5Calpha_%7B%5Cgamma_1%7D "= \alpha_{\gamma_1}")
+- `bSur1onSur2`
+  ![= \omega](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D%20%5Comega "= \omega")
+- `SigSqSur1onSur2`
+  ![=\lambda^2\_{\gamma 1}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D%5Clambda%5E2_%7B%5Cgamma%201%7D "=\lambda^2_{\gamma 1}")
+- `muSur2`
+  ![=\mu\_{\gamma2}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D%5Cmu_%7B%5Cgamma2%7D "=\mu_{\gamma2}")
+- `sigSqSur2`
+  ![=\sigma^2\_{\gamma2}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D%5Csigma%5E2_%7B%5Cgamma2%7D "=\sigma^2_{\gamma2}")
 
   
 
