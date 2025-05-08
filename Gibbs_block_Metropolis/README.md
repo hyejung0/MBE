@@ -1,7 +1,7 @@
 Gibbs sampling with block Metropolis
 ================
 Hyejung Lee <hyejung.lee@utah.edu>
-Wed May 07, 2025 18:10:56
+Wed May 07, 2025 18:14:43
 
 - [Overview](#overview)
 - [Setup](#setup)
@@ -33,13 +33,15 @@ Let:
 First stage model
 
 $$
-\left[ \begin{matrix} \hat{\theta}_{i} \\ \hat{\gamma}_{1i} \\ \hat{\gamma}_{2i}\end{matrix}  \right] \bigg| \begin{bmatrix} \theta_{i} \\ \gamma_{1i} \\ \gamma_{2i}\end{bmatrix} \sim N\left(\begin{bmatrix} \theta_{i} \\ \gamma_{1i} \\ \gamma_{2i}\end{bmatrix}, \begin{bmatrix}
+\begin{bmatrix} \hat{\theta}_{i} \\ \hat{\gamma}_{1i} \\ \hat{\gamma}_{2i} \end{bmatrix} \bigg| \begin{bmatrix} \theta_{i} \\ \gamma_{1i} \\ \gamma_{2i}\end{bmatrix} \sim N\left(\begin{bmatrix} \theta_{i} \\ \gamma_{1i} \\ \gamma_{2i}\end{bmatrix}, \begin{bmatrix}
 \sigma^2_{i} & r_{\theta, 1i} \sigma_{i} \delta_{1i} & r_{\theta, 2i} \sigma_{i} \delta_{2i} \\
 r_{\theta, 1i} \sigma_{i} \delta_{1i} & \delta^2_{1i} & r_{1i, 2i} \delta_{1i} \delta_{2i}  \\
 r_{\theta, 2i} \sigma_{i} \delta_{2i} & r_{1i, 2i} \delta_{1i} \delta_{2i} & \delta^2_{2i} \end{bmatrix} \right)
-$${#eq:EQ1}
+$$
 
-The second stage model: $$
+The second stage model:
+
+$$
 \begin{bmatrix} \theta_{i} \\ \gamma_{1i} \\ \gamma_{2i}\end{bmatrix}, \sim N\left(\begin{bmatrix} \mu_{\theta} \\ \mu_{\gamma 1} \\ \mu_{\gamma 2}\end{bmatrix}, \begin{bmatrix}
 \sigma^2_{\theta} & R_{\theta, \gamma 1} \sigma_{\theta} \sigma_{\gamma 1} & R_{\theta, \gamma 2} \sigma_{i} \sigma_{\gamma 1} \\
 R_{\theta, \gamma 1} \sigma_{\theta} \sigma_{\gamma 1} & \sigma^2_{\gamma 1} & R_{\gamma 1, \gamma 2} \sigma_{\gamma 1} \sigma_{\gamma 2}  \\
