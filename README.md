@@ -1,2 +1,11 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
 # MBE
-Folder containing all R codes to run MCMC on historical data and MBE estimation
+
+<!-- badges: start -->
+
+<!-- badges: end -->
+
+This repository contains all relevent R functions that estimates
+Multicomponent Bayesian Endpoints (MBE).
