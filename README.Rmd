@@ -2,6 +2,9 @@
 Date: \today
 showMiniToc: TRUE
 output: github_document
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -13,34 +16,80 @@ knitr::opts_chunk$set(
 )
 ```
 
-# MBE
+# Multi-component Bayesian Endpoint (MBE)
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
-This repository contains all relevant R functions that estimates Multicomponent Bayesian Endpoints (MBE).
+This repository contains all relevant R codes that was used in the
+Multi-Component Bayesian Endpoints for Randomized Clinical Trials paper
+produced by Lee et. al., (2026).
+
+The MBE is an endpoint that combines clinical endpoint with at least one
+surrogate endpoint to create a more sensitive and efficient endpoint for
+clinical trials. It is developed using a Bayesian framework, which
+allows for the incorporation of historical randomized clinical trials (RCTs) and the estimation of uncertainty in estimating the treatment effect on the clinical endpoint using the treatment effect on surrogate endpoint(s).
+
+Thus, it has two distinct coding components:
+
+-   Step 1. Fit Markov chain Monte Carlo (MCMC) on a trial-level model
+    to historical RCTs to produce historical posterior samples of the model 
+    parameters
+
+-   Step2. Construct a prior distribution of MBE using the historical posterior 
+    samples estimated in step 1, and then update the MBE's prior based on the
+    estimated treatment effects in a "new RCT" to obtain the MBE's posterior
+    distribution for the true treatment effect on the CE in that new RCT.
 
 
-## Code for acute and chronic joint slopes
+For both the historical and new RCTs, the model is a hierarchical model that relates the treatment effect on the clinical endpoint to the treatment effect on surrogate endpoint(s) across trials. The model parameters include the intercept, slope(s), and variance parameters that capture the relationship between the treatment effects on the surrogate and clinical endpoints across trials. Please refer to Section 2 of the manuscript for details of the model specification.
 
-The `code/AcuChron` folder contains R scripts and data to accomplish two 
-objectives for developing the slope-based MBE based on the established 
-clinical endpoint (CE) and the acute and chronic GFR slopes. 
-
-The code is fixed to use inverse gamma priors for the variance parameters when 
-running MCMC on the historical data. 
-
-Please view the [README](./code/AcuChron/README.md) file in that folder for details 
-of each file and instructions on how to run the code. 
-      
-      
-## Code for acute and chronic joint slopes using Maximum Likelihood Estimation
+Our work demonstrated these steps using chronic kidney disease trials where two surrogate endpoints, the treatment effect on acute and chronic slopes of glomerular filtration rate (GFR), were used to estimate the MBE for the treatment effect on the clinical endpoint.
 
 
-The `code/AcuChron` folder contains R script and file necessary to fit maximum 
-likelihood on hierarchical model for treatment effect on the CE on treatment 
-effect on acute and chronic slopes.
+## Data Structure
+
+We have 66 historical RCTs that have treatment effect estimates on the clinical endpoint, the acute slope, and the chronic slope. Data use agreements prohibit CKD-EPI CT from sharing data with parties external to the agreement. Thus, we explain the data structure and how to use the data to fit the historical model, but we cannot share the data itself.
+
+Total 66 rows and 9 columns form the data set, stored as a data.table element. 
+The column names and descriptions are as follows:  
+
+| Column Name | Description |
+|-------------|-------------|
+| ClnEst | observed treatment effect on Clinical endpoint (CE) |
+| ClnSE | standard error of observed treatment effect on CE |
+| Sur1Est | observed treatment effect on chronic slope (Surrogate 1) |
+| Sur1SE | standard error of observed treatment effect on chronic slope |
+| Sur2Est | observed treatment effect on acute slope (Surrogate 2) |
+| Sur2SE | standard error of observed treatment effect on acute slope |
+| R1Clin | correlation between observed treatment effect on CE and chronic slope |
+| R2Clin | correlation between observed treatment effect on CE and acute slope |
+| R1R2 | correlation between observed treatment effect on chronic slope and acute slope |
+
+These column names are used in all R codes provided in this Github. So if you want to use the provided R script to your own data, please make sure to have the same column names and structure as described above.
 
 
-- `MLE.R`: fits MLE using all 66 studies
-   
+## Step 1 Historical Model Fitting 
+
+The manuscript describes two different models to fit the historical data: 
+
+1. Fix $\beta_0$ to be zero
+2. Allow $\beta_0$ to be estimated from the data
+
+where $\beta_0$ is the intercept parameter in the regression model that relates the true treatment effect on the clinical endpoint to the true treatment effect on all surrogate endpoints. 
+
+Besides, we can also choose to use either inverse gamma or half-normal priors for the variance parameters (or standard deviation) in the model. Thus, totally, there are four different ways to fit the historical model.
+
+The four stan code that correspond to the four different ways to fit the historical model are stored in the `code/historical` folder. :
+
+- `fix_beta0_invGamma.stan`: fit the historical model with inverse gamma prior for variance parameters and $\beta_0$ fixed to be zero
+- `random_beta0_invGamma.stan`: fit the historical model with inverse gamma prior for variance parameters and model $\beta_0$ as a random parameter
+- `fix_beta0_halfNormal.stan`: fit the historical model with half-normal prior for standard deviation parameters and $\beta_0$ fixed to be zero
+- `random_beta0_halfNormal.stan`: fit the historical model with half-normal prior for standard deviation parameters and model $\beta_0$ as a random parameter
+
+
+In the same folder, you can find `historical_model_fit.R` file, which sources one of the four stan files to run MCMC on the historical data. You can choose which stan file to source based on the model specification you want to fit. 
+
+
+
