@@ -52,8 +52,10 @@ Our work demonstrated these steps using chronic kidney disease trials where two 
 
 We have 66 historical RCTs that have treatment effect estimates on the clinical endpoint, the acute slope, and the chronic slope. Data use agreements prohibit CKD-EPI CT from sharing data with parties external to the agreement. Thus, we explain the data structure and how to use the data to fit the historical model, but we cannot share the data itself.
 
-Total 66 rows and 9 columns form the data set, stored as a data.table element. 
-The column names and descriptions are as follows:  
+
+
+As the analysis is at trial-level, the unit of observation is per trial. Thus, 
+the dataset has 66 rows. The columns are as follows:  
 
 | Column Name | Description |
 |-------------|-------------|
@@ -93,3 +95,15 @@ In the same folder, you can find `historical_model_fit.R` file, which sources on
 
 
 
+## Step 2 MBE Construction
+
+Using the parameter distributions estimated with the historical data in Step 1, we now estimate the distribution of MBE. All relevant R code for this step can be found in the `code/MBE` folder.
+
+The function `theta0_given_hat_psi0` estimates the posterior distribution of $\theta_0 \mid \hat{\psi}_0$ (saved as `theta0_given_hat_psi0.R` file). This function fits Models A through D in the manuscript. `MBE_given_all_dat.R` file demonstrates use of this function to generate the posterior distributions of $\theta_0 \mid \hat{\psi}_0$ under all four different model specifications. 
+
+
+
+
+with full historical prior carry over is shown in `MBE_full_historical_posterior.R` file. This is what the manuscript calls 'Model A.'
+
+The R code for Step 2 is stored in the `code/MBE_estimation.R` file. In this code, we first read in the MCMC samples of the model parameters estimated in Step 1, and then we use these samples to construct the MBE for a "new RCT" that was left out from the historical data. The "new RCT" is represented by the `sample_dat` list in the code, which contains the observed treatment effect estimates on the clinical endpoint and surrogate endpoints, as well as their standard errors and correlations.
