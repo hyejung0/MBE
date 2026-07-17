@@ -164,12 +164,13 @@ in the historical data. Then for each left out RCT, we do the following:
 
 $$N(\beta_0^{(b)} + \beta_1^{(b)} \cdot \gamma_{01}^{(b)}+ \beta_2^{(b)} \cdot \gamma_{02}^{(b)}, \lambda_{\theta}^{2 \ (b)} + \sigma^2_{\hat{\theta}_0}),$$
 
-where $\beta_0^{(b)}$, $\beta_1^{(b)}$, $\beta_2^{(b)}$, and \$ \_{}^{2
- (b)}\$ are $b^{th}$ MCMC sample of the the historical posterior
-distribution, $\gamma_{01}^{(b)}$ and $\gamma_{02}^{(b)}$ are the
-$b^{th}$ posterior samples of the surrogate endpoint(s) for the left out
-RCT, and $\sigma^2_{\hat{\theta}_0}$ is the observed variance of the
-treatment effect on the clinical endpoint for the left out RCT.
+where $\beta_0^{(b)}$, $\beta_1^{(b)}$, $\beta_2^{(b)}$, and
+$\lambda_{\theta}^{2 \ (b)}$ are $b^{th}$ MCMC sample of the the
+historical posterior distribution, $\gamma_{01}^{(b)}$ and
+$\gamma_{02}^{(b)}$ are the $b^{th}$ posterior samples of the surrogate
+endpoint(s) for the left out RCT, and $\sigma^2_{\hat{\theta}_0}$ is the
+observed variance of the treatment effect on the clinical endpoint for
+the left out RCT.
 
 The collection these draws form a posterior predictive distribution for
 the observed treatment effect on the clinical endpoint for the left out
