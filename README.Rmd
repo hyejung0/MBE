@@ -107,3 +107,25 @@ The function `theta0_given_hat_psi0` estimates the posterior distribution of $\t
 with full historical prior carry over is shown in `MBE_full_historical_posterior.R` file. This is what the manuscript calls 'Model A.'
 
 The R code for Step 2 is stored in the `code/MBE_estimation.R` file. In this code, we first read in the MCMC samples of the model parameters estimated in Step 1, and then we use these samples to construct the MBE for a "new RCT" that was left out from the historical data. The "new RCT" is represented by the `sample_dat` list in the code, which contains the observed treatment effect estimates on the clinical endpoint and surrogate endpoints, as well as their standard errors and correlations.
+
+
+
+## Historical Data Model Fit Check
+
+In Appendix, you can find a section for Historical Model fit, where I used a various metric to check the model fit for the historical data. The R code for this is stored in the `code/historical_model_assessment` folder. Suppose that as in our paper, we have 66 historical RCTs. 
+
+
+### Leave-One-Out Cross-Validated Tolerance Interval (LOO-CV TI) coverage 
+
+The `PPD.R` file demonstrates how to construct a posterior predictive distribution for observed treatment effect on the clinical endpoint. One fits historical model on 65 RCTs, and then uses the posterior samples of the model parameters to generate a posterior predictive distribution (PPD) for the observed treatment effect on the clinical endpoint for the left out RCT. The PPD is estimated by following procedure. Suppose we have $B$ posterior samples of the model parameters, and we have $N$ RCTs in the historical data. Then for each left out RCT, we do the following:
+
+1. Estimate the posterior distribution of the surrogate endpoint(s) by updating the historical model with the observed treatment effect on the surrogate endpoint(s) for the left out RCT. This should be done for each of the $B$ posterior samples of the model parameters and we will have $B$ posterior samples of the surrogate endpoint(s) for the left out RCT.
+2. For each $b$ posterior sample of the surrogate endpoint(s), we generate a posterior predictive distribution for the observed treatment effect on the clinical endpoint for the left out RCT by drawing a sample from each conditional normal distribution: 
+
+$$N(\beta_0^{(b)} + \beta_1^{(b)} \cdot \gamma_{01}^{(b)}+ \beta_2^{(b)} \cdot \gamma_{02}^{(b)}, \lambda_{\theta}^{2 \ (b)} + \sigma^2_{\hat{\theta}_0}),$$ 
+
+where $\beta_0^{(b)}$, $\beta_1^{(b)}$, $\beta_2^{(b)}$, and $ \lambda_{\theta}^{2 \ (b)}$ are $b^{th}$ MCMC sample of the the historical posterior distribution, $\gamma_{01}^{(b)}$ and $\gamma_{02}^{(b)}$ are the $b^{th}$ posterior samples of the surrogate endpoint(s) for the left out RCT, and $\sigma^2_{\hat{\theta}_0}$ is the observed variance of the treatment effect on the clinical endpoint for the left out RCT.
+
+The collection these draws form a posterior predictive distribution for the observed treatment effect on the clinical endpoint for the left out RCT. Then, we estimate where the observed treatment effect on the CE for the left out RCT ($\hat{\theta}_0$) falls within this PPD. If we are interested in constructing 95% tolerance interval, we can find whether $\hat{\theta}_0$ sits within the 2.5th and 97.5th percentiles of this PPD. We log the result as 1 if $\hat{\theta}_0$ falls within the 95% tolerance interval, and 0 otherwise.
+
+We repeat this process for all $N$ RCTs in the historical data, and calculate the coverage of the 95% tolerance interval by taking the average of the logged results (1 if $\hat{\theta}_0$ falls within the  95% tolerance interval, and 0 otherwise) across all $N$ RCTs. This coverage should be close to 0.95 if the historical model fits the data well.
