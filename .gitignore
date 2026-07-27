@@ -1,4 +1,18 @@
+# History and Workspace
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
+# Package check and build files
+*.Rcheck/
+*.tar.gz
+
+# Mac OS folder clutter (if you or a collaborator uses a Mac)
+.DS_Store
+
+
+# folders to ignore
+data-raw/
+inst/
+tests/
