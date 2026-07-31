@@ -16,3 +16,7 @@
 data-raw/
 inst/
 tests/
+inst/doc
+/doc/
+/Meta/
+docs

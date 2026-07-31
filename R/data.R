@@ -2,13 +2,16 @@
 #'
 #' @description This is a simulated data set for chronic kidney disease clinical trials.
 #' The definitive clinical endpoint is the first of ESRD or a 57% decline from baseline eGFR.
-#' It has treatment effect on chronic slope(Sur1), acute slope (Sur2), and UACR (Sur3),
-#' for intermediate analysis months 15-35. It contains 3 different scenarios
-#' Scenarios 2 is where the baseline eGFR ranges from 30-60 ml/min/1.73m2 (standard baselineeGFR range),
+#' In addition to the treatment effect estimated on the definitive clinical endpoint,
+#' the treatment effect is also estimated on two surrogate endpoints: the acute slope (Sur2) and chronic slope (Sur1) of eGFR, and on log(UACR) (Sur3).
+#' It contains 6 different scenarios:
+#' Scenarios 2 is where the baseline eGFR ranges from 30-60 ml/min/1.73m2 (standard baseline eGFR range),
 #' scenarios 4 is where the baseline eGFR ranges from 30-70 ml/min/1.73m2 (wider/higher baseline eGFR range),
 #' and scenarios 6 is where the baseline eGFR ranges from 25-50 ml/min/1.73m2 (lower baseline eGFR range).
 #' For all 3 scenarios, the slope effect is 0.8 and treatment mean log(UACR) change is -0.3.
 #' Thus, in all three cases, there is an active treatment effect.
+#' Scenario 1 is same as scenario 2, but with no treatment effect (slope effect = 0 and mean log(UACR) change = 0).
+#' Likewise, scenario 3 is same as scenario 4, but with no treatment effect, and scenario 5 is same as scenario 6, but with no treatment effect.
 #'
 #' @format A data frame with 63 rows and 16 variables:
 #' \describe{

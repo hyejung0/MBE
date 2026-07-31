@@ -8,7 +8,21 @@
 [![R-CMD-check](https://github.com/hyejung0/MBE/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hyejung0/MBE/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of MBE is to …
+This repository contains all relevant R codes that was used in the
+Multi-Component Bayesian Endpoints for Randomized Clinical Trials paper
+produced by Lee et. al., (2026).
+
+The MBE is an endpoint that combines clinical endpoint with at least one
+surrogate endpoint to create a more sensitive and efficient endpoint for
+clinical trials. It is developed using a Bayesian framework, which
+allows for the incorporation of historical randomized clinical trials
+(RCTs) and the estimation of uncertainty in estimating the treatment
+effect on the clinical endpoint using the treatment effect on surrogate
+endpoint(s).
+
+Detailed explanation of mapping the manuscript to the code can be found
+in this document: [Mapping the manuscript to the
+code](articles/MBE-manuscript-to-code.html)
 
 ## Installation
 
