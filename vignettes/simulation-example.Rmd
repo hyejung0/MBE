@@ -169,8 +169,6 @@ To fit the model, we use our MCMC function on the sample data. *Note: This step 
 
 ```{r}
 
-library(cmdstanr)
-
 # Read in the stan code: historical model with inverse gamma prior for variance parameters and model $\beta_0$ as a random parameter
 mod_path <- system.file("stan", "random_beta0_invGamma.stan", package = "MBE")
 cat(readLines(mod_path), sep = "\n")
