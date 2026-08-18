@@ -1,4 +1,4 @@
-#' Simulated Data for Package Examples
+#' Simulated Data for Interim Analysis
 #'
 #' @description This is a simulated data set for chronic kidney disease clinical trials.
 #' The definitive clinical endpoint is the first of ESRD or a 57% decline from baseline eGFR.
@@ -34,7 +34,11 @@
 #' }
 #' @author Jian Ying \email{jian.ying@@hsc.utah.edu}
 #' @source Simulated by Jian Ying
-"sim_dat"
+"interim_sim_dat"
+
+
+
+
 
 #' Posterior Distribution of Parameter Values from Modeling with UACR, Acute Slope, and Chronic Slope as Surrogates for Clinical Endpoint
 #'
@@ -49,3 +53,29 @@
 #'   \item{col2}{Description}
 #' }
 "historical_posterior"
+
+
+
+
+#' 66 Trial Level Summary Simulated Data
+#'
+#' @description Wait until Yizhen gives me her description
+#' @format A data frame with 66 rows (one row per trial) and 13 variables:
+#' \describe{
+#'   \item{trial_id}{Integer. Index for trial.}
+#'   \item{CE_est}{Numeric. Observed estimated treatment effect on the clinical endpoint.}
+#'   \item{Sur1_est}{Numeric. Observed estimated treatment effect on the first surrogate endpoint.}
+#'   \item{Sur2_est}{Numeric. Observed estimated treatment effect on the second surrogate endpoint.}
+#'   \item{CE_se}{Numeric. Standard error of the observed estimated treatment effect on the clinical endpoint.}
+#'   \item{Sur1_se}{Numeric. Standard error of the observed estimated treatment effect on the first surrogate endpoint.}
+#'   \item{Sur2_se}{Numeric. Standard error of the observed estimated treatment effect on the second surrogate endpoint.}
+#'   \item{Cor_CE_Sur1}{Numeric. Estimated correlation between clinical endpoint and 1st surrogate endpoint.}
+#'   \item{Cor_CE_Sur2}{Numeric. Estimated correlation between clinical endpoint and 2nd surrogate endpoint.}
+#'   \item{Cor_Sur1_Sur2}{Numeric. Estimated correlation between 1st surrogate endpoint and 2nd surrogate endpoint.}
+#'   \item{theta_CE}{Numeric. True treatment effect on the clinical endpoint.}
+#'   \item{theta_Sur1}{Numeric. True treatment effect on the 1st surrogate endpoint.}
+#'   \item{theta_Sur2}{Numeric. True treatment effect on the 2nd surrogate endpoint.}
+#' }
+#' @author Yizhen Xu \email{yizhen.xu@utah.edu}
+#' @source Simulated by Yizhen Xu
+"trial_sim_dat"

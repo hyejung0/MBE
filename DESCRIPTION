@@ -12,15 +12,18 @@ Depends:
     R (>= 3.5)
 LazyData: true
 Imports: 
+    cmdstanr,
     data.table,
+    loo,
     mvtnorm,
     parallel,
-    cmdstanr (>= 0.9.0)
+    posterior,
+    utils
 Suggests: 
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-Remotes:  
+Remotes: 
     stan-dev/cmdstanr

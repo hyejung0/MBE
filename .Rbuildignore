@@ -10,3 +10,6 @@
 ^docs$
 ^pkgdown$
 ^precalculated_data$
+^\.vscode$
+^inst/code$
+^package_cheat_sheet.txt

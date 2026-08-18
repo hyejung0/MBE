@@ -13,7 +13,6 @@
 #'    \item{covar}{A list of covariance matrices for each MCMC sample.}
 #'    \item{dt}{A data.table containing the mean and covariance values for each MCMC sample.}
 #' }
-#' @export
 #'
 #' @examples
 #' # Use the example MCMC data provided in the package `historical_posterior`
@@ -25,6 +24,7 @@
 #' )
 #'
 #' head(result_matrix)
+#' @noRd
 vector_to_matrix<-function(MCMC_dat,diffuse_se=100, diffuse=TRUE, intercept0=TRUE){
 
 

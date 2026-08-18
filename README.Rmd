@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# MBE
+# Multi-component Bayesian Endpoints (MBEs)
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/hyejung0/MBE/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hyejung0/MBE/actions/workflows/R-CMD-check.yaml)

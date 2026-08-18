@@ -16,13 +16,14 @@ MBE(
 \arguments{
 \item{mcmc_dat}{A data.table object containing MCMC samples.}
 
-\item{sample_dat}{A list containing the observed mean and variance vector.}
+\item{sample_dat}{A list containing the new RCT data (estimated treatment effects on the CE and surrogates and their variances and correlations).
+They should explicitely have names \code{ClnEst}, \code{ClnSE},  \code{Sur1Est}, \code{Sur1SE}, \code{Sur2Est}, \code{Sur2SE}, \code{R1Clin}, \code{R2Clin}, and \code{R12}. See Example.}
 
 \item{diffuse}{A logical value indicating whether to use a diffuse prior. Defaults to TRUE.}
 
 \item{diffuse_se}{A numeric value specifying the standard error for the diffuse prior.}
 
-\item{ncores}{An integer. For parallel computing.}
+\item{ncores}{An integer. Number of parallel chains to run. Defaults to 3. If set to 1, the function will run sequentially without parallelization.}
 
 \item{intercept0}{A logical value indicating whether to center the intercept term of the meta-regression to zero. Defaults to TRUE.
 stripped before the computation proceeds. Defaults to \code{TRUE}.}
@@ -31,38 +32,41 @@ stripped before the computation proceeds. Defaults to \code{TRUE}.}
 A data frame with three columns: \code{mean}, \code{sd}, and \code{n}.
 }
 \description{
-Takes a numeric vector and returns a data frame containing
-the mean, standard deviation, and count of non-missing values.
+Takes new data and historical posterior samples to estimate the posterior distribution of MBE using importance sampling.
+Built specifically for the case of two surrogate endpoints and a single clinical endpoint.
 }
 \examples{
-# Use the example MCMC data provided in the package.
-# Use a single time point in the provided simulated data.
-
-# We will use simulation case 2, month 30.
-sim_dat<-data.table::data.table(sim_dat)
-sim_dat<-sim_dat[case==2 & analysis.month==30, ]
+# Use the example data provided in the package.
+# Load the historical posterior samples where the model was fit
+# with random intercept and inverse gamma prior for variance parameters
+# on the 65/66 simulated trials in `trial_sim_dat` dataset.
+# It's the first trial that was left out as if it was a new trial.
+# We demonstrate estimating the posterior distribution of MBE on this first
+# row that was left out.
+data("historical_posterior")
+data("trial_sim_dat")
 one_sim_dat<-list(
 
 # treatment effect on CE
-ClnEst=sim_dat$ClnEst,
-ClnSE=sim_dat$ClnSE,
+ClnEst=trial_sim_dat$CE_est[1],
+ClnSE=trial_sim_dat$CE_se[1],
 
 # treatment effect on chronic slope
-Sur1Est=sim_dat$Sur1Est,
-Sur1SE=sim_dat$Sur1SE,
+Sur1Est=trial_sim_dat$Sur1_est[1],
+Sur1SE=trial_sim_dat$Sur1_se[1],
 
 # treatment effect on acute slope
-Sur2Est=sim_dat$Sur2Est,
-Sur2SE=sim_dat$Sur2SE,
+Sur2Est=trial_sim_dat$Sur2_est[1],
+Sur2SE=trial_sim_dat$Sur2_se[1],
 
 # correlation between CE and chronic slope
-R1Clin=sim_dat$R1Clin,
+R1Clin=trial_sim_dat$Cor_CE_Sur1[1],
 
 # correlation between CE and acute slope
-R2Clin=sim_dat$R2Clin,
+R2Clin=trial_sim_dat$Cor_CE_Sur2[1],
 
 # correlation between chronic slope and acute slope
-R1R2=sim_dat$R12
+R12=trial_sim_dat$Cor_Sur1_Sur2[1]
 )
 
 MBE_distribution<-MBE(

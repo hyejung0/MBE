@@ -1,0 +1,94 @@
+===============================================================================
+                       R PACKAGE DEVELOPMENT CHEAT SHEET
+===============================================================================
+
+-------------------------------------------------------------------------------
+1. DAILY DEVELOPMENT LOOP & KEYBOARD SHORTCUTS
+-------------------------------------------------------------------------------
+# Load all functions into memory instantly (Test code fast)
+devtools::load_all()          # Shortcut: Cmd + Shift + L (Mac) / Ctrl + Shift + L (Win)
+
+# Generate help files (.Rd) and NAMESPACE from roxygen comments
+devtools::document()          # Shortcut: Cmd + Shift + D / Ctrl + Shift + D
+
+# Install the package onto your local computer
+devtools::install()           # Shortcut: Cmd + Shift + B / Ctrl + Shift + B
+
+# Run automated package quality checks
+devtools::check()             # Shortcut: Cmd + Shift + E / Ctrl + Shift + E
+
+
+-------------------------------------------------------------------------------
+2. CREATING & DOCUMENTING FUNCTIONS
+-------------------------------------------------------------------------------
+# 1. Create a blank script in R/
+usethis::use_r("function_name")
+
+# 2. Insert Roxygen Documentation Skeleton (In RStudio editor)
+#    - Write: function_name <- function(arg1, arg2) {}
+#    - Click inside the function body.
+#    - Press: Cmd + Option + Shift + R (Mac) / Ctrl + Alt + Shift + R (Win)
+#    - Or go to menu: Code -> Insert Roxygen Skeleton
+
+# 3. Key Roxygen tags to fill out:
+#    #' @description  A clear summary of what the function does.
+#    #' @param arg1     Explain input parameter 1.
+#    #' @param arg2     Explain input parameter 2.
+#    #' @return        Explain output object (e.g., list, dataframe, vector).
+#    #' @export        Makes function public to users (REQUIRED for main functions).
+#    #' @examples      Provide runnable example code blocks.
+
+
+-------------------------------------------------------------------------------
+3. ADDING OTHER COMPONENTS
+-------------------------------------------------------------------------------
+# Add an external dependency package to the DESCRIPTION file
+usethis::use_package("package_name")
+
+# Add a script in data-raw/ to process raw CSV/RDS files
+usethis::use_data_raw("dataset_name")
+
+# Convert an R object into an official .rda dataset in data/
+usethis::use_data(dataset_name, overwrite = TRUE)
+
+# Add a new vignette tutorial in vignettes/
+usethis::use_vignette("vignette_name")
+
+# Tell R to ignore a custom private developer folder (e.g., simulation scripts)
+usethis::use_build_ignore("folder_name")
+
+
+-------------------------------------------------------------------------------
+4. TESTING, CHECKING, & README
+-------------------------------------------------------------------------------
+# Re-knit README.Rmd into README.md whenever you update README code examples
+# (Never edit README.md directly!)
+devtools::build_readme()
+
+# Wipe out temporary vignette artifacts if devtools::check() complains
+devtools::clean_vignettes()
+
+
+-------------------------------------------------------------------------------
+5. WEBSITE GENERATION (pkgdown)
+-------------------------------------------------------------------------------
+# Render a single vignette to preview how it looks on the site
+pkgdown::build_article("vignette_name")
+
+# Rebuild the ENTIRE website into the docs/ folder
+# (Run this before committing to update your GitHub Pages site)
+pkgdown::build_site()
+
+
+===============================================================================
+                    STANDARD WORKFLOW FOR UPDATING YOUR PACKAGE
+===============================================================================
+1. Create/edit script: `usethis::use_r("my_function")`
+2. Write function and insert skeleton: `Cmd + Option + Shift + R`
+3. Run `devtools::document()` to update help files.
+4. Run `devtools::install()` so your local machine has the latest version.
+5. Update vignettes or README if needed.
+6. Run `devtools::check()` (Aim for 0 errors | 0 warnings | 0 notes).
+7. Run `devtools::build_readme()` (if README.Rmd was changed).
+8. Run `pkgdown::build_site()` to refresh the docs/ folder.
+9. Commit and Push everything (including docs/) to GitHub!

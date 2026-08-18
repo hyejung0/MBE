@@ -1,22 +1,33 @@
-# History and Workspace
-.Rproj.user
+# --- R Session & Workspace ---
+.Rproj.user/
 .Rhistory
 .RData
 .Ruserdata
 
-# Package check and build files
+# --- R Package Build & Check Artifacts ---
 *.Rcheck/
 *.tar.gz
+doc/
+Meta/
 
-# Mac OS folder clutter (if you or a collaborator uses a Mac)
+
+# --- IDE & OS Files ---
+.vscode/
 .DS_Store
+Thumbs.db
 
+
+# --- Heavy Simulation Data & Scripts (Avoids GitHub 100MB File Limit) ---
+inst/code/
+precalculated_data/
 
 # folders to ignore
-data-raw/
-inst/
+data-raw/ALL_STUDIES.rds
+inst/code
 tests/
-inst/doc
 /doc/
 /Meta/
+
+# Optional: uncomment if NOT using GitHub Pages for pkgdown
 docs
+
