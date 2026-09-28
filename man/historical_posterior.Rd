@@ -22,8 +22,8 @@ A data.table with 4,000 rows and 9 variables:
 historical_posterior
 }
 \description{
-Posterior draws of all model parameters from the MCMC model with chronic and
-acute eGFR slopes as the two surrogates for the clinical endpoint.
+Posterior draws of all model parameters from the MCMC model with chronic
+and acute eGFR slopes as the two surrogates for the clinical endpoint.
 This data set is used in the examples of the package to demonstrate how
 to use the \code{vector_to_matrix} and \code{MBE} functions.
 }

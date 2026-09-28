@@ -34,10 +34,10 @@ the treatment effect is estimated on exactly two surrogate endpoints: chronic
 eGFR slope (\code{Sur1}) and acute eGFR slope (\code{Sur2}).
 
 The data contain eight scenarios. Cases 1 and 2 use a baseline eGFR range of
-30--60, cases 3 and 4 use 30--75, and cases 5--8 use 25--50 ml/min/1.73m2.
-Odd-numbered cases have no slope treatment effect; even-numbered cases have an
-active slope treatment effect of 0.8. Cases 7 and 8 repeat the settings of cases
-5 and 6, respectively.
+30--60, cases 3 and 4 use 30--75, and cases 5--8 use 25--50
+ml/min/1.73m2. Odd-numbered cases have no slope treatment effect; even-numbered
+cases have an active slope treatment effect of 0.8. Cases 7 and 8 repeat the
+settings of cases 5 and 6, respectively.
 }
 \author{
 Jian Ying \email{jian.ying@hsc.utah.edu}

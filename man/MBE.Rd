@@ -4,21 +4,15 @@
 \alias{MBE}
 \title{Estimate an MBE Posterior with Two Surrogate Endpoints}
 \usage{
-MBE(
-  mcmc_dat,
-  sample_dat,
-  diffuse = TRUE,
-  diffuse_se = 100,
-  intercept0 = TRUE
-)
+MBE(mcmc_dat, sample_dat, diffuse = TRUE, diffuse_se = 100, intercept0 = TRUE)
 }
 \arguments{
 \item{mcmc_dat}{A data frame or matrix containing posterior draws from the
 two-surrogate historical model.}
 
 \item{sample_dat}{A named list containing exactly nine scalar values:
-\code{ClnEst}, \code{ClnSE}, \code{Sur1Est}, \code{Sur1SE}, \code{Sur2Est},
-\code{Sur2SE}, \code{R1Clin}, \code{R2Clin}, and \code{R12}.}
+\code{ClnEst}, \code{ClnSE}, \code{Sur1Est}, \code{Sur1SE}, \code{Sur2Est}, \code{Sur2SE}, \code{R1Clin},
+\code{R2Clin}, and \code{R12}.}
 
 \item{diffuse}{A logical value indicating whether to use a diffuse prior. Defaults to TRUE.}
 
@@ -28,15 +22,15 @@ of the diffuse prior for the two surrogate effects.}
 \item{intercept0}{A logical value indicating whether to center the intercept term of the meta-regression to zero. Defaults to TRUE.}
 }
 \value{
-A list containing posterior means, posterior covariance, weighted quantiles
-for the clinical and two surrogate effects, posterior draws, and importance
-weights. Components are ordered as clinical endpoint, surrogate 1, and
-surrogate 2.
+A list containing posterior means, posterior covariance, weighted
+quantiles for the clinical and two surrogate effects, posterior draws, and
+the corresponding importance weights. Components are always ordered as
+clinical endpoint, surrogate 1, and surrogate 2.
 }
 \description{
-Uses new-trial estimates and historical posterior draws to estimate an MBE by
-importance sampling. The model is fixed to one clinical endpoint and exactly
-two surrogate endpoints.
+Uses new-trial estimates and historical posterior draws to
+estimate the posterior distribution of an MBE by importance sampling. The
+model is fixed to one clinical endpoint and exactly two surrogate endpoints.
 }
 \examples{
 # Use the example data provided in the package.

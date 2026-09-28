@@ -24,8 +24,8 @@ library(data.table)
 
 We use the simulated data provided in the package to demonstrate an MBE with
 one clinical endpoint and exactly two surrogate endpoints. In this CKD example,
-the surrogates are chronic and acute eGFR slopes. Simulation-scenario details
-are available in [this report](../case_defination.html).
+the surrogates are chronic and acute eGFR slopes. The simulation scenarios are
+summarized in the documentation for `interim_sim_dat`.
 
 ## Data 
 

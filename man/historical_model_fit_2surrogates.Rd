@@ -20,9 +20,9 @@ historical_model_fit_2surrogates(
 \arguments{
 \item{data}{A data frame or matrix with one row per trial and exactly these
 nine numeric columns (order does not matter): \code{CE_est}, \code{CE_se},
-\code{Sur1_est}, \code{Sur1_se}, \code{Sur2_est}, \code{Sur2_se},
-\code{Cor_CE_Sur1}, \code{Cor_CE_Sur2}, and \code{Cor_Sur1_Sur2}. Data for a
-third surrogate endpoint are not accepted.}
+\code{Sur1_est}, \code{Sur1_se}, \code{Sur2_est}, \code{Sur2_se}, \code{Cor_CE_Sur1},
+\code{Cor_CE_Sur2}, and \code{Cor_Sur1_Sur2}. Data for a third surrogate endpoint
+are not accepted.}
 
 \item{random_intercept}{logical indicating whether to include intercept in
 regression modeling.}
@@ -68,8 +68,8 @@ A list containing the fitted model object and other relevant information:
 }
 \description{
 Fits a trial-level meta-analysis using a two-stage random-effects Bayesian
-model for exactly two surrogate endpoints and one definitive clinical endpoint,
-as described in Lee et al. (2026).
+model for exactly two surrogate endpoints and one definitive clinical
+endpoint, as described in Lee et al. (2026).
 }
 \details{
 This function fits a trial-level meta-analysis model using a 2-stage random effects Bayesian model

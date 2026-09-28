@@ -95,7 +95,12 @@ vector_to_matrix <- function(MCMC_dat, diffuse_se = 100, diffuse = TRUE, interce
   for (i in seq_len(B)) {
     means_array[,,i] <- tmp[i, ]
   }
-  means <- lapply(seq_len(dim(means_array)[3]), function(i) means_array[,,i,drop=FALSE])
+  # Dropping only the third array dimension still leaves a 3 x 1 x 1 array.
+  # Construct matrices explicitly so callers always receive the documented
+  # 3 x 1 shape (clinical, surrogate 1, surrogate 2).
+  means <- lapply(seq_len(dim(means_array)[3]), function(i) {
+    matrix(means_array[, , i], nrow = 3, ncol = 1)
+  })
 
 
   return(list(mean=means, covar=covars, dt=this.MCMC_dat[,.SD,.SDcols=c("mu1","mu2","mu3",these_cols)]))

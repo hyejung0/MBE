@@ -29,9 +29,10 @@ Simulated by Yizhen Xu
 trial_sim_dat
 }
 \description{
-Simulated summary data for 66 randomized trials. Each trial has one clinical
-endpoint and exactly two surrogate endpoints (chronic and acute eGFR slopes),
-along with their standard errors, correlations, and simulation truths.
+Simulated summary data for 66 randomized trials. Each trial has
+one clinical endpoint and exactly two surrogate endpoints (chronic and acute
+eGFR slopes), along with their standard errors, correlations, and simulation
+truths.
 }
 \author{
 Yizhen Xu \email{yizhen.xu@utah.edu}
