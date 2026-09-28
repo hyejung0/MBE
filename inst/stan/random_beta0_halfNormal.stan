@@ -1,9 +1,10 @@
-// random beta0=0 with half normal
+// One clinical endpoint + exactly two surrogate endpoints.
+// Estimate beta0 and use half-normal priors for standard deviations.
 
 data {
   int<lower=1> N;                        // number of studies
-  array[N] vector[3] obs_mean;           // observed treatment effects (CE, chronic, acute)
-  array[N] matrix[3, 3] obs_var;         // study-specific observed covariance matrices
+  array[N] vector[3] obs_mean;           // fixed order: CE, surrogate 1, surrogate 2
+  array[N] matrix[3, 3] obs_var;         // covariance for those three effects
 }
 parameters{
 
@@ -15,7 +16,7 @@ parameters{
   real bSur1onSur2;         // slope
 
 //meta-regression for modeling clinical endpoints ~ chronic slope + acute slope
-  real alphaCEonSur1Sur2;   // intercept (= beta0). Because it is treated as 0, we should just remove this.
+  real alphaCEonSur1Sur2;   // intercept (= beta0)
   real b1CEonSur1Sur2;      // slope for chronic slope
   real b2CEonSur1Sur2;      // slope for acute slope
 

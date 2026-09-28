@@ -3,30 +3,24 @@
 #' @description This is a simulated data set for chronic kidney disease clinical trials.
 #' The definitive clinical endpoint is the first of ESRD or a 57% decline from baseline eGFR.
 #' In addition to the treatment effect estimated on the definitive clinical endpoint,
-#' the treatment effect is also estimated on two surrogate endpoints: the acute slope (Sur2) and chronic slope (Sur1) of eGFR, and on log(UACR) (Sur3).
-#' It contains 6 different scenarios:
-#' Scenarios 2 is where the baseline eGFR ranges from 30-60 ml/min/1.73m2 (standard baseline eGFR range),
-#' scenarios 4 is where the baseline eGFR ranges from 30-70 ml/min/1.73m2 (wider/higher baseline eGFR range),
-#' and scenarios 6 is where the baseline eGFR ranges from 25-50 ml/min/1.73m2 (lower baseline eGFR range).
-#' For all 3 scenarios, the slope effect is 0.8 and treatment mean log(UACR) change is -0.3.
-#' Thus, in all three cases, there is an active treatment effect.
-#' Scenario 1 is same as scenario 2, but with no treatment effect (slope effect = 0 and mean log(UACR) change = 0).
-#' Likewise, scenario 3 is same as scenario 4, but with no treatment effect, and scenario 5 is same as scenario 6, but with no treatment effect.
+#' the treatment effect is estimated on exactly two surrogate endpoints: chronic
+#' eGFR slope (`Sur1`) and acute eGFR slope (`Sur2`).
 #'
-#' @format A data frame with 63 rows and 16 variables:
+#' The data contain eight scenarios. Cases 1 and 2 use a baseline eGFR range of
+#' 30--60, cases 3 and 4 use 30--75, and cases 5--8 use 25--50
+#' ml/min/1.73m2. Odd-numbered cases have no slope treatment effect; even-numbered
+#' cases have an active slope treatment effect of 0.8. Cases 7 and 8 repeat the
+#' settings of cases 5 and 6, respectively.
+#'
+#' @format A data frame with 528 rows and 11 variables:
 #' \describe{
-#'   \item{case}{Integer. The scenario case number (2, 4, or 6).}
+#'   \item{case}{Integer. The scenario case number (1 through 8).}
 #'   \item{analysis.month}{Integer. Number of months since the study began for the specific case.}
 #'   \item{R1Clin}{Numeric. Estimated correlation between chronic slope and clinical endpoint. If NA, that is because the treatment effect on clinical endpoint (ClnEst and ClnSE) were not estimated due to small event size.}
 #'   \item{R2Clin}{Numeric. Estimated correlation between acute slope and clinical endpoint. If NA, that is because the treatment effect on clinical endpoint (ClnEst and ClnSE) were not estimated due to small event size.}
-#'   \item{R3Clin}{Numeric. Estimated correlation between log UACR and clinical endpoint. If NA, that is because the treatment effect on clinical endpoint (ClnEst and ClnSE) were not estimated due to small event size.}
 #'   \item{R12}{Numeric. Estimated correlation between chronic slope and acute slope.}
-#'   \item{R13}{Numeric. Estimated correlation between chronic slope and log UACR.}
-#'   \item{R23}{Numeric. Estimated correlation between acute slope and log UACR.}
 #'   \item{ClnEst}{Numeric. Estimated treatment effect on the clinical endpoint (log hazard ratio). If NA, that is because the treatment effect on clinical endpoint (ClnEst and ClnSE) were not estimated due to small event size.}
-#'   \item{ClnSE}{Numeric. Standard error of the estimated treatment effect on the clinical endpoint.. If NA, that is because the treatment effect on clinical endpoint (ClnEst and ClnSE) were not estimated due to small event size.}
-#'   \item{Sur3Est}{Numeric. Estimated treatment effect on log UACR.}
-#'   \item{Sur3SE}{Numeric. Standard error of the estimated treatment effect on log UACR.}
+#'   \item{ClnSE}{Numeric. Standard error of the estimated treatment effect on the clinical endpoint. If NA, that is because the clinical treatment effect was not estimated due to small event size.}
 #'   \item{Sur2Est}{Numeric. Estimated treatment effect on acute slope.}
 #'   \item{Sur2SE}{Numeric. Standard error of the estimated treatment effect on acute slope.}
 #'   \item{Sur1Est}{Numeric. Estimated treatment effect on chronic slope.}
@@ -40,26 +34,36 @@
 
 
 
-#' Posterior Distribution of Parameter Values from Modeling with UACR, Acute Slope, and Chronic Slope as Surrogates for Clinical Endpoint
+#' Historical Posterior for Two Surrogate Endpoints
 #'
-#' Posterior distribution of all parameters from the MCMC model with UACR,
-#' acute slope, and chronic slope as surrogates for the clinical endpoint.
+#' Posterior draws of all model parameters from the MCMC model with chronic
+#' and acute eGFR slopes as the two surrogates for the clinical endpoint.
 #' This data set is used in the examples of the package to demonstrate how
 #' to use the `vector_to_matrix` and `MBE` functions.
 #'
-#' @format A data.table with 500 rows and 4 variables:
+#' @format A data.table with 4,000 rows and 9 variables:
 #' \describe{
-#'   \item{col1}{Description}
-#'   \item{col2}{Description}
+#'   \item{alphaCEonSur1Sur2}{Intercept for clinical effect conditional on both surrogate effects.}
+#'   \item{b1CEonSur1Sur2}{Slope for surrogate 1 in the clinical-effect regression.}
+#'   \item{b2CEonSur1Sur2}{Slope for surrogate 2 in the clinical-effect regression.}
+#'   \item{SigSqCEonSur1Sur2}{Conditional variance of the clinical effect.}
+#'   \item{alphaSur1onSur2}{Intercept for surrogate 1 conditional on surrogate 2.}
+#'   \item{bSur1onSur2}{Slope for surrogate 2 in the surrogate-1 regression.}
+#'   \item{SigSqSur1onSur2}{Conditional variance of surrogate 1.}
+#'   \item{muSur2}{Population mean for surrogate 2.}
+#'   \item{sigSqSur2}{Population variance for surrogate 2.}
 #' }
 "historical_posterior"
 
 
 
 
-#' 66 Trial Level Summary Simulated Data
+#' Simulated Trial-Level Data for Two Surrogate Endpoints
 #'
-#' @description Wait until Yizhen gives me her description
+#' @description Simulated summary data for 66 randomized trials. Each trial has
+#' one clinical endpoint and exactly two surrogate endpoints (chronic and acute
+#' eGFR slopes), along with their standard errors, correlations, and simulation
+#' truths.
 #' @format A data frame with 66 rows (one row per trial) and 13 variables:
 #' \describe{
 #'   \item{trial_id}{Integer. Index for trial.}

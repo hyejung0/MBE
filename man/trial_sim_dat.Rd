@@ -3,7 +3,7 @@
 \docType{data}
 \name{trial_sim_dat}
 \alias{trial_sim_dat}
-\title{66 Trial Level Summary Simulated Data}
+\title{Simulated Trial-Level Data for Two Surrogate Endpoints}
 \format{
 A data frame with 66 rows (one row per trial) and 13 variables:
 \describe{
@@ -29,7 +29,9 @@ Simulated by Yizhen Xu
 trial_sim_dat
 }
 \description{
-Wait until Yizhen gives me her description
+Simulated summary data for 66 randomized trials. Each trial has one clinical
+endpoint and exactly two surrogate endpoints (chronic and acute eGFR slopes),
+along with their standard errors, correlations, and simulation truths.
 }
 \author{
 Yizhen Xu \email{yizhen.xu@utah.edu}

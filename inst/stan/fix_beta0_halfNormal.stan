@@ -1,9 +1,10 @@
-// fix beta0=0 with half normal
+// One clinical endpoint + exactly two surrogate endpoints.
+// Fix beta0 = 0 and use half-normal priors for standard deviations.
 
 data {
   int<lower=1> N;                        // number of studies
-  array[N] vector[3] obs_mean;           // observed treatment effects (CE, chronic, acute)
-  array[N] matrix[3, 3] obs_var;         // study-specific observed covariance matrices
+  array[N] vector[3] obs_mean;           // fixed order: CE, surrogate 1, surrogate 2
+  array[N] matrix[3, 3] obs_var;         // covariance for those three effects
 }
 parameters{
 

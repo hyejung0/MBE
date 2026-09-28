@@ -3,4 +3,3 @@
 export(MBE)
 export(historical_model_fit_2surrogates)
 import(data.table)
-import(parallel)

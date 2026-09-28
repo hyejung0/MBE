@@ -1,9 +1,13 @@
 Package: MBE
-Title: What the Package Does (One Line, Title Case)
+Title: Bayesian Endpoints with Two Surrogate Outcomes
 Version: 0.0.0.9000
 Authors@R: 
     person("Hyejung", "Lee", , "hyejung.lee@utah.edu", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: Fits a trial-level Bayesian model for exactly two surrogate
+    endpoints and one clinical endpoint, then updates the historical posterior
+    with results from a new randomized clinical trial. The package provides
+    fixed- and random-intercept Stan models and importance-sampling tools for
+    estimating the resulting Multi-Component Bayesian Endpoint.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -16,7 +20,6 @@ Imports:
     data.table,
     loo,
     mvtnorm,
-    parallel,
     posterior,
     utils
 Suggests: 

@@ -1,7 +1,6 @@
 #Here, we import all dependencies and set up global variables for the package.
 
 #' @import data.table
-#' @import parallel
 NULL
 
 
@@ -12,6 +11,11 @@ utils::globalVariables(c(
   ".",
   "..these_cols",
   "empirical_cdf",
+  "clinical",
+  "surrogate1",
+  "surrogate2",
+  "norm_w",
+  "w",
   "bSur1onSur2",
   "SigSqSur1onSur2",
   "sigSqSur2",

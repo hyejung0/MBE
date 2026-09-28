@@ -42,8 +42,17 @@ usethis::use_data(trial_sim_dat, overwrite = TRUE)
 # 1. Read the .rds file into a named R object
 interim_sim_dat <- readRDS("data-raw/dat.rds")
 
+# Keep only the single clinical endpoint and the two retained surrogate
+# endpoints (chronic and acute eGFR slopes). Third-surrogate fields are
+# intentionally excluded from both the raw and packaged example data.
+interim_sim_dat <- interim_sim_dat[, c(
+  "case", "analysis.month",
+  "R1Clin", "R2Clin", "R12",
+  "ClnEst", "ClnSE",
+  "Sur2Est", "Sur2SE",
+  "Sur1Est", "Sur1SE"
+), with = FALSE]
+
 # 2. Save it as an .rda file into the official data/ folder
 usethis::use_data(interim_sim_dat, overwrite = TRUE)
-
-
 

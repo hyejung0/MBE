@@ -3,20 +3,27 @@
 \docType{data}
 \name{historical_posterior}
 \alias{historical_posterior}
-\title{Posterior Distribution of Parameter Values from Modeling with UACR, Acute Slope, and Chronic Slope as Surrogates for Clinical Endpoint}
+\title{Historical Posterior for Two Surrogate Endpoints}
 \format{
-A data.table with 500 rows and 4 variables:
+A data.table with 4,000 rows and 9 variables:
 \describe{
-\item{col1}{Description}
-\item{col2}{Description}
+\item{alphaCEonSur1Sur2}{Intercept for clinical effect conditional on both surrogate effects.}
+\item{b1CEonSur1Sur2}{Slope for surrogate 1 in the clinical-effect regression.}
+\item{b2CEonSur1Sur2}{Slope for surrogate 2 in the clinical-effect regression.}
+\item{SigSqCEonSur1Sur2}{Conditional variance of the clinical effect.}
+\item{alphaSur1onSur2}{Intercept for surrogate 1 conditional on surrogate 2.}
+\item{bSur1onSur2}{Slope for surrogate 2 in the surrogate-1 regression.}
+\item{SigSqSur1onSur2}{Conditional variance of surrogate 1.}
+\item{muSur2}{Population mean for surrogate 2.}
+\item{sigSqSur2}{Population variance for surrogate 2.}
 }
 }
 \usage{
 historical_posterior
 }
 \description{
-Posterior distribution of all parameters from the MCMC model with UACR,
-acute slope, and chronic slope as surrogates for the clinical endpoint.
+Posterior draws of all model parameters from the MCMC model with chronic and
+acute eGFR slopes as the two surrogates for the clinical endpoint.
 This data set is used in the examples of the package to demonstrate how
 to use the \code{vector_to_matrix} and \code{MBE} functions.
 }

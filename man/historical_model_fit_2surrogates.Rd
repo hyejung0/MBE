@@ -2,7 +2,7 @@
 % Please edit documentation in R/historical_model_fit_2surrogates.R
 \name{historical_model_fit_2surrogates}
 \alias{historical_model_fit_2surrogates}
-\title{Trial-level Meta-Analysis on Historical Data using 2-stage Random Effects Bayesian Model (2 surrogates)}
+\title{Fit the Historical Model for Exactly Two Surrogate Endpoints}
 \usage{
 historical_model_fit_2surrogates(
   data,
@@ -18,14 +18,11 @@ historical_model_fit_2surrogates(
 )
 }
 \arguments{
-\item{data}{n by p data set with n trials and p covariates.
-The first column should be the estimated treatment effect on the definitive
-clinical endpoint. The following column should be standard error of the treatment effect on the clinical endpoint.
-The next two columns should be the estimated treatment effect on the first surrogate endpoint and its standard error.
-The next two columns should be the estimated treatment effect on the second surrogate endpoint and its standard error.
-The last three columns should be the correlation between the clinical endpoint
-and the first surrogates, in the order of clinical endpoint and first surrogate,
-clinical endpoint and second surrogate, and first surrogate and second surrogate.}
+\item{data}{A data frame or matrix with one row per trial and exactly these
+nine numeric columns (order does not matter): \code{CE_est}, \code{CE_se},
+\code{Sur1_est}, \code{Sur1_se}, \code{Sur2_est}, \code{Sur2_se},
+\code{Cor_CE_Sur1}, \code{Cor_CE_Sur2}, and \code{Cor_Sur1_Sur2}. Data for a
+third surrogate endpoint are not accepted.}
 
 \item{random_intercept}{logical indicating whether to include intercept in
 regression modeling.}
@@ -70,14 +67,16 @@ A list containing the fitted model object and other relevant information:
 }
 }
 \description{
-Fits a trial-level meta-analysis model using a 2-stage random effects Bayesian model for two surrogate endpoints and a definitive clinical endpoint, as described in Lee et al. (2026).
+Fits a trial-level meta-analysis using a two-stage random-effects Bayesian
+model for exactly two surrogate endpoints and one definitive clinical endpoint,
+as described in Lee et al. (2026).
 }
 \details{
 This function fits a trial-level meta-analysis model using a 2-stage random effects Bayesian model
 under chronic kidney disease (CKD) context first introduced by Lee et al. (2026).
 For a true treatment effect on clinical endpoint \eqn{\theta_i}, and true treatment effect on two surrogate endpoints
 \eqn{\gamma_{i, 1}} and \eqn{\gamma_{i, 2}} for the \eqn{i}-th trial, the model is specified as follows:
-\deqn{\hat{\psi}_i \mid \psi_i \sim N_3(\psi_i, \Sigma_{y, i}), \quad \psi_i = (\mu, \Sigma)^T}{hat(psi)_i | psi_i ~ N_3(psi_i, Sigma_{y,i}), psi_i = (\mu, \Sigma)^T}
+\deqn{\hat{\psi}_i \mid \psi_i \sim N_3(\psi_i, \Sigma_{y, i})}{hat(psi)_i | psi_i ~ N_3(psi_i, Sigma_{y,i})}
 where \eqn{\psi_i = (\theta_i, \gamma_{i, 1}, \gamma_{i, 2})^T}{\psi_i = (\theta_i, \gamma_{i,1}, \gamma_{i,2})^T} is the true
 treatment effect vector for the \eqn{i}-th trial, \eqn{\hat{\psi}_i}{hat(\psi)_i} is
 the observed (estimated) treatment effect vector for the \eqn{i}-th trial,
@@ -95,8 +94,13 @@ the posterior distribution of the model parameters.
 \dontrun{
 data("trial_sim_dat", package = "MBE")
 
+historical_data <- trial_sim_dat[, c(
+  "CE_est", "CE_se", "Sur1_est", "Sur1_se", "Sur2_est", "Sur2_se",
+  "Cor_CE_Sur1", "Cor_CE_Sur2", "Cor_Sur1_Sur2"
+)]
+
 fit <- historical_model_fit_2surrogates(
-  data = trial_sim_dat,
+  data = historical_data,
   random_intercept = TRUE,
   nchains = 4,
   ncores = 4,

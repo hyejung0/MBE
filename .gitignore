@@ -24,10 +24,8 @@ precalculated_data/
 # folders to ignore
 data-raw/ALL_STUDIES.rds
 inst/code
-tests/
 /doc/
 /Meta/
 
 # Optional: uncomment if NOT using GitHub Pages for pkgdown
 docs
-

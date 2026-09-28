@@ -23,10 +23,11 @@ This repository contains all relevant R codes that was used in the
 Multi-Component Bayesian Endpoints for Randomized Clinical Trials paper
 produced by Lee et. al., (2026).
 
-The MBE is an endpoint that combines clinical endpoint with at least one
-surrogate endpoint to create a more sensitive and efficient endpoint for
-clinical trials. It is developed using a Bayesian framework, which
-allows for the incorporation of historical randomized clinical trials (RCTs) and the estimation of uncertainty in estimating the treatment effect on the clinical endpoint using the treatment effect on surrogate endpoint(s).
+This package implements an MBE with exactly one clinical endpoint and two
+surrogate endpoints. The current CKD implementation uses chronic and acute
+eGFR slopes as the two surrogates. A Bayesian framework incorporates historical
+randomized clinical trials (RCTs) and propagates uncertainty when estimating the
+treatment effect on the clinical endpoint from both surrogate effects.
 
 Detailed explanation of mapping the manuscript to the code can be found in this document: [Mapping the manuscript to the code](articles/MBE-manuscript-to-code.html)
 
@@ -41,25 +42,29 @@ pak::pak("hyejung0/MBE")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+The package includes compatible historical posterior draws and simulated data.
+The input for a new trial always contains the clinical endpoint, both surrogate
+endpoints, and the three pairwise correlations:
 
-```{r example}
+```{r example, message=FALSE}
 library(MBE)
-## basic example code
+
+data("historical_posterior")
+data("trial_sim_dat")
+
+new_trial <- list(
+  ClnEst = trial_sim_dat$CE_est[1],
+  ClnSE = trial_sim_dat$CE_se[1],
+  Sur1Est = trial_sim_dat$Sur1_est[1],
+  Sur1SE = trial_sim_dat$Sur1_se[1],
+  Sur2Est = trial_sim_dat$Sur2_est[1],
+  Sur2SE = trial_sim_dat$Sur2_se[1],
+  R1Clin = trial_sim_dat$Cor_CE_Sur1[1],
+  R2Clin = trial_sim_dat$Cor_CE_Sur2[1],
+  R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
+)
+
+set.seed(1)
+fit <- MBE(historical_posterior, new_trial)
+fit$post_mean
 ```
-
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
-
-```{r cars}
-summary(cars)
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.

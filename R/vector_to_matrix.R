@@ -25,11 +25,20 @@
 #'
 #' head(result_matrix)
 #' @noRd
-vector_to_matrix<-function(MCMC_dat,diffuse_se=100, diffuse=TRUE, intercept0=TRUE){
+vector_to_matrix <- function(MCMC_dat, diffuse_se = 100, diffuse = TRUE, intercept0 = TRUE) {
+  .validate_mcmc_dat(MCMC_dat)
+  .validate_scalar_logical(diffuse, "diffuse")
+  .validate_scalar_logical(intercept0, "intercept0")
+  .validate_positive_scalar(diffuse_se, "diffuse_se")
 
+  # Work on a copy because data.table assignment modifies by reference.
+  this.MCMC_dat <- data.table::as.data.table(data.table::copy(MCMC_dat))
 
-  #Make sure we are using data.table format
-  this.MCMC_dat<-data.table::data.table(MCMC_dat)
+  # Fixed-intercept historical models do not emit this parameter. Represent the
+  # fixed value explicitly so the downstream two-surrogate formulas are shared.
+  if (!"alphaCEonSur1Sur2" %in% names(this.MCMC_dat)) {
+    this.MCMC_dat[, alphaCEonSur1Sur2 := 0]
+  }
 
   #Save number of MCMC samples
   B<-nrow(this.MCMC_dat)
@@ -46,7 +55,7 @@ vector_to_matrix<-function(MCMC_dat,diffuse_se=100, diffuse=TRUE, intercept0=TRU
 
   #If we want to shift the mean of the intercept to 0
   if(intercept0){
-    this.MCMC_dat[,alphaCEonSur1Sur2:=scale(alphaCEonSur1Sur2, center=TRUE, scale=FALSE)]
+    this.MCMC_dat[, alphaCEonSur1Sur2 := alphaCEonSur1Sur2 - mean(alphaCEonSur1Sur2)]
   }
 
   #Variance
@@ -93,5 +102,3 @@ vector_to_matrix<-function(MCMC_dat,diffuse_se=100, diffuse=TRUE, intercept0=TRU
 
 
 }
-
-

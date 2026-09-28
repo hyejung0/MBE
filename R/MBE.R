@@ -1,18 +1,23 @@
-#' Estimate posterior distribution of Multi-Component Bayesian Endpoints (MBE)
+#' Estimate an MBE Posterior with Two Surrogate Endpoints
 #'
-#' @description Takes new data and historical posterior samples to estimate the posterior distribution of MBE using importance sampling.
-#' Built specifically for the case of two surrogate endpoints and a single clinical endpoint.
+#' @description Uses new-trial estimates and historical posterior draws to
+#' estimate the posterior distribution of an MBE by importance sampling. The
+#' model is fixed to one clinical endpoint and exactly two surrogate endpoints.
 #'
-#' @param mcmc_dat A data.table object containing MCMC samples.
-#' @param sample_dat A list containing the new RCT data (estimated treatment effects on the CE and surrogates and their variances and correlations).
-#' They should explicitely have names `ClnEst`, `ClnSE`,  `Sur1Est`, `Sur1SE`, `Sur2Est`, `Sur2SE`, `R1Clin`, `R2Clin`, and `R12`. See Example.
-#' @param diffuse_se A numeric value specifying the standard error for the diffuse prior.
+#' @param mcmc_dat A data frame or matrix containing posterior draws from the
+#'   two-surrogate historical model.
+#' @param sample_dat A named list containing exactly nine scalar values:
+#'   `ClnEst`, `ClnSE`, `Sur1Est`, `Sur1SE`, `Sur2Est`, `Sur2SE`, `R1Clin`,
+#'   `R2Clin`, and `R12`.
+#' @param diffuse_se A positive numeric value specifying the standard deviation
+#'   of the diffuse prior for the two surrogate effects.
 #' @param diffuse A logical value indicating whether to use a diffuse prior. Defaults to TRUE.
 #' @param intercept0 A logical value indicating whether to center the intercept term of the meta-regression to zero. Defaults to TRUE.
-#' stripped before the computation proceeds. Defaults to `TRUE`.
-#' @param ncores An integer. Number of parallel chains to run. Defaults to 3. If set to 1, the function will run sequentially without parallelization.
 #'
-#' @return A data frame with three columns: `mean`, `sd`, and `n`.
+#' @return A list containing posterior means, posterior covariance, weighted
+#'   quantiles for the clinical and two surrogate effects, posterior draws, and
+#'   the corresponding importance weights. Components are always ordered as
+#'   clinical endpoint, surrogate 1, and surrogate 2.
 #'
 #' @export
 #'
@@ -58,26 +63,30 @@
 #' intercept0 = TRUE
 #' )
 #'
-#'head(MBE_distribution)
-MBE<-function(mcmc_dat, sample_dat,diffuse=TRUE, diffuse_se=100, ncores=3, intercept0=TRUE){
+#' head(MBE_distribution$post_psi0)
+MBE <- function(mcmc_dat, sample_dat, diffuse = TRUE, diffuse_se = 100, intercept0 = TRUE) {
+  .validate_mcmc_dat(mcmc_dat)
+  .validate_sample_dat(sample_dat)
+  .validate_scalar_logical(diffuse, "diffuse")
+  .validate_scalar_logical(intercept0, "intercept0")
+  .validate_positive_scalar(diffuse_se, "diffuse_se")
 
-
-  this.MCMC_dat<-data.table::data.table(mcmc_dat)
+  this.MCMC_dat <- data.table::as.data.table(copy(mcmc_dat))
 
   #save the total number of MCMC samples
-  B<-nrow(this.MCMC_dat)
+  B <- nrow(this.MCMC_dat)
 
 
   #Construct observed mean and variance vector and matrix:
-  hat_psi0<-c(sample_dat$ClnEst,
-              sample_dat$Sur1Est,
-              sample_dat$Sur2Est)
-  hat_Sigma_y0<-matrix(
+  hat_psi0 <- c(sample_dat$ClnEst, sample_dat$Sur1Est, sample_dat$Sur2Est)
+  hat_Sigma_y0 <- matrix(
     c(sample_dat$ClnSE^2, sample_dat$R1Clin*sample_dat$ClnSE*sample_dat$Sur1SE,  sample_dat$R2Clin*sample_dat$ClnSE*sample_dat$Sur2SE,
       sample_dat$R1Clin*sample_dat$ClnSE*sample_dat$Sur1SE, sample_dat$Sur1SE^2, sample_dat$Sur1SE*sample_dat$Sur2SE*sample_dat$R12,
       sample_dat$R2Clin*sample_dat$ClnSE*sample_dat$Sur2SE, sample_dat$Sur1SE*sample_dat$Sur2SE*sample_dat$R12,sample_dat$Sur2SE^2),
-    nrow=3,ncol = 3, byrow=T)
-  inv_hat_Sigma_y0<-solve(hat_Sigma_y0)
+    nrow = 3, ncol = 3, byrow = TRUE
+  )
+  .validate_positive_definite(hat_Sigma_y0, "The sampling covariance matrix derived from `sample_dat`")
+  inv_hat_Sigma_y0 <- chol2inv(chol(hat_Sigma_y0))
 
   #Let's first re-parameterize the MCMC parameters into marginal mean and variance.
   prior_mean_cov<-vector_to_matrix(
@@ -89,13 +98,16 @@ MBE<-function(mcmc_dat, sample_dat,diffuse=TRUE, diffuse_se=100, ncores=3, inter
 
 
   #Calculate importance weight
-  w<-
-    lapply(1:B,function(i){
-      mvtnorm::dmvnorm(x = hat_psi0, mean=prior_mean_cov$mean[[i]], sigma = hat_Sigma_y0 + prior_mean_cov$covar[[i]])
-    })
-  w<-do.call(c,w)
-  #normalize the weight
-  norm_w<-w/sum(w)
+  log_w <- vapply(seq_len(B), function(i) {
+    mvtnorm::dmvnorm(
+      x = hat_psi0,
+      mean = prior_mean_cov$mean[[i]],
+      sigma = hat_Sigma_y0 + prior_mean_cov$covar[[i]],
+      log = TRUE
+    )
+  }, numeric(1))
+  w <- exp(log_w - max(log_w))
+  norm_w <- w / sum(w)
 
 
 
@@ -107,11 +119,11 @@ MBE<-function(mcmc_dat, sample_dat,diffuse=TRUE, diffuse_se=100, ncores=3, inter
   #construct variance:
 
   #First, take inverse of the prior mean
-  inv_prior_cov<-lapply(prior_mean_cov$covar,function(xx){
-    solve(xx)
+  inv_prior_cov <- lapply(prior_mean_cov$covar, function(xx) {
+    chol2inv(chol(xx))
   })
-  post_var_noW<- lapply(inv_prior_cov,function(xx){
-    solve(xx + inv_hat_Sigma_y0)
+  post_var_noW <- lapply(inv_prior_cov, function(xx) {
+    chol2inv(chol(xx + inv_hat_Sigma_y0))
   })
 
 
@@ -133,8 +145,8 @@ MBE<-function(mcmc_dat, sample_dat,diffuse=TRUE, diffuse_se=100, ncores=3, inter
   #select sample index
   sample_idx<-sample(1:B, size = B, replace = TRUE, prob = norm_w)
   post_psi0<-almost_post_psi0[sample_idx]
-  post_psi0<-do.call(rbind,post_psi0)
-  colnames(post_psi0)<-c("psi01","psi02","psi03")
+  post_psi0 <- do.call(rbind, post_psi0)
+  colnames(post_psi0) <- c("clinical", "surrogate1", "surrogate2")
 
 
   #calculate posterior statistics using weighted samples technique
@@ -164,19 +176,22 @@ MBE<-function(mcmc_dat, sample_dat,diffuse=TRUE, diffuse_se=100, ncores=3, inter
   var_cond_mean <- Reduce("+", var_cond_mean) #weighted sum
 
   #3. Total variance
-  post_var<-exp_cond_var+var_cond_mean
+  post_var <- exp_cond_var + var_cond_mean
+  endpoint_names <- c("clinical", "surrogate1", "surrogate2")
+  rownames(post_mean) <- endpoint_names
+  dimnames(post_var) <- list(endpoint_names, endpoint_names)
 
 
   #Calculate quantiles
   #1. Sort the samples in the order smallest to largest
   psi0<-do.call(rbind,almost_post_psi0)
-  colnames(psi0)<-c("psi01","psi02","psi03")
-  psi0<-data.table(psi0)
+  colnames(psi0) <- c("clinical", "surrogate1", "surrogate2")
+  psi0 <- data.table::as.data.table(psi0)
   psi0[,norm_w:=norm_w]
   psi0[,w:=w]
-  psi01<-psi0[,.(psi01,norm_w)][order(psi01,decreasing = F)]
-  psi02<-psi0[,.(psi02,norm_w)][order(psi02,decreasing = F)]
-  psi03<-psi0[,.(psi03,norm_w)][order(psi03,decreasing = F)]
+  psi01 <- psi0[, .(clinical, norm_w)][order(clinical)]
+  psi02 <- psi0[, .(surrogate1, norm_w)][order(surrogate1)]
+  psi03 <- psi0[, .(surrogate2, norm_w)][order(surrogate2)]
 
   #2. empirical CDF is cumulative sum of the weights
   psi01[,empirical_cdf:=cumsum(norm_w)]
@@ -187,13 +202,13 @@ MBE<-function(mcmc_dat, sample_dat,diffuse=TRUE, diffuse_se=100, ncores=3, inter
   these_quant<-
     c(0.025,0.05,0.1,0.25,0.5,0.75,0.9,0.95,0.975)
   quant01<-sapply(these_quant,function(this.quantile){
-    psi01[empirical_cdf>=this.quantile,][1,psi01]
+    psi01[empirical_cdf >= this.quantile, clinical][1]
   })
   quant02<-sapply(these_quant,function(this.quantile){
-    psi02[empirical_cdf>=this.quantile,][1,psi02]
+    psi02[empirical_cdf >= this.quantile, surrogate1][1]
   })
   quant03<-sapply(these_quant,function(this.quantile){
-    psi03[empirical_cdf>=this.quantile,][1,psi03]
+    psi03[empirical_cdf >= this.quantile, surrogate2][1]
   })
   names(quant01)<-
     names(quant02)<-
@@ -203,16 +218,13 @@ MBE<-function(mcmc_dat, sample_dat,diffuse=TRUE, diffuse_se=100, ncores=3, inter
 
 
 
-  return(
-    list(
-      post_mean=post_mean, #posterior mean (mathematically calculated)
-      post_var=post_var, #posterior variance (mathematically calculated)
-      post_quantiles_psi01 = quant01, #percentiles of posterior distribution on CE
-      post_quantiles_psi02 = quant02, #percentiles of posterior distribution on chronic slope
-      post_quantiles_psi03 = quant03, #percentiles of posterior distribution on acute slope
-      post_psi0=post_psi0, #posterior distribution sample (weighted)
-      weight_data=psi0 #data.table containing unweighted posterior draws and the associated weights for those draws. Please use the norm_w (normalized weight).
-
-    )
+  list(
+    post_mean = post_mean,
+    post_var = post_var,
+    post_quantiles_clinical = quant01,
+    post_quantiles_surrogate1 = quant02,
+    post_quantiles_surrogate2 = quant03,
+    post_psi0 = post_psi0,
+    weight_data = psi0
   )
 }
