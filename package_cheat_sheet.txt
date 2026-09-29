@@ -2,93 +2,162 @@
                        R PACKAGE DEVELOPMENT CHEAT SHEET
 ===============================================================================
 
--------------------------------------------------------------------------------
-1. DAILY DEVELOPMENT LOOP & KEYBOARD SHORTCUTS
--------------------------------------------------------------------------------
-# Load all functions into memory instantly (Test code fast)
-devtools::load_all()          # Shortcut: Cmd + Shift + L (Mac) / Ctrl + Shift + L (Win)
-
-# Generate help files (.Rd) and NAMESPACE from roxygen comments
-devtools::document()          # Shortcut: Cmd + Shift + D / Ctrl + Shift + D
-
-# Install the package onto your local computer
-devtools::install()           # Shortcut: Cmd + Shift + B / Ctrl + Shift + B
-
-# Run automated package quality checks
-devtools::check()             # Shortcut: Cmd + Shift + E / Ctrl + Shift + E
+Run these commands from the package project unless noted otherwise.
 
 
 -------------------------------------------------------------------------------
-2. CREATING & DOCUMENTING FUNCTIONS
+1. DAILY DEVELOPMENT LOOP AND KEYBOARD SHORTCUTS
 -------------------------------------------------------------------------------
-# 1. Create a blank script in R/
+
+# Load the package for interactive development without installing it
+devtools::load_all()          # Mac: Cmd + Shift + L | Windows: Ctrl + Shift + L
+
+# Generate help files (.Rd) and NAMESPACE from roxygen2 comments
+devtools::document()          # Mac: Cmd + Shift + D | Windows: Ctrl + Shift + D
+
+# Run the testthat test suite
+devtools::test()
+
+# Install the package locally
+devtools::install()           # Mac: Cmd + Shift + B | Windows: Ctrl + Shift + B
+
+# Run the complete package quality check
+devtools::check()             # Mac: Cmd + Shift + E | Windows: Ctrl + Shift + E
+
+# Target before pushing: 0 errors, 0 warnings, and 0 notes
+
+
+-------------------------------------------------------------------------------
+2. CREATING AND DOCUMENTING FUNCTIONS
+-------------------------------------------------------------------------------
+
+# 1. Create a new R script in R/
 usethis::use_r("function_name")
 
-# 2. Insert Roxygen Documentation Skeleton (In RStudio editor)
-#    - Write: function_name <- function(arg1, arg2) {}
-#    - Click inside the function body.
-#    - Press: Cmd + Option + Shift + R (Mac) / Ctrl + Alt + Shift + R (Win)
-#    - Or go to menu: Code -> Insert Roxygen Skeleton
+# 2. Write the function, place the cursor inside it, and insert a roxygen
+#    documentation skeleton:
+#      Mac:     Cmd + Option + Shift + R
+#      Windows: Ctrl + Alt + Shift + R
+#      Menu:    Code -> Insert Roxygen Skeleton
 
-# 3. Key Roxygen tags to fill out:
-#    #' @description  A clear summary of what the function does.
-#    #' @param arg1     Explain input parameter 1.
-#    #' @param arg2     Explain input parameter 2.
-#    #' @return        Explain output object (e.g., list, dataframe, vector).
-#    #' @export        Makes function public to users (REQUIRED for main functions).
-#    #' @examples      Provide runnable example code blocks.
+# 3. Complete the relevant roxygen2 fields:
+#' @description Explain what the function does.
+#' @param arg1 Explain the first argument.
+#' @param arg2 Explain the second argument.
+#' @return Describe the returned object and its structure.
+#' @export
+#' @examples
+#' result <- function_name(arg1, arg2)
+
+# 4. Regenerate documentation after changing roxygen2 comments
+devtools::document()
+
+# Use @export only for functions that should be part of the public API.
 
 
 -------------------------------------------------------------------------------
-3. ADDING OTHER COMPONENTS
+3. ADDING DATA, DEPENDENCIES, AND VIGNETTES
 -------------------------------------------------------------------------------
-# Add an external dependency package to the DESCRIPTION file
+
+# Add a package dependency to DESCRIPTION
 usethis::use_package("package_name")
 
-# Add a script in data-raw/ to process raw CSV/RDS files
+# Create a script in data-raw/ for preparing a dataset
 usethis::use_data_raw("dataset_name")
 
-# Convert an R object into an official .rda dataset in data/
+# Save a prepared R object as an official package dataset in data/
 usethis::use_data(dataset_name, overwrite = TRUE)
 
-# Add a new vignette tutorial in vignettes/
+# Create a vignette in vignettes/
 usethis::use_vignette("vignette_name")
 
-# Tell R to ignore a custom private developer folder (e.g., simulation scripts)
-usethis::use_build_ignore("folder_name")
+# Exclude a developer-only file or directory from the package bundle
+usethis::use_build_ignore("path_name")
+
+# Document package datasets with roxygen2 comments in R/data.R, then run:
+devtools::document()
 
 
 -------------------------------------------------------------------------------
-4. TESTING, CHECKING, & README
+4. TESTING, CHECKING, README, AND VIGNETTES
 -------------------------------------------------------------------------------
-# Re-knit README.Rmd into README.md whenever you update README code examples
-# (Never edit README.md directly!)
+
+# Run all tests during development
+devtools::test()
+
+# Run one test file
+devtools::test_file("tests/testthat/test-file-name.R")
+
+# Rebuild README.md whenever README.Rmd changes
+# Do not edit generated README.md directly.
 devtools::build_readme()
 
-# Wipe out temporary vignette artifacts if devtools::check() complains
+# Remove temporary vignette artifacts if a package check identifies them
 devtools::clean_vignettes()
 
+# Run the full package check before pushing
+devtools::check()
+
 
 -------------------------------------------------------------------------------
-5. WEBSITE GENERATION (pkgdown)
+5. PREVIEWING THE PKGDOWN WEBSITE LOCALLY
 -------------------------------------------------------------------------------
-# Render a single vignette to preview how it looks on the site
-pkgdown::build_article("vignette_name")
 
-# Rebuild the ENTIRE website into the docs/ folder
-# (Run this before committing to update your GitHub Pages site)
+# Build the complete website in docs/
 pkgdown::build_site()
 
+# Open a local preview in a browser
+pkgdown::preview_site()
+
+# Rebuild one vignette/article while editing it
+pkgdown::build_article("vignette_name")
+
+# The generated docs/ directory is a local build artifact in this repository.
+# It is ignored by Git and should not be committed when GitHub Actions handles
+# website deployment.
+
+
+-------------------------------------------------------------------------------
+6. PUBLISHING THE PKGDOWN WEBSITE WITH GITHUB PAGES
+-------------------------------------------------------------------------------
+
+Expected public URL:
+https://hyejung0.github.io/MBE/
+
+ONE-TIME SETUP:
+
+# Configure pkgdown, the gh-pages branch, and the publishing workflow
+usethis::use_pkgdown_github_pages()
+
+# Review the generated changes, then commit and push them to GitHub.
+# If requested, confirm in the repository's GitHub Pages settings that the
+# gh-pages branch is the publishing source:
+https://github.com/hyejung0/MBE/settings/pages
+
+NORMAL UPDATES:
+
+# Push changes to the default branch. The pkgdown GitHub Action should build
+# and deploy the website automatically; do not commit the local docs/ folder.
+
+# Check deployment progress under the repository's Actions tab:
+https://github.com/hyejung0/MBE/actions
+
+# After the pkgdown Action succeeds, open:
+https://hyejung0.github.io/MBE/
+
 
 ===============================================================================
-                    STANDARD WORKFLOW FOR UPDATING YOUR PACKAGE
+                    STANDARD WORKFLOW FOR UPDATING THE PACKAGE
 ===============================================================================
-1. Create/edit script: `usethis::use_r("my_function")`
-2. Write function and insert skeleton: `Cmd + Option + Shift + R`
-3. Run `devtools::document()` to update help files.
-4. Run `devtools::install()` so your local machine has the latest version.
-5. Update vignettes or README if needed.
-6. Run `devtools::check()` (Aim for 0 errors | 0 warnings | 0 notes).
-7. Run `devtools::build_readme()` (if README.Rmd was changed).
-8. Run `pkgdown::build_site()` to refresh the docs/ folder.
-9. Commit and Push everything (including docs/) to GitHub!
+
+1. Pull the latest changes and confirm the working tree is understood.
+2. Edit functions, tests, documentation, data, or vignettes as needed.
+3. Use devtools::load_all() for quick interactive checks.
+4. Run devtools::document() after changing roxygen2 comments or exports.
+5. Run devtools::test() and fix any failures.
+6. Run devtools::build_readme() if README.Rmd changed.
+7. Run devtools::check(); aim for 0 errors, 0 warnings, and 0 notes.
+8. Optionally run pkgdown::build_site() and pkgdown::preview_site() locally.
+9. Review git status and the diff, then commit and push the source changes.
+10. Confirm that the R CMD check and pkgdown GitHub Actions both succeed.
+11. Confirm the deployed website at https://hyejung0.github.io/MBE/.
