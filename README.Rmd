@@ -19,9 +19,9 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/hyejung0/MBE/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hyejung0/MBE/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-This repository contains all relevant R codes that was used in the
-Multi-Component Bayesian Endpoints for Randomized Clinical Trials paper
-produced by Lee et. al., (2026).
+This repository contains the R package accompanying the
+*Multi-Component Bayesian Endpoints for Randomized Clinical Trials* manuscript
+by Lee et al. (2026).
 
 This package implements an MBE with exactly one clinical endpoint and two
 surrogate endpoints. The current CKD implementation uses chronic and acute
@@ -29,7 +29,9 @@ eGFR slopes as the two surrogates. A Bayesian framework incorporates historical
 randomized clinical trials (RCTs) and propagates uncertainty when estimating the
 treatment effect on the clinical endpoint from both surrogate effects.
 
-Detailed explanation of mapping the manuscript to the code can be found in this document: [Mapping the manuscript to the code](articles/MBE-manuscript-to-code.html)
+See [Mapping the MBE Manuscript to the
+Package](https://hyejung0.github.io/MBE/articles/MBE-manuscript-to-code.html)
+for the complete workflow.
 
 ## Installation
 
@@ -38,6 +40,14 @@ You can install the development version of MBE from [GitHub](https://github.com/
 ``` r
 # install.packages("pak")
 pak::pak("hyejung0/MBE")
+```
+
+Fitting a historical model requires a working CmdStan installation. If CmdStan
+has not already been installed, run:
+
+``` r
+cmdstanr::check_cmdstan_toolchain()
+cmdstanr::install_cmdstan()
 ```
 
 ## Example
@@ -67,4 +77,26 @@ new_trial <- list(
 set.seed(1)
 fit <- MBE(historical_posterior, new_trial)
 fit$post_mean
+cat(sprintf(
+  "%s: %.3f\n",
+  names(fit$importance_diagnostics),
+  fit$importance_diagnostics
+))
+```
+
+## Historical-model assessment
+
+The package provides a restartable workflow for fitting one historical model
+per held-out trial and calculating LOO-CV RMSE and 90% and 95% predictive
+interval coverage. See `?fit_loo_historical_models` and
+`?loo_cv_model_assessment` for the computational workflow.
+
+The completed 66-trial assessment is included as two compact datasets:
+
+```{r loo-results}
+data("loo_assessment_summary", package = "MBE")
+data("loo_assessment_by_trial", package = "MBE")
+
+loo_assessment_summary
+head(loo_assessment_by_trial)
 ```

@@ -2,3 +2,27 @@ url: https://hyejung0.github.io/MBE/
 template:
   bootstrap: 5
 
+reference:
+- title: Model fitting and updating
+  contents:
+  - historical_model_fit_2surrogates
+  - MBE
+- title: Historical-model assessment
+  contents:
+  - fit_loo_historical_models
+  - loo_cv_model_assessment
+- title: Example data
+  contents:
+  - historical_posterior
+  - trial_sim_dat
+  - interim_sim_dat
+  - loo_assessment_summary
+  - loo_assessment_by_trial
+
+articles:
+- title: Examples
+  navbar: ~
+  contents:
+  - MBE-manuscript-to-code
+  - simulation-example
+  - interim-analysis-example

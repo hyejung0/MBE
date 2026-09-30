@@ -41,9 +41,21 @@ test_that("MBE returns three components in the documented order", {
       "post_quantiles_clinical",
       "post_quantiles_surrogate1",
       "post_quantiles_surrogate2",
-      "post_psi0", "weight_data"
+      "post_psi0", "weight_data", "importance_diagnostics"
     )
   )
+  expect_named(
+    result$importance_diagnostics,
+    c(
+      "effective_sample_size",
+      "relative_effective_sample_size",
+      "maximum_normalized_weight"
+    )
+  )
+  expect_gte(result$importance_diagnostics[["effective_sample_size"]], 1)
+  expect_lte(result$importance_diagnostics[["effective_sample_size"]], 25)
+  expect_gt(result$importance_diagnostics[["relative_effective_sample_size"]], 0)
+  expect_lte(result$importance_diagnostics[["relative_effective_sample_size"]], 1)
 })
 
 test_that("MBE rejects a third surrogate endpoint", {
@@ -67,6 +79,22 @@ test_that("historical fitting input is restricted to two surrogates", {
   expect_error(
     historical_model_fit_2surrogates(data, nchains = 1, ncores = 1, niter = 1, nwarmup = 1),
     "exactly the nine named columns"
+  )
+})
+
+test_that("historical fit summaries pass measures individually", {
+  draws <- posterior::as_draws_df(data.frame(theta = seq_len(10)))
+  fake_fit <- list(
+    summary = function(variables, ...) {
+      posterior::summarise_draws(draws, ...)
+    }
+  )
+
+  result <- MBE:::.summarize_historical_fit(fake_fit, "theta")
+
+  expect_named(
+    result,
+    c("variable", "mean", "median", "sd", "mad", "q2.5", "q97.5")
   )
 })
 

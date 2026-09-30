@@ -15,9 +15,12 @@
 #' @param intercept0 A logical value indicating whether to center the intercept term of the meta-regression to zero. Defaults to TRUE.
 #'
 #' @return A list containing posterior means, posterior covariance, weighted
-#'   quantiles for the clinical and two surrogate effects, posterior draws, and
-#'   the corresponding importance weights. Components are always ordered as
-#'   clinical endpoint, surrogate 1, and surrogate 2.
+#'   quantiles for the clinical and two surrogate effects, posterior draws, the
+#'   corresponding importance weights, and importance-sampling diagnostics.
+#'   The diagnostic vector reports the effective sample size, effective sample
+#'   size relative to the number of historical draws, and maximum normalized
+#'   weight. Endpoint components are always ordered as clinical endpoint,
+#'   surrogate 1, and surrogate 2.
 #'
 #' @export
 #'
@@ -71,7 +74,7 @@ MBE <- function(mcmc_dat, sample_dat, diffuse = TRUE, diffuse_se = 100, intercep
   .validate_scalar_logical(intercept0, "intercept0")
   .validate_positive_scalar(diffuse_se, "diffuse_se")
 
-  this.MCMC_dat <- data.table::as.data.table(copy(mcmc_dat))
+  this.MCMC_dat <- data.table::as.data.table(data.table::copy(mcmc_dat))
 
   #save the total number of MCMC samples
   B <- nrow(this.MCMC_dat)
@@ -106,8 +109,20 @@ MBE <- function(mcmc_dat, sample_dat, diffuse = TRUE, diffuse_se = 100, intercep
       log = TRUE
     )
   }, numeric(1))
+  if (anyNA(log_w) || !any(is.finite(log_w))) {
+    stop(
+      "The importance weights could not be normalized; check the posterior draws and new-trial inputs.",
+      call. = FALSE
+    )
+  }
   w <- exp(log_w - max(log_w))
   norm_w <- w / sum(w)
+  importance_ess <- 1 / sum(norm_w^2)
+  importance_diagnostics <- c(
+    effective_sample_size = importance_ess,
+    relative_effective_sample_size = importance_ess / B,
+    maximum_normalized_weight = max(norm_w)
+  )
 
 
 
@@ -225,6 +240,7 @@ MBE <- function(mcmc_dat, sample_dat, diffuse = TRUE, diffuse_se = 100, intercep
     post_quantiles_surrogate1 = quant02,
     post_quantiles_surrogate2 = quant03,
     post_psi0 = post_psi0,
-    weight_data = psi0
+    weight_data = psi0,
+    importance_diagnostics = importance_diagnostics
   )
 }

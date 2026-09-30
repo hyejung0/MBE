@@ -23,9 +23,12 @@ of the diffuse prior for the two surrogate effects.}
 }
 \value{
 A list containing posterior means, posterior covariance, weighted
-quantiles for the clinical and two surrogate effects, posterior draws, and
-the corresponding importance weights. Components are always ordered as
-clinical endpoint, surrogate 1, and surrogate 2.
+quantiles for the clinical and two surrogate effects, posterior draws, the
+corresponding importance weights, and importance-sampling diagnostics.
+The diagnostic vector reports the effective sample size, effective sample
+size relative to the number of historical draws, and maximum normalized
+weight. Endpoint components are always ordered as clinical endpoint,
+surrogate 1, and surrogate 2.
 }
 \description{
 Uses new-trial estimates and historical posterior draws to

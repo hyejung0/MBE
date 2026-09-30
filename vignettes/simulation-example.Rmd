@@ -7,189 +7,54 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-```
-
-
-```{r setup}
 library(MBE)
-library(data.table)
+data("trial_sim_dat", package = "MBE")
+data("historical_posterior", package = "MBE")
 ```
 
+## Simulated trial data
 
+`trial_sim_dat` contains 66 simulated trials with one clinical endpoint and
+exactly two surrogate endpoints. Each row contains treatment-effect estimates,
+standard errors, sampling correlations, and the corresponding simulation truths.
 
-We use the simulated data provided in the package to demonstrate an MBE with
-one clinical endpoint and exactly two surrogate endpoints. In this CKD example,
-the surrogates are chronic and acute eGFR slopes. The simulation scenarios are
-summarized in the documentation for `interim_sim_dat`.
-
-## Data 
-
-The simulated data is stored in the `trial_sim_dat` dataset in the package. 
-The dataset provides estimated treatment effects, standard errors, and correlations  on the clinical endpoint, chronic slope, and, acute slope in 66 trials as well as the corresponding true treatment effects.   Below, we show the first few lines of the dataset followed by column descriptions.:
-
-
-```{r}
-#| label: load-trial-sim
-
-data("trial_sim_dat")
+```{r trial-data}
 head(trial_sim_dat)
 ```
 
+The column definitions are available with `?trial_sim_dat`.
 
-| Column Name | Description |
-| ----: | :---------- |
-| trial id | Integer. Index for trial.|
-| CE_est | Numeric. Observed estimated treatment effect on the clinical endpoint. |
-| Sur1_est | Numeric. Observed estimated treatment effect on the first surrogate endpoint.|
-| Sur2_est | Numeric. Observed estimated treatment effect on the second surrogate endpoint.|
-| CE_se | Numeric. Standard error of the observed estimated treatment effect on the clinical endpoint. |
-| Sur1_se | Numeric. Standard error of the observed estimated treatment effect on the first surrogate endpoint. |
-| Sur2_se | Numeric. Standard error of the observed estimated treatment effect on the second surrogate endpoint. |
-| Cor_CE_Sur1 | Numeric. Estimated correlation between clinical endpoint and 1st surrogate endpoint. |
-| Cor_CE_Sur2 | Numeric. Estimated correlation between clinical endpoint and 2nd surrogate endpoint.|
-| Cor_Sur1_Sur2 | Numeric. Estimated correlation between 1st surrogate endpoint and 2nd surrogate endpoint. |
-| theta_CE | Numeric. True treatment effect on the clinical endpoint. |
-| theta_Sur1 | Numeric. True treatment effect on the 1st surrogate endpoint. |
-| theta_Sur2 | Numeric. True treatment effect on the 2nd surrogate endpoint.|
+## Fit the historical model
 
+For this example, trial 1 is treated as a new trial and the historical model is
+fit to the remaining 65 trials. The call below uses the manuscript's initial
+random-intercept, inverse-gamma specification. It is not run while building the
+vignette because it requires CmdStan and several minutes of computation.
 
-
-
-For our demonstration, we will just take out the first trial as if it is a 'new trial' and fit the historical modeling on the remaining 65 trial. We will then estimate MBE on the trial that was left out. 
-
-
-## Historical Model Fitting
-
-Here, we demonstrate how to fit the historical model using the stan script `random_beta0_invGamma.stan` which allows $\beta_0$ to be estimated from the data and uses inverse gamma prior for the variance parameters.
-
-
-First, we reshape the data into a list of observed treatment effects and covariance matrices for each study. The observed treatment effects are stored in a list of vectors, where each vector contains the observed treatment effects on the clinical endpoint, chronic slope, and acute slope for a given study. The observed covariance matrices are stored in a list of matrices, where each matrix contains the variances and covariances of the observed treatment effects for a given study.
-
-```{r historical-model-data-reshape, eval = FALSE}
-
-library(cmdstanr)
-
-
-# Generate data for Stan model fitting. The data is a list of the following elements:
-
-# observed treatment effect per study
-obs_mean<-lapply(1:nrow(trial_sim_dat),function(j){
-  unlist(trial_sim_dat[j,.(CE_est,      ## observed Clinical endpoint
-                    Sur1_est,     ## observed chronic slope
-                    Sur2_est      ## observed acute slope
-  )])
-})
-
-
-# observed covariance matrix per study
-obs_var <- lapply(1:nrow(trial_sim_dat), function(j) {
-  # vector of SEs
-  sample_dat<-trial_sim_dat[j,.(CE_se, #SE for Clinical endpoint
-                         Sur1_se, #SE for chronic slope
-                         Sur2_se, #SE for acute slope
-                         Cor_CE_Sur1, #correlation of chronic slope & clinical endpoint
-                         Cor_CE_Sur2, #correlation of acute slope & clinical endpoint
-                         Cor_Sur1_Sur2  #correlation of acute & chronic slope
-  )]
-
-
-  sample_dat[
-    ,
-    matrix(
-      c(CE_se^2, Cor_CE_Sur1*CE_se*Sur1_se,  Cor_CE_Sur2*CE_se*Sur2_se,
-        Cor_CE_Sur1*CE_se*Sur1_se, Sur1_se^2, Sur1_se*Sur2_se*Cor_Sur1_Sur2,
-        Cor_CE_Sur2*CE_se*Sur2_se, Sur1_se*Sur2_se*Cor_Sur1_Sur2,Sur2_se^2),
-      nrow=3,ncol = 3, byrow=T)
-  ]
-})
-
-
-#collect them together as a more comprehensive list
-#Exclude the first RCT from the list
-data_sub = list(
-  N=nrow(trial_sim_dat) -1,
-  obs_mean = obs_mean[-1],
-  obs_var = obs_var[-1]
-
+```{r historical-model, eval=FALSE}
+historical_fit <- historical_model_fit_2surrogates(
+  data = trial_sim_dat[-1, ],
+  random_intercept = TRUE,
+  prior_for_uncertainty = "inverse_gamma",
+  nchains = 4,
+  ncores = 4,
+  niter = 2000,
+  nwarmup = 1000,
+  seed = 2026,
+  adapt_delta = 0.95,
+  max_treedepth = 15
 )
 
-```
+historical_fit$diagnostics
+historical_fit$summary
 
-
-Now that we have the data in the correct format, we can fit the historical model using the `cmdstanr` package. We will use the `random_beta0_invGamma.stan` script to fit the model, which allows for $\beta_0$ to be estimated from the data and uses an inverse gamma prior for the variance parameters.
-
-To fit the model, we use our MCMC function on the sample data. *Note: This step may take several minutes to run on your machine.*
-
-
-
-```{r}
-
-# Read in the stan code: historical model with inverse gamma prior for variance parameters and model $\beta_0$ as a random parameter
-mod_path <- system.file("stan", "random_beta0_invGamma.stan", package = "MBE")
-cat(readLines(mod_path), sep = "\n")
-
-```
-
-
-```{r eval = FALSE}
-
-
-# Run the MCMC sampling
-
-ncores<-4 #Number of cores to run chains parallely
-options(mc.cores = ncores) #necessary for setting parallel
-num.iter=40000 #number of iterations for each chain. You can change this number as you like. We recommend to have at least 40,000 iterations for the historical model fitting.
-num.warmup=num.iter/2 #number of warmup iterations. The default is half of the total number of iterations, but you can change this number as you like. We recommend to have at least 20,000 warmup iterations for the historical model fitting.
-num.chains<-ncores
-num.thin<-1 #thinning number. The default is 1, which means no thinning. You can change this number as you like. We recommend to have no thinning for the historical model fitting.
-
-
-set.seed(1) #Change seed number as you like
-
-fit <- mod$sample(
-  data = data_sub,
-  chains = num.chains,
-  parallel_chains = num.chains,
-  iter_warmup = num.warmup,
-  iter_sampling = num.warmup,
-  adapt_delta = 0.99,
-  max_treedepth=25,
-  output_dir = ".",  #current working directory is where the STAN output will be saved.
-  output_basename="historical_fit" #the STAN files are saved with "historical_fit" as a base name
-)
-
-```
-
-```{r mcmc-completion-message, echo=FALSE}
-cat("All 4 chains finished successfully.\n")
-cat("Mean chain execution time: 118.0 seconds.\n")
-cat("Total execution time: 144.6 seconds.\n\n")
-cat("149.839 sec elapsed\n")
-
-
-```
-
-
-
-
-
-
-```{r load-historical-model-fit, echo=FALSE, message=FALSE}
-library(cmdstanr)
-summary_df <- readRDS("model_summary.rds")
-```
-
-
-
-Inspect the posterior distribution of all parameters in the historical model.:
-```{r summary-historical-model, eval=FALSE}
-all_pars<-c(
-  "alphaCEonSur1Sur2" ,
+historical_posterior <- as.data.frame(historical_fit$posterior_samples)[, c(
+  "alphaCEonSur1Sur2",
   "b1CEonSur1Sur2",
   "b2CEonSur1Sur2",
   "SigSqCEonSur1Sur2",
@@ -198,100 +63,56 @@ all_pars<-c(
   "SigSqSur1onSur2",
   "muSur2",
   "sigSqSur2"
+)]
+```
+
+The package's `historical_posterior` dataset contains compatible precomputed
+draws from this specification with trial 1 held out.
+
+## Update the MBE
+
+Construct the new-trial input from the held-out row:
+
+```{r new-trial}
+new_trial <- list(
+  ClnEst = trial_sim_dat$CE_est[1],
+  ClnSE = trial_sim_dat$CE_se[1],
+  Sur1Est = trial_sim_dat$Sur1_est[1],
+  Sur1SE = trial_sim_dat$Sur1_se[1],
+  Sur2Est = trial_sim_dat$Sur2_est[1],
+  Sur2SE = trial_sim_dat$Sur2_se[1],
+  R1Clin = trial_sim_dat$Cor_CE_Sur1[1],
+  R2Clin = trial_sim_dat$Cor_CE_Sur2[1],
+  R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
 )
-#first, we can draw the historical posterior samples if we'd like
-historical_posterior<-fit$draws(variables = all_pars, format = "draws_df")
-
-
-# Generate the summary locally
-summary_df <- fit$summary(variables = all_pars)
 ```
 
-```{r summary-historical-model-2, message=FALSE}
-# Load and print the tiny summary table
-print(summary_df)
-```
+Then update the historical distribution with the new-trial estimates:
 
-
-
-## Estimating Posterior Distribution of MBE
-
-Now that we have historical posteriors, we use the `MBE` function to estimate the posterior distribution of MBE for a new trial. We will use the first trial in the `trial_sim_dat` dataset as our new trial and use the remaining trials to fit the historical model.
-
-```{r}
-#| label: MBE-estimation
-#| eval: true
-#| echo: true
-
-# Put the new trial into the appropriate format
-
-one_sim_dat<-list(
-  
-# treatment effect on CE
-ClnEst=trial_sim_dat$CE_est[1],
-ClnSE=trial_sim_dat$CE_se[1],
-
-# treatment effect on chronic slope
-Sur1Est=trial_sim_dat$Sur1_est[1],
-Sur1SE=trial_sim_dat$Sur1_se[1],
-
-# treatment effect on acute slope
-Sur2Est=trial_sim_dat$Sur2_est[1],
-Sur2SE=trial_sim_dat$Sur2_se[1],
-
-# correlation between CE and chronic slope
-R1Clin=trial_sim_dat$Cor_CE_Sur1[1],
-
-# correlation between CE and acute slope
-R2Clin=trial_sim_dat$Cor_CE_Sur2[1],
-
-# correlation between chronic slope and acute slope
-R12=trial_sim_dat$Cor_Sur1_Sur2[1]
+```{r mbe-estimation}
+set.seed(1)
+mbe_fit <- MBE(
+  mcmc_dat = historical_posterior,
+  sample_dat = new_trial,
+  diffuse = TRUE,
+  diffuse_se = 100,
+  intercept0 = TRUE
 )
 
-
-#Estimate MBE
-MBE_distribution<-MBE(
-mcmc_dat = historical_posterior,
-sample_dat=one_sim_dat,
-diffuse_se = 100,
-diffuse = TRUE,
-intercept0 = TRUE
-)
-
-
+mbe_fit$post_mean
+mbe_fit$post_var
+mbe_fit$post_quantiles_clinical
+mbe_fit$importance_diagnostics
 ```
 
+The rows of `post_mean` and `post_var` are ordered as the clinical endpoint,
+surrogate 1, and surrogate 2. The posterior is a mixture over historical-model
+draws; `post_mean` and `post_var` summarize its first two moments rather than
+asserting that the mixture itself is a single multivariate normal distribution.
 
-In the above `MBE()` function, we set `intercept0=TRUE`, which centers the distribution of $\beta_0$ at zero (the `alphaCEonSur1Sur2` column in `historical_posterior`). We use a diffuse prior for the two surrogate effects (`diffuse=TRUE` and `diffuse_se=100`) to avoid strong prior information about those effects. The diffuse prior is bivariate normal with mean zero and marginal standard deviation 100. The `MBE()` function returns the posterior distribution stored in `MBE_distribution`.
+Posterior samples and normalized importance weights are also available:
 
-The posterior distribution is trivariate normal with mean and variance as below:
-```{r}
-#| label: post-MBE-mean-var
-
-# print out mean
-MBE_distribution$post_mean
-
-# print out variance
-MBE_distribution$post_var
+```{r posterior-draws}
+head(mbe_fit$post_psi0)
+head(mbe_fit$weight_data[, c("clinical", "surrogate1", "surrogate2", "norm_w")])
 ```
-
-Thus, the posterior distribution of MBE on the treatment effect on the clinical endpoint is normal with mean `r sprintf("%.3f", MBE_distribution$post_mean[1])` and variance `r sprintf("%.3f", MBE_distribution$post_var[1,1])`. Similarly, the posterior distribution of MBE on the treatment effect on the chronic slope is $N($`r sprintf("%.3f", MBE_distribution$post_mean[2])`,`r sprintf("%.3f", MBE_distribution$post_var[2,2])` $)$. The posterior distribution of MBE on the treatment effect on the acute slope $N($`r sprintf("%.3f", MBE_distribution$post_mean[3])`, `r sprintf("%.3f", MBE_distribution$post_var[3,3])` $)$.
-
-The posterior distribution samples can also be obtained with `MBE_distribution$post_psi0`, which has the same number of rows as the number of MCMC samples in the historical model fitting. Each row is a sample from the posterior distribution of MBE, and each column corresponds to the treatment effect on the clinical endpoint, chronic slope, and acute slope, respectively. 
-
-```{r}
-#| label: post-MBE-post-samples
-
-head(MBE_distribution$post_psi0)
-```
-
-The `MBE_distribution$weight_data` is a data.table which contains unweighted posterior draws and the associated weights for those draws. The `MBE_distribution$weight_data` has the following columns.:
-
-```{r}
-#| label: post-MBE-data
-
-head(MBE_distribution$weight_data)
-```
-
-Please use the `norm_w` (normalized weight) to obtain the proper posterior distribution. The `w` is unnormalized weight.

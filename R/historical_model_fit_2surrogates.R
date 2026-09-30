@@ -35,6 +35,17 @@ get_cmdstan_model <- function(model_name) {
   return(mod)
 }
 
+.summarize_historical_fit <- function(fit, variables) {
+  fit$summary(
+    variables = variables,
+    "mean",
+    "median",
+    "sd",
+    "mad",
+    ~posterior::quantile2(.x, probs = c(0.025, 0.975))
+  )
+}
+
 #' Fit the Historical Model for Exactly Two Surrogate Endpoints
 #'
 #' @description
@@ -88,6 +99,12 @@ get_cmdstan_model <- function(model_name) {
 #'
 #' This function fits the model using MCMC sampling on historical RCTs and returns
 #' the posterior distribution of the model parameters.
+#'
+#' The `loo` and `waic` components use the Stan `log_lik` values conditional on
+#' each trial's latent treatment-effect vector. They therefore describe
+#' conditional model fit. For prediction to a completely held-out trial, use
+#' [fit_loo_historical_models()] and [loo_cv_model_assessment()], which refit the
+#' model after removing each trial.
 #'
 #' @return A list containing the fitted model object and other relevant information:
 #' \describe{
@@ -246,10 +263,7 @@ historical_model_fit_2surrogates <- function(data,
 
 
 
-  my_summary<-fit$summary(variables =  present_pars,
-                          posterior::default_summary_measures()[1:4],
-                          ~posterior::quantile2(.x, probs = c(0.025, 0.975))
-                          )
+  my_summary <- .summarize_historical_fit(fit, present_pars)
 
 
   # 8. LOO and WAIC calculations

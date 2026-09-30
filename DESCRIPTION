@@ -1,5 +1,5 @@
 Package: MBE
-Title: Bayesian Endpoints with Two Surrogate Outcomes
+Title: Multi-Component Bayesian Endpoints with Two Surrogates
 Version: 0.0.0.9000
 Authors@R: 
     person("Hyejung", "Lee", , "hyejung.lee@utah.edu", role = c("aut", "cre"))
@@ -31,3 +31,4 @@ Remotes:
     stan-dev/cmdstanr
 Config/roxygen2/version: 8.1.0
 URL: https://hyejung0.github.io/MBE/
+BugReports: https://github.com/hyejung0/MBE/issues

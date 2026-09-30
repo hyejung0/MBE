@@ -89,6 +89,12 @@ The density of \eqn{\psi}{psi} can be expressed as a sequence of conditional den
 
 This function fits the model using MCMC sampling on historical RCTs and returns
 the posterior distribution of the model parameters.
+
+The \code{loo} and \code{waic} components use the Stan \code{log_lik} values conditional on
+each trial's latent treatment-effect vector. They therefore describe
+conditional model fit. For prediction to a completely held-out trial, use
+\code{\link[=fit_loo_historical_models]{fit_loo_historical_models()}} and \code{\link[=loo_cv_model_assessment]{loo_cv_model_assessment()}}, which refit the
+model after removing each trial.
 }
 \examples{
 \dontrun{

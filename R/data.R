@@ -38,8 +38,8 @@
 #'
 #' Posterior draws of all model parameters from the MCMC model with chronic
 #' and acute eGFR slopes as the two surrogates for the clinical endpoint.
-#' This data set is used in the examples of the package to demonstrate how
-#' to use the `vector_to_matrix` and `MBE` functions.
+#' This data set is used in package examples to demonstrate an MBE update
+#' without requiring users to refit the historical Stan model.
 #'
 #' @format A data.table with 4,000 rows and 9 variables:
 #' \describe{
@@ -83,3 +83,61 @@
 #' @author Yizhen Xu \email{yizhen.xu@utah.edu}
 #' @source Simulated by Yizhen Xu
 "trial_sim_dat"
+
+
+
+#' Aggregate Leave-One-Out Historical-Model Assessment
+#'
+#' @description A one-row summary of leave-one-out cross-validation for the
+#' random-intercept historical model with inverse-gamma variance priors. Each of
+#' the 66 simulated trials was held out once. The tolerance-interval calculation
+#' includes both residual clinical heterogeneity and the held-out trial's
+#' clinical sampling variance.
+#'
+#' @format A data frame with 1 row and 4 variables:
+#' \describe{
+#'   \item{n_trials}{Integer. Number of held-out trials.}
+#'   \item{loo_cv_rmse}{Numeric. Root mean squared error between held-out
+#'   clinical estimates and their posterior means.}
+#'   \item{coverage_95}{Numeric. Proportion of held-out clinical estimates
+#'   covered by the 95 percent predictive interval.}
+#'   \item{coverage_90}{Numeric. Proportion of held-out clinical estimates
+#'   covered by the 90 percent predictive interval.}
+#' }
+#' @source Derived from `trial_sim_dat` using [fit_loo_historical_models()] and
+#' [loo_cv_model_assessment()] with seed 2026.
+"loo_assessment_summary"
+
+
+
+#' Trial-Level Leave-One-Out Historical-Model Assessment
+#'
+#' @description Trial-level results underlying `loo_assessment_summary`. The
+#' assessment uses the random-intercept historical model with inverse-gamma
+#' variance priors and seed 2026.
+#'
+#' @format A data frame with 66 rows and 11 variables:
+#' \describe{
+#'   \item{trial_id}{Character. Identifier of the held-out trial.}
+#'   \item{observed_clinical}{Numeric. Observed clinical treatment-effect estimate.}
+#'   \item{posterior_mean_clinical}{Numeric. Posterior mean for the held-out
+#'   clinical treatment effect.}
+#'   \item{squared_error}{Numeric. Squared error of the posterior mean.}
+#'   \item{predictive_percentile}{Numeric. Empirical predictive percentile of
+#'   the observed clinical estimate.}
+#'   \item{predictive_lower_95}{Numeric. Lower endpoint of the 95 percent
+#'   predictive interval.}
+#'   \item{predictive_lower_90}{Numeric. Lower endpoint of the 90 percent
+#'   predictive interval.}
+#'   \item{predictive_upper_90}{Numeric. Upper endpoint of the 90 percent
+#'   predictive interval.}
+#'   \item{predictive_upper_95}{Numeric. Upper endpoint of the 95 percent
+#'   predictive interval.}
+#'   \item{covered_95}{Logical. Whether the 95 percent interval covered the
+#'   observed clinical estimate.}
+#'   \item{covered_90}{Logical. Whether the 90 percent interval covered the
+#'   observed clinical estimate.}
+#' }
+#' @source Derived from `trial_sim_dat` using [fit_loo_historical_models()] and
+#' [loo_cv_model_assessment()] with seed 2026.
+"loo_assessment_by_trial"

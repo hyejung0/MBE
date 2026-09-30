@@ -23,6 +23,7 @@ precalculated_data/
 
 # folders to ignore
 data-raw/ALL_STUDIES.rds
+data-raw/loo-random-inverse-gamma/
 inst/code
 /doc/
 /Meta/
