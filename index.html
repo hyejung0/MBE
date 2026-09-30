@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Bayesian Endpoints with Two Surrogate Outcomes • MBE</title>
+<title>Multi-Component Bayesian Endpoints with Two Surrogates • MBE</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Bayesian Endpoints with Two Surrogate Outcomes">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Multi-Component Bayesian Endpoints with Two Surrogates">
 <meta name="description" content="Fits a trial-level Bayesian model for exactly two surrogate endpoints and one clinical endpoint, then updates the historical posterior with results from a new randomized clinical trial. The package provides fixed- and random-intercept Stan models and importance-sampling tools for estimating the resulting Multi-Component Bayesian Endpoint.">
 <meta property="og:description" content="Fits a trial-level Bayesian model for exactly two surrogate endpoints and one clinical endpoint, then updates the historical posterior with results from a new randomized clinical trial. The package provides fixed- and random-intercept Stan models and importance-sampling tools for estimating the resulting Multi-Component Bayesian Endpoint.">
 </head>
@@ -35,9 +35,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/interim-analysis-example.html">Interim Analysis Example</a></li>
-    <li><a class="dropdown-item" href="articles/MBE-manuscript-to-code.html">Mapping the MBE manuscript to Rcode</a></li>
+<li><a class="dropdown-item" href="articles/MBE-manuscript-to-code.html">Mapping the MBE Manuscript to the Package</a></li>
     <li><a class="dropdown-item" href="articles/simulation-example.html">Simulation Example</a></li>
+    <li><a class="dropdown-item" href="articles/interim-analysis-example.html">Interim Analysis Example</a></li>
   </ul>
 </li>
       </ul>
@@ -45,6 +45,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/hyejung0/MBE/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -57,9 +58,9 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>This repository contains all relevant R codes that was used in the Multi-Component Bayesian Endpoints for Randomized Clinical Trials paper produced by Lee et. al., (2026).</p>
+<p>This repository contains the R package accompanying the <em>Multi-Component Bayesian Endpoints for Randomized Clinical Trials</em> manuscript by Lee et al. (2026).</p>
 <p>This package implements an MBE with exactly one clinical endpoint and two surrogate endpoints. The current CKD implementation uses chronic and acute eGFR slopes as the two surrogates. A Bayesian framework incorporates historical randomized clinical trials (RCTs) and propagates uncertainty when estimating the treatment effect on the clinical endpoint from both surrogate effects.</p>
-<p>Detailed explanation of mapping the manuscript to the code can be found in this document: <a href="articles/MBE-manuscript-to-code.html">Mapping the manuscript to the code</a></p>
+<p>See <a href="https://hyejung0.github.io/MBE/articles/MBE-manuscript-to-code.html">Mapping the MBE Manuscript to the Package</a> for the complete workflow.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -67,12 +68,16 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"hyejung0/MBE"</span><span class="op">)</span></span></code></pre></div>
+<p>Fitting a historical model requires a working CmdStan installation. If CmdStan has not already been installed, run:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">cmdstanr</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/cmdstanr/reference/install_cmdstan.html" class="external-link">check_cmdstan_toolchain</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">cmdstanr</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/cmdstanr/reference/install_cmdstan.html" class="external-link">install_cmdstan</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p>The package includes compatible historical posterior draws and simulated data. The input for a new trial always contains the clinical endpoint, both surrogate endpoints, and the three pairwise correlations:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://hyejung0.github.io/MBE/">MBE</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"historical_posterior"</span><span class="op">)</span></span>
@@ -92,10 +97,65 @@
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/MBE.html">MBE</a></span><span class="op">(</span><span class="va">historical_posterior</span>, <span class="va">new_trial</span><span class="op">)</span></span>
-<span><span class="va">fit</span><span class="op">$</span><span class="va">post_mean</span></span></code></pre></div>
+<span><span class="va">fit</span><span class="op">$</span><span class="va">post_mean</span></span>
+<span><span class="co">#&gt;                  [,1]</span></span>
+<span><span class="co">#&gt; clinical   -0.1013294</span></span>
+<span><span class="co">#&gt; surrogate1  0.6837417</span></span>
+<span><span class="co">#&gt; surrogate2 -5.4760921</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span></span>
+<span>  <span class="st">"%s: %.3f\n"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">importance_diagnostics</span><span class="op">)</span>,</span>
+<span>  <span class="va">fit</span><span class="op">$</span><span class="va">importance_diagnostics</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; effective_sample_size: 3943.574</span></span>
+<span><span class="co">#&gt;  relative_effective_sample_size: 0.986</span></span>
+<span><span class="co">#&gt;  maximum_normalized_weight: 0.000</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="historical-model-assessment">Historical-model assessment<a class="anchor" aria-label="anchor" href="#historical-model-assessment"></a>
+</h2>
+<p>The package provides a restartable workflow for fitting one historical model per held-out trial and calculating LOO-CV RMSE and 90% and 95% predictive interval coverage. See <code><a href="reference/fit_loo_historical_models.html">?fit_loo_historical_models</a></code> and <code><a href="reference/loo_cv_model_assessment.html">?loo_cv_model_assessment</a></code> for the computational workflow.</p>
+<p>The completed 66-trial assessment is included as two compact datasets:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"loo_assessment_summary"</span>, package <span class="op">=</span> <span class="st">"MBE"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"loo_assessment_by_trial"</span>, package <span class="op">=</span> <span class="st">"MBE"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">loo_assessment_summary</span></span>
+<span><span class="co">#&gt;   n_trials loo_cv_rmse coverage_95 coverage_90</span></span>
+<span><span class="co">#&gt; 1       66   0.2385382    0.969697   0.9090909</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">loo_assessment_by_trial</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   trial_id observed_clinical posterior_mean_clinical squared_error</span></span>
+<span><span class="co">#&gt; 1        1        -0.1337531             -0.09656727   0.001382784</span></span>
+<span><span class="co">#&gt; 2        2         0.3126354              0.06360662   0.062015334</span></span>
+<span><span class="co">#&gt; 3        3        -0.7966332             -0.62698427   0.028780758</span></span>
+<span><span class="co">#&gt; 4        4        -0.3433848             -0.44253095   0.009829956</span></span>
+<span><span class="co">#&gt; 5        5        -0.1624861             -0.06922007   0.008698544</span></span>
+<span><span class="co">#&gt; 6        6        -0.5146880             -0.44928852   0.004277089</span></span>
+<span><span class="co">#&gt;   predictive_percentile predictive_lower_95 predictive_lower_90</span></span>
+<span><span class="co">#&gt; 1              0.366625          -0.4208025          -0.3664697</span></span>
+<span><span class="co">#&gt; 2              0.956875          -0.5601490          -0.4838673</span></span>
+<span><span class="co">#&gt; 3              0.121375          -0.9534428          -0.8945087</span></span>
+<span><span class="co">#&gt; 4              0.579625          -1.3476991          -1.2068675</span></span>
+<span><span class="co">#&gt; 5              0.406125          -0.9828023          -0.8245005</span></span>
+<span><span class="co">#&gt; 6              0.254750          -0.7040234          -0.6563685</span></span>
+<span><span class="co">#&gt;   predictive_upper_90 predictive_upper_95 covered_95 covered_90</span></span>
+<span><span class="co">#&gt; 1           0.2232711           0.2789574       TRUE       TRUE</span></span>
+<span><span class="co">#&gt; 2           0.2948599           0.3647947       TRUE      FALSE</span></span>
+<span><span class="co">#&gt; 3          -0.2279492          -0.1651125       TRUE       TRUE</span></span>
+<span><span class="co">#&gt; 4           0.3414936           0.4838808       TRUE       TRUE</span></span>
+<span><span class="co">#&gt; 5           0.6862105           0.8377323       TRUE       TRUE</span></span>
+<span><span class="co">#&gt; 6          -0.1831045          -0.1363449       TRUE       TRUE</span></span></code></pre></div>
 </div>
 </div>
-  </main><aside class="col-md-3"><div class="license">
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Links</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/hyejung0/MBE/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/hyejung0/MBE/issues" class="external-link">Report a bug</a></li>
+</ul>
+</div>
+
+<div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>

@@ -22,12 +22,13 @@ endpoint, as described in Lee et al. (2026)."></head><body>
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/interim-analysis-example.html">Interim Analysis Example</a></li>
-    <li><a class="dropdown-item" href="../articles/MBE-manuscript-to-code.html">Mapping the MBE manuscript to Rcode</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/MBE-manuscript-to-code.html">Mapping the MBE Manuscript to the Package</a></li>
     <li><a class="dropdown-item" href="../articles/simulation-example.html">Simulation Example</a></li>
+    <li><a class="dropdown-item" href="../articles/interim-analysis-example.html">Interim Analysis Example</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/hyejung0/MBE/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -37,7 +38,7 @@ endpoint, as described in Lee et al. (2026)."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Fit the Historical Model for Exactly Two Surrogate Endpoints</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/hyejung0/MBE/blob/main/R/historical_model_fit_2surrogates.R" class="external-link"><code>R/historical_model_fit_2surrogates.R</code></a></small>
       <div class="d-none name"><code>historical_model_fit_2surrogates.Rd</code></div>
     </div>
 
@@ -163,6 +164,11 @@ $$\gamma_{i, 1} \mid \gamma_{i, 2} \sim N(\alpha_{\gamma_1} + \beta_{\gamma_1} \
 $$\theta_i \mid \gamma_{i, 1}, \gamma_{i, 2} \sim N(\alpha_\theta + \beta_{\gamma_1} \cdot \gamma_{i, 1} + \beta_{\gamma_2} \cdot \gamma_{i, 2}, \lambda^2_\theta)$$</p>
 <p>This function fits the model using MCMC sampling on historical RCTs and returns
 the posterior distribution of the model parameters.</p>
+<p>The <code>loo</code> and <code>waic</code> components use the Stan <code>log_lik</code> values conditional on
+each trial's latent treatment-effect vector. They therefore describe
+conditional model fit. For prediction to a completely held-out trial, use
+<code><a href="fit_loo_historical_models.html">fit_loo_historical_models()</a></code> and <code><a href="loo_cv_model_assessment.html">loo_cv_model_assessment()</a></code>, which refit the
+model after removing each trial.</p>
     </div>
 
     <div class="section level2">

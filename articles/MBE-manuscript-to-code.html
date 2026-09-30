@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Mapping the MBE manuscript to Rcode • MBE</title>
+<title>Mapping the MBE Manuscript to the Package • MBE</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Mapping the MBE manuscript to Rcode">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Mapping the MBE Manuscript to the Package">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -33,9 +33,9 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/interim-analysis-example.html">Interim Analysis Example</a></li>
-    <li><a class="dropdown-item" href="../articles/MBE-manuscript-to-code.html">Mapping the MBE manuscript to Rcode</a></li>
+<li><a class="dropdown-item" href="../articles/MBE-manuscript-to-code.html">Mapping the MBE Manuscript to the Package</a></li>
     <li><a class="dropdown-item" href="../articles/simulation-example.html">Simulation Example</a></li>
+    <li><a class="dropdown-item" href="../articles/interim-analysis-example.html">Interim Analysis Example</a></li>
   </ul>
 </li>
       </ul>
@@ -43,6 +43,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/hyejung0/MBE/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -56,288 +57,275 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Mapping the MBE manuscript to Rcode</h1>
+      <h1>Mapping the MBE Manuscript to the Package</h1>
             
       
-
+      <small class="dont-index">Source: <a href="https://github.com/hyejung0/MBE/blob/main/vignettes/MBE-manuscript-to-code.Rmd" class="external-link"><code>vignettes/MBE-manuscript-to-code.Rmd</code></a></small>
       <div class="d-none name"><code>MBE-manuscript-to-code.Rmd</code></div>
     </div>
 
     
     
 <div class="section level2">
-<h2 id="example-run-of-mbe-code-following-the-manuscript-math">Example run of MBE code following the manuscript math<a class="anchor" aria-label="anchor" href="#example-run-of-mbe-code-following-the-manuscript-math"></a>
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>This document aims to bridge the mathematical details provided in Lee
-et. al., (2026) with the corresponding R code implementation. The goal
-is to provide a clear mapping between the theoretical framework and the
-practical application of the Multi-Component Bayesian Endpoint (MBE)
-methodology.</p>
-<div class="section level3">
-<h3 id="steps">Steps<a class="anchor" aria-label="anchor" href="#steps"></a>
-</h3>
-<p>Estimating the posterior distribution of MBE has two distinct coding
-components:</p>
-<ul>
-<li><p>Step 1. Fit Markov chain Monte Carlo (MCMC) on a trial-level
-model to historical RCTs to produce historical posterior samples of the
-model parameters</p></li>
-<li><p>Step2. Construct a prior distribution of MBE using the historical
-posterior samples estimated in step 1, and then update the MBE’s prior
-based on the estimated treatment effects in a “new RCT” to obtain the
-MBE’s posterior distribution for the true treatment effect on the CE in
-that new RCT.</p></li>
-</ul>
-<p>For both the historical and new RCTs, the model is a hierarchical
-model that relates the treatment effect on the clinical endpoint to the
-treatment effects on exactly two surrogate endpoints across trials. The
-model parameters include the intercept, two surrogate slope
-coefficients, and variance parameters that capture the relationship
-between the surrogate and clinical treatment effects across trials.
-Please refer to Section 2 of the manuscript for details of the model
-specification.</p>
-<p>Our work demonstrated these steps using chronic kidney disease trials
-where two surrogate endpoints, the treatment effect on acute and chronic
-slopes of glomerular filtration rate (GFR), were used to estimate the
-MBE for the treatment effect on the clinical endpoint.</p>
+<p>The Multi-Component Bayesian Endpoint (MBE) workflow described by Lee
+et al. (2026) has two stages:</p>
+<ol style="list-style-type: decimal">
+<li>Fit a trial-level Bayesian meta-analytic model to historical
+randomized clinical trials.</li>
+<li>Use draws from that historical model to update the treatment effects
+for a new trial.</li>
+</ol>
+<p>The package implementation is deliberately restricted to one clinical
+endpoint and exactly two surrogate endpoints. In the chronic kidney
+disease example, the two surrogates are treatment effects on chronic and
+acute eGFR slopes.</p>
 </div>
-<div class="section level3">
-<h3 id="data-structure">Data Structure<a class="anchor" aria-label="anchor" href="#data-structure"></a>
-</h3>
-<p>We have 66 historical RCTs that have treatment effect estimates on
-the clinical endpoint, the acute slope, and the chronic slope. Data use
-agreements prohibit CKD-EPI CT from sharing data with parties external
-to the agreement. Thus, we explain the data structure and how to use the
-data to fit the historical model, but we cannot share the data
-itself.</p>
-<p>As the analysis is at trial-level, the unit of observation is per
-trial. Thus, the dataset has 66 rows. The columns are as follows:</p>
+<div class="section level2">
+<h2 id="input-data">Input data<a class="anchor" aria-label="anchor" href="#input-data"></a>
+</h2>
+<p><code><a href="../reference/historical_model_fit_2surrogates.html">historical_model_fit_2surrogates()</a></code> expects one row per
+historical trial and the following nine columns:</p>
 <table class="table">
 <colgroup>
 <col width="50%">
 <col width="50%">
 </colgroup>
 <thead><tr class="header">
-<th>Column Name</th>
-<th>Description</th>
+<th align="left">Column</th>
+<th align="left">Meaning</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>ClnEst</td>
-<td>observed treatment effect on Clinical endpoint (CE)</td>
+<td align="left">
+<code>CE_est</code>, <code>CE_se</code>
+</td>
+<td align="left">Clinical treatment-effect estimate and standard
+error</td>
 </tr>
 <tr class="even">
-<td>ClnSE</td>
-<td>standard error of observed treatment effect on CE</td>
+<td align="left">
+<code>Sur1_est</code>, <code>Sur1_se</code>
+</td>
+<td align="left">Surrogate 1 estimate and standard error</td>
 </tr>
 <tr class="odd">
-<td>Sur1Est</td>
-<td>observed treatment effect on chronic slope (Surrogate 1)</td>
+<td align="left">
+<code>Sur2_est</code>, <code>Sur2_se</code>
+</td>
+<td align="left">Surrogate 2 estimate and standard error</td>
 </tr>
 <tr class="even">
-<td>Sur1SE</td>
-<td>standard error of observed treatment effect on chronic slope</td>
+<td align="left"><code>Cor_CE_Sur1</code></td>
+<td align="left">Sampling correlation between the clinical endpoint and
+surrogate 1</td>
 </tr>
 <tr class="odd">
-<td>Sur2Est</td>
-<td>observed treatment effect on acute slope (Surrogate 2)</td>
+<td align="left"><code>Cor_CE_Sur2</code></td>
+<td align="left">Sampling correlation between the clinical endpoint and
+surrogate 2</td>
 </tr>
 <tr class="even">
-<td>Sur2SE</td>
-<td>standard error of observed treatment effect on acute slope</td>
-</tr>
-<tr class="odd">
-<td>R1Clin</td>
-<td>correlation between observed treatment effect on CE and chronic
-slope</td>
-</tr>
-<tr class="even">
-<td>R2Clin</td>
-<td>correlation between observed treatment effect on CE and acute
-slope</td>
-</tr>
-<tr class="odd">
-<td>R12</td>
-<td>correlation between observed treatment effect on chronic slope and
-acute slope</td>
+<td align="left"><code>Cor_Sur1_Sur2</code></td>
+<td align="left">Sampling correlation between the two surrogates</td>
 </tr>
 </tbody>
 </table>
-<p>These column names are used in all R codes provided in this Github.
-So if you want to use the provided R script to your own data, please
-make sure to have the same column names and structure as described
-above.</p>
-<p>For the demonstration, we consider 65 trial as the historical data,
-and leave out one trial as the “new” trial. This vignette will re-create
-the Figure 1 in the manuscript, which shows the posterior distribution
-of MBE for the left out trial.</p>
+<p><code>trial_sim_dat</code> provides a shareable simulated example
+with 66 trials. The restricted CKD-EPI CT trial data used in the
+motivating analysis are not distributed with the package.</p>
 </div>
-<div class="section level3">
-<h3 id="step-1-historical-model-fitting">Step 1 Historical Model Fitting<a class="anchor" aria-label="anchor" href="#step-1-historical-model-fitting"></a>
-</h3>
-<p>The manuscript describes two different models to fit the historical
-data:</p>
-<ol style="list-style-type: decimal">
-<li>Fix
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>
-to be zero</li>
-<li>Allow
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>
-to be estimated from the data</li>
-</ol>
-<p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>
-is the intercept parameter in the regression model that relates the true
-treatment effect on the clinical endpoint to the true treatment effect
-on all surrogate endpoints.</p>
-<p>Besides, we can also choose to use either inverse gamma or
-half-normal priors for the variance parameters (or standard deviation)
-in the model. Thus, totally, there are four different ways to fit the
-historical model.</p>
-<p>The four stan code that correspond to the four different ways to fit
-the historical model are stored in the <code>code/historical</code>
-folder. :</p>
-<ul>
-<li>
-<code>fix_beta0_invGamma.stan</code>: fit the historical model with
-inverse gamma prior for variance parameters and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>
-fixed to be zero</li>
-<li>
-<code>random_beta0_invGamma.stan</code>: fit the historical model
-with inverse gamma prior for variance parameters and model
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>
-as a random parameter</li>
-<li>
-<code>fix_beta0_halfNormal.stan</code>: fit the historical model
-with half-normal prior for standard deviation parameters and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>
-fixed to be zero</li>
-<li>
-<code>random_beta0_halfNormal.stan</code>: fit the historical model
-with half-normal prior for standard deviation parameters and model
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>
-as a random parameter</li>
-</ul>
-<p>In the same folder, you can find <code>historical_model_fit.R</code>
-file, which sources one of the four stan files to run MCMC on the
-historical data. You can choose which stan file to source based on the
-model specification you want to fit.</p>
-<hr>
-<p>For demonstration purposes, we chose to fit a historical model with
-random
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>,
-using inverse gamma prior for the variance parameters. This is the exact
-model used to generate the historical posterior distribution to use as
-the MBE prior in the manuscript.</p>
-</div>
-<div class="section level3">
-<h3 id="step-2-mbe-construction">Step 2 MBE Construction<a class="anchor" aria-label="anchor" href="#step-2-mbe-construction"></a>
-</h3>
-<p>Using the parameter distributions estimated with the historical data
-in Step 1, we now estimate the distribution of MBE. All relevant R code
-for this step can be found in the <code>code/MBE</code> folder.</p>
-<p>The function <code>theta0_given_hat_psi0</code> estimates the
-posterior distribution of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mn>0</mn></msub><mo>∣</mo><msub><mover><mi>ψ</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">\theta_0 \mid \hat{\psi}_0</annotation></semantics></math>
-(saved as <code>theta0_given_hat_psi0.R</code> file). This function fits
-Models A through D in the manuscript. <code>MBE_given_all_dat.R</code>
-file demonstrates use of this function to generate the posterior
-distributions of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mn>0</mn></msub><mo>∣</mo><msub><mover><mi>ψ</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">\theta_0 \mid \hat{\psi}_0</annotation></semantics></math>
-under all four different model specifications.</p>
-<p>with full historical prior carry over is shown in
-<code>MBE_full_historical_posterior.R</code> file. This is what the
-manuscript calls ‘Model A.’</p>
-<p>The R code for Step 2 is stored in the
-<code>code/MBE_estimation.R</code> file. In this code, we first read in
-the MCMC samples of the model parameters estimated in Step 1, and then
-we use these samples to construct the MBE for a “new RCT” that was left
-out from the historical data. The “new RCT” is represented by the
-<code>sample_dat</code> list in the code, which contains the observed
-treatment effect estimates on the clinical endpoint and surrogate
-endpoints, as well as their standard errors and correlations.</p>
-</div>
-<div class="section level3">
-<h3 id="historical-data-model-fit-check">Historical Data Model Fit Check<a class="anchor" aria-label="anchor" href="#historical-data-model-fit-check"></a>
-</h3>
-<p>In Appendix, you can find a section for Historical Model fit, where I
-used a various metric to check the model fit for the historical data.
-The R code for this is stored in the
-<code>code/historical_model_assessment</code> folder. Suppose that as in
-our paper, we have 66 historical RCTs.</p>
-<div class="section level4">
-<h4 id="leave-one-out-cross-validated-tolerance-interval-loo-cv-ti-coverage">Leave-One-Out Cross-Validated Tolerance Interval (LOO-CV TI)
-coverage<a class="anchor" aria-label="anchor" href="#leave-one-out-cross-validated-tolerance-interval-loo-cv-ti-coverage"></a>
-</h4>
-<p>The <code>PPD.R</code> file demonstrates how to construct a posterior
-predictive distribution for observed treatment effect on the clinical
-endpoint. One fits historical model on 65 RCTs, and then uses the
-posterior samples of the model parameters to generate a posterior
-predictive distribution (PPD) for the observed treatment effect on the
-clinical endpoint for the left out RCT. The PPD is estimated by
-following procedure. Suppose we have
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
-posterior samples of the model parameters, and we have
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
-RCTs in the historical data. Then for each left out RCT, we do the
-following:</p>
-<ol style="list-style-type: decimal">
-<li>Estimate the joint posterior distribution of the two surrogate
-effects by updating the historical model with both observed surrogate
-treatment effects for the left-out RCT. This is done for each of the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
-posterior samples of the model parameters, producing
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
-paired posterior samples of the two surrogate effects.</li>
-<li>For each paired posterior sample, generate a posterior predictive
-draw for the observed clinical-endpoint treatment effect in the left-out
-RCT from the conditional normal distribution:</li>
-</ol>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo stretchy="false" form="prefix">(</mo><msubsup><mi>β</mi><mn>0</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>β</mi><mn>1</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>⋅</mo><msubsup><mi>γ</mi><mn>01</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>β</mi><mn>2</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>⋅</mo><msubsup><mi>γ</mi><mn>02</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>,</mo><msubsup><mi>λ</mi><mi>θ</mi><mrow><mn>2</mn><mspace width="0.222em"></mspace><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>σ</mi><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">N(\beta_0^{(b)} + \beta_1^{(b)} \cdot \gamma_{01}^{(b)}+ \beta_2^{(b)} \cdot \gamma_{02}^{(b)}, \lambda_{\theta}^{2 \ (b)} + \sigma^2_{\hat{\theta}_0}),</annotation></semantics></math></p>
-<p>where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>β</mi><mn>0</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><annotation encoding="application/x-tex">\beta_0^{(b)}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>β</mi><mn>1</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><annotation encoding="application/x-tex">\beta_1^{(b)}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>β</mi><mn>2</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><annotation encoding="application/x-tex">\beta_2^{(b)}</annotation></semantics></math>,
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>λ</mi><mi>θ</mi><mrow><mn>2</mn><mspace width="0.222em"></mspace><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><annotation encoding="application/x-tex">\lambda_{\theta}^{2 \ (b)}</annotation></semantics></math>
-are the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>b</mi><mrow><mi>t</mi><mi>h</mi></mrow></msup><annotation encoding="application/x-tex">b^{th}</annotation></semantics></math>
-MCMC sample from the historical posterior,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>γ</mi><mn>01</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><annotation encoding="application/x-tex">\gamma_{01}^{(b)}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>γ</mi><mn>02</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><annotation encoding="application/x-tex">\gamma_{02}^{(b)}</annotation></semantics></math>
-are the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>b</mi><mrow><mi>t</mi><mi>h</mi></mrow></msup><annotation encoding="application/x-tex">b^{th}</annotation></semantics></math>
-posterior samples of surrogate effects 1 and 2 for the left-out RCT, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>σ</mi><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub><mn>2</mn></msubsup><annotation encoding="application/x-tex">\sigma^2_{\hat{\theta}_0}</annotation></semantics></math>
-is the observed variance of the clinical-endpoint treatment-effect
-estimate.</p>
-<p>The collection these draws form a posterior predictive distribution
-for the observed treatment effect on the clinical endpoint for the left
-out RCT. Then, we estimate where the observed treatment effect on the CE
-for the left out RCT
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub><annotation encoding="application/x-tex">\hat{\theta}_0</annotation></semantics></math>)
-falls within this PPD. If we are interested in constructing 95%
-tolerance interval, we can find whether
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub><annotation encoding="application/x-tex">\hat{\theta}_0</annotation></semantics></math>
-sits within the 2.5th and 97.5th percentiles of this PPD. We log the
-result as 1 if
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub><annotation encoding="application/x-tex">\hat{\theta}_0</annotation></semantics></math>
-falls within the 95% tolerance interval, and 0 otherwise.</p>
-<p>We repeat this process for all
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
-RCTs in the historical data, and calculate the coverage of the 95%
-tolerance interval by taking the average of the logged results (1 if
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub><annotation encoding="application/x-tex">\hat{\theta}_0</annotation></semantics></math>
-falls within the 95% tolerance interval, and 0 otherwise) across all
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
-RCTs. This coverage should be close to 0.95 if the historical model fits
-the data well.</p>
+<div class="section level2">
+<h2 id="stage-1-fit-the-historical-model">Stage 1: fit the historical model<a class="anchor" aria-label="anchor" href="#stage-1-fit-the-historical-model"></a>
+</h2>
+<p>The historical model can use a fixed or estimated clinical intercept
+and either half-normal or inverse-gamma priors for its uncertainty
+parameters. The manuscript’s initial specification uses an estimated
+(random) intercept and inverse-gamma priors. The first simulated trial
+can be held out as follows:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://hyejung0.github.io/MBE/">MBE</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">historical_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/historical_model_fit_2surrogates.html">historical_model_fit_2surrogates</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span>,</span>
+<span>  random_intercept <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  prior_for_uncertainty <span class="op">=</span> <span class="st">"inverse_gamma"</span>,</span>
+<span>  nchains <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  ncores <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  niter <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>  nwarmup <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">2026</span>,</span>
+<span>  adapt_delta <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  max_treedepth <span class="op">=</span> <span class="fl">15</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">historical_fit</span><span class="op">$</span><span class="va">summary</span></span>
+<span><span class="va">historical_fit</span><span class="op">$</span><span class="va">loo</span></span>
+<span><span class="va">historical_fit</span><span class="op">$</span><span class="va">waic</span></span></code></pre></div>
+<p>The returned object also contains the CmdStan fit, posterior draws,
+and sampler diagnostics. Historical fits should be accepted only after
+checking convergence and sampler warnings.</p>
 </div>
+<div class="section level2">
+<h2 id="stage-2-update-the-mbe-for-a-new-trial">Stage 2: update the MBE for a new trial<a class="anchor" aria-label="anchor" href="#stage-2-update-the-mbe-for-a-new-trial"></a>
+</h2>
+<p>The package includes <code>historical_posterior</code>, a compact set
+of compatible draws from the random-intercept, inverse-gamma model with
+trial 1 held out. The held-out trial is converted to the naming
+convention used by <code><a href="../reference/MBE.html">MBE()</a></code>:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"historical_posterior"</span>, package <span class="op">=</span> <span class="st">"MBE"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">new_trial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  ClnEst <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  ClnSE <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  Sur1Est <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur1_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  Sur1SE <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur1_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  Sur2Est <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur2_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  Sur2SE <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur2_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  R1Clin <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_CE_Sur1</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  R2Clin <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_CE_Sur2</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  R12 <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_Sur1_Sur2</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">mbe_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MBE.html">MBE</a></span><span class="op">(</span></span>
+<span>  mcmc_dat <span class="op">=</span> <span class="va">historical_posterior</span>,</span>
+<span>  sample_dat <span class="op">=</span> <span class="va">new_trial</span>,</span>
+<span>  diffuse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  diffuse_se <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  intercept0 <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">post_mean</span></span>
+<span><span class="co">#&gt;                  [,1]</span></span>
+<span><span class="co">#&gt; clinical   -0.1013294</span></span>
+<span><span class="co">#&gt; surrogate1  0.6837417</span></span>
+<span><span class="co">#&gt; surrogate2 -5.4760921</span></span>
+<span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">post_var</span></span>
+<span><span class="co">#&gt;               clinical   surrogate1   surrogate2</span></span>
+<span><span class="co">#&gt; clinical    0.01196417 -0.019592518 -0.091338433</span></span>
+<span><span class="co">#&gt; surrogate1 -0.01959252  0.060139164 -0.009146439</span></span>
+<span><span class="co">#&gt; surrogate2 -0.09133843 -0.009146439  3.981621682</span></span>
+<span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">post_quantiles_clinical</span></span>
+<span><span class="co">#&gt; quantile_0.025  quantile_0.05   quantile_0.1  quantile_0.25   quantile_0.5 </span></span>
+<span><span class="co">#&gt;    -0.31485836    -0.28123031    -0.24074706    -0.17402273    -0.09799387 </span></span>
+<span><span class="co">#&gt;  quantile_0.75   quantile_0.9  quantile_0.95 quantile_0.975 </span></span>
+<span><span class="co">#&gt;    -0.02681263     0.03707755     0.07905239     0.12341721</span></span>
+<span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">importance_diagnostics</span></span>
+<span><span class="co">#&gt;          effective_sample_size relative_effective_sample_size </span></span>
+<span><span class="co">#&gt;                   3.943574e+03                   9.858936e-01 </span></span>
+<span><span class="co">#&gt;      maximum_normalized_weight </span></span>
+<span><span class="co">#&gt;                   3.262557e-04</span></span></code></pre></div>
+<p><code>post_mean</code> and <code>post_var</code> are the mean and
+covariance of the updated posterior mixture. <code>post_psi0</code>
+contains resampled posterior draws in the fixed order clinical endpoint,
+surrogate 1, and surrogate 2. <code>weight_data$norm_w</code> contains
+the normalized importance weights. <code>importance_diagnostics</code>
+helps identify whether those weights are concentrated in only a small
+number of historical draws.</p>
 </div>
+<div class="section level2">
+<h2 id="historical-model-fit-assessment">Historical-model fit assessment<a class="anchor" aria-label="anchor" href="#historical-model-fit-assessment"></a>
+</h2>
+<p>The historical model is assessed by holding out each of the 66 trials
+in turn. <code><a href="../reference/fit_loo_historical_models.html">fit_loo_historical_models()</a></code> fits the
+random-intercept, inverse-gamma model to the other 65 trials and saves
+the posterior columns required for assessment. The batch is restartable:
+existing trial files are reused unless
+<code>overwrite = TRUE</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">loo_paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_loo_historical_models.html">fit_loo_historical_models</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">trial_sim_dat</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"data-raw/loo-random-inverse-gamma"</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">2026</span>,</span>
+<span>  nchains <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  ncores <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  niter <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>  nwarmup <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  adapt_delta <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  max_treedepth <span class="op">=</span> <span class="fl">15</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="../reference/loo_cv_model_assessment.html">loo_cv_model_assessment()</a></code> calculates two quantities:</p>
+<ul>
+<li>LOO-CV RMSE compares each held-out clinical estimate with its
+posterior mean from the full-carryover MBE update.</li>
+<li>Tolerance coverage predicts the held-out observed clinical estimate
+after conditioning on only its two observed surrogate estimates.</li>
+</ul>
+<p>For posterior draw
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>,
+the predictive clinical estimate has distribution</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>β</mi><mn>0</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>β</mi><mn>1</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><msubsup><mi>γ</mi><mn>01</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>β</mi><mn>2</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><msubsup><mi>γ</mi><mn>02</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>,</mo><msubsup><mi>λ</mi><mi>θ</mi><mrow><mn>2</mn><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>σ</mi><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+N\left(
+  \beta_0^{(b)} + \beta_1^{(b)}\gamma_{01}^{(b)} +
+  \beta_2^{(b)}\gamma_{02}^{(b)},
+  \lambda_{\theta}^{2(b)} + \sigma^2_{\hat{\theta}_0}
+\right).
+</annotation></semantics></math></p>
+<p>The variance therefore includes both the historical model’s residual
+clinical heterogeneity and the held-out trial’s clinical sampling
+variance.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">loo_assessment</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loo_cv_model_assessment.html">loo_cv_model_assessment</a></span><span class="op">(</span></span>
+<span>  loo_posteriors <span class="op">=</span> <span class="st">"data-raw/loo-random-inverse-gamma"</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">trial_sim_dat</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">2026</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The completed, converged 66-trial assessment is included as two
+compact package datasets so users do not need to rerun all 66 Stan
+models:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"loo_assessment_summary"</span>, package <span class="op">=</span> <span class="st">"MBE"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"loo_assessment_by_trial"</span>, package <span class="op">=</span> <span class="st">"MBE"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">loo_assessment_summary</span>, digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">n_trials</th>
+<th align="right">loo_cv_rmse</th>
+<th align="right">coverage_95</th>
+<th align="right">coverage_90</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">66</td>
+<td align="right">0.2385</td>
+<td align="right">0.9697</td>
+<td align="right">0.9091</td>
+</tr></tbody>
+</table>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">coverage_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  interval <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"95%"</span>, <span class="st">"90%"</span><span class="op">)</span>,</span>
+<span>  covered <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">loo_assessment_by_trial</span><span class="op">$</span><span class="va">covered_95</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">loo_assessment_by_trial</span><span class="op">$</span><span class="va">covered_90</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">loo_assessment_by_trial</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">coverage_counts</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">interval</th>
+<th align="right">covered</th>
+<th align="right">total</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">95%</td>
+<td align="right">64</td>
+<td align="right">66</td>
+</tr>
+<tr class="even">
+<td align="left">90%</td>
+<td align="right">60</td>
+<td align="right">66</td>
+</tr>
+</tbody>
+</table>
+<p>Only these small derived tables are installed with MBE. The complete
+leave-one-out posterior files remain in <code>data-raw/</code> or
+suitable external archival storage.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

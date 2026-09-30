@@ -1,201 +1,221 @@
-# Mapping the MBE manuscript to Rcode
+# Mapping the MBE Manuscript to the Package
 
-## Example run of MBE code following the manuscript math
+## Overview
 
-This document aims to bridge the mathematical details provided in Lee
-et. al., (2026) with the corresponding R code implementation. The goal
-is to provide a clear mapping between the theoretical framework and the
-practical application of the Multi-Component Bayesian Endpoint (MBE)
-methodology.
+The Multi-Component Bayesian Endpoint (MBE) workflow described by Lee et
+al. (2026) has two stages:
 
-### Steps
+1.  Fit a trial-level Bayesian meta-analytic model to historical
+    randomized clinical trials.
+2.  Use draws from that historical model to update the treatment effects
+    for a new trial.
 
-Estimating the posterior distribution of MBE has two distinct coding
-components:
+The package implementation is deliberately restricted to one clinical
+endpoint and exactly two surrogate endpoints. In the chronic kidney
+disease example, the two surrogates are treatment effects on chronic and
+acute eGFR slopes.
 
-- Step 1. Fit Markov chain Monte Carlo (MCMC) on a trial-level model to
-  historical RCTs to produce historical posterior samples of the model
-  parameters
+## Input data
 
-- Step2. Construct a prior distribution of MBE using the historical
-  posterior samples estimated in step 1, and then update the MBE’s prior
-  based on the estimated treatment effects in a “new RCT” to obtain the
-  MBE’s posterior distribution for the true treatment effect on the CE
-  in that new RCT.
+[`historical_model_fit_2surrogates()`](https://hyejung0.github.io/MBE/reference/historical_model_fit_2surrogates.md)
+expects one row per historical trial and the following nine columns:
 
-For both the historical and new RCTs, the model is a hierarchical model
-that relates the treatment effect on the clinical endpoint to the
-treatment effects on exactly two surrogate endpoints across trials. The
-model parameters include the intercept, two surrogate slope
-coefficients, and variance parameters that capture the relationship
-between the surrogate and clinical treatment effects across trials.
-Please refer to Section 2 of the manuscript for details of the model
-specification.
+| Column | Meaning |
+|:---|:---|
+| `CE_est`, `CE_se` | Clinical treatment-effect estimate and standard error |
+| `Sur1_est`, `Sur1_se` | Surrogate 1 estimate and standard error |
+| `Sur2_est`, `Sur2_se` | Surrogate 2 estimate and standard error |
+| `Cor_CE_Sur1` | Sampling correlation between the clinical endpoint and surrogate 1 |
+| `Cor_CE_Sur2` | Sampling correlation between the clinical endpoint and surrogate 2 |
+| `Cor_Sur1_Sur2` | Sampling correlation between the two surrogates |
 
-Our work demonstrated these steps using chronic kidney disease trials
-where two surrogate endpoints, the treatment effect on acute and chronic
-slopes of glomerular filtration rate (GFR), were used to estimate the
-MBE for the treatment effect on the clinical endpoint.
+`trial_sim_dat` provides a shareable simulated example with 66 trials.
+The restricted CKD-EPI CT trial data used in the motivating analysis are
+not distributed with the package.
 
-### Data Structure
+## Stage 1: fit the historical model
 
-We have 66 historical RCTs that have treatment effect estimates on the
-clinical endpoint, the acute slope, and the chronic slope. Data use
-agreements prohibit CKD-EPI CT from sharing data with parties external
-to the agreement. Thus, we explain the data structure and how to use the
-data to fit the historical model, but we cannot share the data itself.
-
-As the analysis is at trial-level, the unit of observation is per trial.
-Thus, the dataset has 66 rows. The columns are as follows:
-
-| Column Name | Description |
-|----|----|
-| ClnEst | observed treatment effect on Clinical endpoint (CE) |
-| ClnSE | standard error of observed treatment effect on CE |
-| Sur1Est | observed treatment effect on chronic slope (Surrogate 1) |
-| Sur1SE | standard error of observed treatment effect on chronic slope |
-| Sur2Est | observed treatment effect on acute slope (Surrogate 2) |
-| Sur2SE | standard error of observed treatment effect on acute slope |
-| R1Clin | correlation between observed treatment effect on CE and chronic slope |
-| R2Clin | correlation between observed treatment effect on CE and acute slope |
-| R12 | correlation between observed treatment effect on chronic slope and acute slope |
-
-These column names are used in all R codes provided in this Github. So
-if you want to use the provided R script to your own data, please make
-sure to have the same column names and structure as described above.
-
-For the demonstration, we consider 65 trial as the historical data, and
-leave out one trial as the “new” trial. This vignette will re-create the
-Figure 1 in the manuscript, which shows the posterior distribution of
-MBE for the left out trial.
-
-### Step 1 Historical Model Fitting
-
-The manuscript describes two different models to fit the historical
-data:
-
-1.  Fix $`\beta_0`$ to be zero
-2.  Allow $`\beta_0`$ to be estimated from the data
-
-where $`\beta_0`$ is the intercept parameter in the regression model
-that relates the true treatment effect on the clinical endpoint to the
-true treatment effect on all surrogate endpoints.
-
-Besides, we can also choose to use either inverse gamma or half-normal
-priors for the variance parameters (or standard deviation) in the model.
-Thus, totally, there are four different ways to fit the historical
-model.
-
-The four stan code that correspond to the four different ways to fit the
-historical model are stored in the `code/historical` folder. :
-
-- `fix_beta0_invGamma.stan`: fit the historical model with inverse gamma
-  prior for variance parameters and $`\beta_0`$ fixed to be zero
-- `random_beta0_invGamma.stan`: fit the historical model with inverse
-  gamma prior for variance parameters and model $`\beta_0`$ as a random
-  parameter
-- `fix_beta0_halfNormal.stan`: fit the historical model with half-normal
-  prior for standard deviation parameters and $`\beta_0`$ fixed to be
-  zero
-- `random_beta0_halfNormal.stan`: fit the historical model with
-  half-normal prior for standard deviation parameters and model
-  $`\beta_0`$ as a random parameter
-
-In the same folder, you can find `historical_model_fit.R` file, which
-sources one of the four stan files to run MCMC on the historical data.
-You can choose which stan file to source based on the model
-specification you want to fit.
-
-------------------------------------------------------------------------
-
-For demonstration purposes, we chose to fit a historical model with
-random $`\beta_0`$, using inverse gamma prior for the variance
-parameters. This is the exact model used to generate the historical
-posterior distribution to use as the MBE prior in the manuscript.
-
-### Step 2 MBE Construction
-
-Using the parameter distributions estimated with the historical data in
-Step 1, we now estimate the distribution of MBE. All relevant R code for
-this step can be found in the `code/MBE` folder.
-
-The function `theta0_given_hat_psi0` estimates the posterior
-distribution of $`\theta_0 \mid \hat{\psi}_0`$ (saved as
-`theta0_given_hat_psi0.R` file). This function fits Models A through D
-in the manuscript. `MBE_given_all_dat.R` file demonstrates use of this
-function to generate the posterior distributions of
-$`\theta_0 \mid \hat{\psi}_0`$ under all four different model
-specifications.
-
-with full historical prior carry over is shown in
-`MBE_full_historical_posterior.R` file. This is what the manuscript
-calls ‘Model A.’
-
-The R code for Step 2 is stored in the `code/MBE_estimation.R` file. In
-this code, we first read in the MCMC samples of the model parameters
-estimated in Step 1, and then we use these samples to construct the MBE
-for a “new RCT” that was left out from the historical data. The “new
-RCT” is represented by the `sample_dat` list in the code, which contains
-the observed treatment effect estimates on the clinical endpoint and
-surrogate endpoints, as well as their standard errors and correlations.
-
-### Historical Data Model Fit Check
-
-In Appendix, you can find a section for Historical Model fit, where I
-used a various metric to check the model fit for the historical data.
-The R code for this is stored in the `code/historical_model_assessment`
-folder. Suppose that as in our paper, we have 66 historical RCTs.
-
-#### Leave-One-Out Cross-Validated Tolerance Interval (LOO-CV TI) coverage
-
-The `PPD.R` file demonstrates how to construct a posterior predictive
-distribution for observed treatment effect on the clinical endpoint. One
-fits historical model on 65 RCTs, and then uses the posterior samples of
-the model parameters to generate a posterior predictive distribution
-(PPD) for the observed treatment effect on the clinical endpoint for the
-left out RCT. The PPD is estimated by following procedure. Suppose we
-have $`B`$ posterior samples of the model parameters, and we have $`N`$
-RCTs in the historical data. Then for each left out RCT, we do the
-following:
-
-1.  Estimate the joint posterior distribution of the two surrogate
-    effects by updating the historical model with both observed
-    surrogate treatment effects for the left-out RCT. This is done for
-    each of the $`B`$ posterior samples of the model parameters,
-    producing $`B`$ paired posterior samples of the two surrogate
-    effects.
-2.  For each paired posterior sample, generate a posterior predictive
-    draw for the observed clinical-endpoint treatment effect in the
-    left-out RCT from the conditional normal distribution:
-
-``` math
-N(\beta_0^{(b)} + \beta_1^{(b)} \cdot \gamma_{01}^{(b)}+ \beta_2^{(b)} \cdot \gamma_{02}^{(b)}, \lambda_{\theta}^{2 \ (b)} + \sigma^2_{\hat{\theta}_0}),
-```
-
-where $`\beta_0^{(b)}`$, $`\beta_1^{(b)}`$, $`\beta_2^{(b)}`$, and
-$`\lambda_{\theta}^{2 \ (b)}`$ are the $`b^{th}`$ MCMC sample from the
-historical posterior, $`\gamma_{01}^{(b)}`$ and $`\gamma_{02}^{(b)}`$
-are the $`b^{th}`$ posterior samples of surrogate effects 1 and 2 for
-the left-out RCT, and $`\sigma^2_{\hat{\theta}_0}`$ is the observed
-variance of the clinical-endpoint treatment-effect estimate.
-
-The collection these draws form a posterior predictive distribution for
-the observed treatment effect on the clinical endpoint for the left out
-RCT. Then, we estimate where the observed treatment effect on the CE for
-the left out RCT ($`\hat{\theta}_0`$) falls within this PPD. If we are
-interested in constructing 95% tolerance interval, we can find whether
-$`\hat{\theta}_0`$ sits within the 2.5th and 97.5th percentiles of this
-PPD. We log the result as 1 if $`\hat{\theta}_0`$ falls within the 95%
-tolerance interval, and 0 otherwise.
-
-We repeat this process for all $`N`$ RCTs in the historical data, and
-calculate the coverage of the 95% tolerance interval by taking the
-average of the logged results (1 if $`\hat{\theta}_0`$ falls within the
-95% tolerance interval, and 0 otherwise) across all $`N`$ RCTs. This
-coverage should be close to 0.95 if the historical model fits the data
-well.
+The historical model can use a fixed or estimated clinical intercept and
+either half-normal or inverse-gamma priors for its uncertainty
+parameters. The manuscript’s initial specification uses an estimated
+(random) intercept and inverse-gamma priors. The first simulated trial
+can be held out as follows:
 
 ``` r
 
-library(MBE)
+historical_fit <- historical_model_fit_2surrogates(
+  data = trial_sim_dat[-1, ],
+  random_intercept = TRUE,
+  prior_for_uncertainty = "inverse_gamma",
+  nchains = 4,
+  ncores = 4,
+  niter = 2000,
+  nwarmup = 1000,
+  seed = 2026,
+  adapt_delta = 0.95,
+  max_treedepth = 15
+)
+
+historical_fit$summary
+historical_fit$loo
+historical_fit$waic
 ```
+
+The returned object also contains the CmdStan fit, posterior draws, and
+sampler diagnostics. Historical fits should be accepted only after
+checking convergence and sampler warnings.
+
+## Stage 2: update the MBE for a new trial
+
+The package includes `historical_posterior`, a compact set of compatible
+draws from the random-intercept, inverse-gamma model with trial 1 held
+out. The held-out trial is converted to the naming convention used by
+[`MBE()`](https://hyejung0.github.io/MBE/reference/MBE.md):
+
+``` r
+
+data("historical_posterior", package = "MBE")
+
+new_trial <- list(
+  ClnEst = trial_sim_dat$CE_est[1],
+  ClnSE = trial_sim_dat$CE_se[1],
+  Sur1Est = trial_sim_dat$Sur1_est[1],
+  Sur1SE = trial_sim_dat$Sur1_se[1],
+  Sur2Est = trial_sim_dat$Sur2_est[1],
+  Sur2SE = trial_sim_dat$Sur2_se[1],
+  R1Clin = trial_sim_dat$Cor_CE_Sur1[1],
+  R2Clin = trial_sim_dat$Cor_CE_Sur2[1],
+  R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
+)
+
+set.seed(1)
+mbe_fit <- MBE(
+  mcmc_dat = historical_posterior,
+  sample_dat = new_trial,
+  diffuse = TRUE,
+  diffuse_se = 100,
+  intercept0 = TRUE
+)
+
+mbe_fit$post_mean
+#>                  [,1]
+#> clinical   -0.1013294
+#> surrogate1  0.6837417
+#> surrogate2 -5.4760921
+mbe_fit$post_var
+#>               clinical   surrogate1   surrogate2
+#> clinical    0.01196417 -0.019592518 -0.091338433
+#> surrogate1 -0.01959252  0.060139164 -0.009146439
+#> surrogate2 -0.09133843 -0.009146439  3.981621682
+mbe_fit$post_quantiles_clinical
+#> quantile_0.025  quantile_0.05   quantile_0.1  quantile_0.25   quantile_0.5 
+#>    -0.31485836    -0.28123031    -0.24074706    -0.17402273    -0.09799387 
+#>  quantile_0.75   quantile_0.9  quantile_0.95 quantile_0.975 
+#>    -0.02681263     0.03707755     0.07905239     0.12341721
+mbe_fit$importance_diagnostics
+#>          effective_sample_size relative_effective_sample_size 
+#>                   3.943574e+03                   9.858936e-01 
+#>      maximum_normalized_weight 
+#>                   3.262557e-04
+```
+
+`post_mean` and `post_var` are the mean and covariance of the updated
+posterior mixture. `post_psi0` contains resampled posterior draws in the
+fixed order clinical endpoint, surrogate 1, and surrogate 2.
+`weight_data$norm_w` contains the normalized importance weights.
+`importance_diagnostics` helps identify whether those weights are
+concentrated in only a small number of historical draws.
+
+## Historical-model fit assessment
+
+The historical model is assessed by holding out each of the 66 trials in
+turn.
+[`fit_loo_historical_models()`](https://hyejung0.github.io/MBE/reference/fit_loo_historical_models.md)
+fits the random-intercept, inverse-gamma model to the other 65 trials
+and saves the posterior columns required for assessment. The batch is
+restartable: existing trial files are reused unless `overwrite = TRUE`.
+
+``` r
+
+loo_paths <- fit_loo_historical_models(
+  data = trial_sim_dat,
+  output_dir = "data-raw/loo-random-inverse-gamma",
+  seed = 2026,
+  nchains = 4,
+  ncores = 4,
+  niter = 2000,
+  nwarmup = 1000,
+  adapt_delta = 0.95,
+  max_treedepth = 15
+)
+```
+
+[`loo_cv_model_assessment()`](https://hyejung0.github.io/MBE/reference/loo_cv_model_assessment.md)
+calculates two quantities:
+
+- LOO-CV RMSE compares each held-out clinical estimate with its
+  posterior mean from the full-carryover MBE update.
+- Tolerance coverage predicts the held-out observed clinical estimate
+  after conditioning on only its two observed surrogate estimates.
+
+For posterior draw $`b`$, the predictive clinical estimate has
+distribution
+
+``` math
+N\left(
+  \beta_0^{(b)} + \beta_1^{(b)}\gamma_{01}^{(b)} +
+  \beta_2^{(b)}\gamma_{02}^{(b)},
+  \lambda_{\theta}^{2(b)} + \sigma^2_{\hat{\theta}_0}
+\right).
+```
+
+The variance therefore includes both the historical model’s residual
+clinical heterogeneity and the held-out trial’s clinical sampling
+variance.
+
+``` r
+
+loo_assessment <- loo_cv_model_assessment(
+  loo_posteriors = "data-raw/loo-random-inverse-gamma",
+  data = trial_sim_dat,
+  seed = 2026
+)
+```
+
+The completed, converged 66-trial assessment is included as two compact
+package datasets so users do not need to rerun all 66 Stan models:
+
+``` r
+
+data("loo_assessment_summary", package = "MBE")
+data("loo_assessment_by_trial", package = "MBE")
+
+knitr::kable(loo_assessment_summary, digits = 4)
+```
+
+| n_trials | loo_cv_rmse | coverage_95 | coverage_90 |
+|---------:|------------:|------------:|------------:|
+|       66 |      0.2385 |      0.9697 |      0.9091 |
+
+``` r
+
+
+coverage_counts <- data.frame(
+  interval = c("95%", "90%"),
+  covered = c(
+    sum(loo_assessment_by_trial$covered_95),
+    sum(loo_assessment_by_trial$covered_90)
+  ),
+  total = nrow(loo_assessment_by_trial)
+)
+knitr::kable(coverage_counts)
+```
+
+| interval | covered | total |
+|:---------|--------:|------:|
+| 95%      |      64 |    66 |
+| 90%      |      60 |    66 |
+
+Only these small derived tables are installed with MBE. The complete
+leave-one-out posterior files remain in `data-raw/` or suitable external
+archival storage.

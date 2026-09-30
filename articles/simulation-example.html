@@ -33,9 +33,9 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/interim-analysis-example.html">Interim Analysis Example</a></li>
-    <li><a class="dropdown-item" href="../articles/MBE-manuscript-to-code.html">Mapping the MBE manuscript to Rcode</a></li>
+<li><a class="dropdown-item" href="../articles/MBE-manuscript-to-code.html">Mapping the MBE Manuscript to the Package</a></li>
     <li><a class="dropdown-item" href="../articles/simulation-example.html">Simulation Example</a></li>
+    <li><a class="dropdown-item" href="../articles/interim-analysis-example.html">Interim Analysis Example</a></li>
   </ul>
 </li>
       </ul>
@@ -43,6 +43,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/hyejung0/MBE/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -59,37 +60,21 @@
       <h1>Simulation Example</h1>
             
       
-
+      <small class="dont-index">Source: <a href="https://github.com/hyejung0/MBE/blob/main/vignettes/simulation-example.Rmd" class="external-link"><code>vignettes/simulation-example.Rmd</code></a></small>
       <div class="d-none name"><code>simulation-example.Rmd</code></div>
     </div>
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://hyejung0.github.io/MBE/">MBE</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'data.table'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     %notin%</span></span></code></pre></div>
-<p>We use the simulated data provided in the package to demonstrate an
-MBE with one clinical endpoint and exactly two surrogate endpoints. In
-this CKD example, the surrogates are chronic and acute eGFR slopes. The
-simulation scenarios are summarized in the documentation for
-<code>interim_sim_dat</code>.</p>
 <div class="section level2">
-<h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
+<h2 id="simulated-trial-data">Simulated trial data<a class="anchor" aria-label="anchor" href="#simulated-trial-data"></a>
 </h2>
-<p>The simulated data is stored in the <code>trial_sim_dat</code>
-dataset in the package. The dataset provides estimated treatment
-effects, standard errors, and correlations on the clinical endpoint,
-chronic slope, and, acute slope in 66 trials as well as the
-corresponding true treatment effects. Below, we show the first few lines
-of the dataset followed by column descriptions.:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"trial_sim_dat"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">trial_sim_dat</span><span class="op">)</span></span>
+<p><code>trial_sim_dat</code> contains 66 simulated trials with one
+clinical endpoint and exactly two surrogate endpoints. Each row contains
+treatment-effect estimates, standard errors, sampling correlations, and
+the corresponding simulation truths.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">trial_sim_dat</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    trial_id     CE_est   Sur1_est  Sur2_est     CE_se    Sur1_se   Sur2_se</span></span>
 <span><span class="co">#&gt;       &lt;int&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;     &lt;num&gt;      &lt;num&gt;     &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1:        1 -0.1337531  0.6746282 -5.616994 0.1345275 0.24675735 2.0208922</span></span>
@@ -106,297 +91,36 @@ of the dataset followed by column descriptions.:</p>
 <span><span class="co">#&gt; 4:  -0.5474905  -0.0928973       -0.2283 -0.54795430  1.4566659   1.017808</span></span>
 <span><span class="co">#&gt; 5:  -0.5228790  -0.1340568       -0.2185 -0.06528294 -0.7109980   5.768145</span></span>
 <span><span class="co">#&gt; 6:  -0.1667742  -0.1519148       -0.1580 -0.32536177  0.4891863   4.465707</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="31%">
-<col width="68%">
-</colgroup>
-<thead><tr class="header">
-<th align="right">Column Name</th>
-<th align="left">Description</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">trial id</td>
-<td align="left">Integer. Index for trial.</td>
-</tr>
-<tr class="even">
-<td align="right">CE_est</td>
-<td align="left">Numeric. Observed estimated treatment effect on the
-clinical endpoint.</td>
-</tr>
-<tr class="odd">
-<td align="right">Sur1_est</td>
-<td align="left">Numeric. Observed estimated treatment effect on the
-first surrogate endpoint.</td>
-</tr>
-<tr class="even">
-<td align="right">Sur2_est</td>
-<td align="left">Numeric. Observed estimated treatment effect on the
-second surrogate endpoint.</td>
-</tr>
-<tr class="odd">
-<td align="right">CE_se</td>
-<td align="left">Numeric. Standard error of the observed estimated
-treatment effect on the clinical endpoint.</td>
-</tr>
-<tr class="even">
-<td align="right">Sur1_se</td>
-<td align="left">Numeric. Standard error of the observed estimated
-treatment effect on the first surrogate endpoint.</td>
-</tr>
-<tr class="odd">
-<td align="right">Sur2_se</td>
-<td align="left">Numeric. Standard error of the observed estimated
-treatment effect on the second surrogate endpoint.</td>
-</tr>
-<tr class="even">
-<td align="right">Cor_CE_Sur1</td>
-<td align="left">Numeric. Estimated correlation between clinical
-endpoint and 1st surrogate endpoint.</td>
-</tr>
-<tr class="odd">
-<td align="right">Cor_CE_Sur2</td>
-<td align="left">Numeric. Estimated correlation between clinical
-endpoint and 2nd surrogate endpoint.</td>
-</tr>
-<tr class="even">
-<td align="right">Cor_Sur1_Sur2</td>
-<td align="left">Numeric. Estimated correlation between 1st surrogate
-endpoint and 2nd surrogate endpoint.</td>
-</tr>
-<tr class="odd">
-<td align="right">theta_CE</td>
-<td align="left">Numeric. True treatment effect on the clinical
-endpoint.</td>
-</tr>
-<tr class="even">
-<td align="right">theta_Sur1</td>
-<td align="left">Numeric. True treatment effect on the 1st surrogate
-endpoint.</td>
-</tr>
-<tr class="odd">
-<td align="right">theta_Sur2</td>
-<td align="left">Numeric. True treatment effect on the 2nd surrogate
-endpoint.</td>
-</tr>
-</tbody>
-</table>
-<p>For our demonstration, we will just take out the first trial as if it
-is a ‘new trial’ and fit the historical modeling on the remaining 65
-trial. We will then estimate MBE on the trial that was left out.</p>
+<p>The column definitions are available with
+<code><a href="../reference/trial_sim_dat.html">?trial_sim_dat</a></code>.</p>
 </div>
 <div class="section level2">
-<h2 id="historical-model-fitting">Historical Model Fitting<a class="anchor" aria-label="anchor" href="#historical-model-fitting"></a>
+<h2 id="fit-the-historical-model">Fit the historical model<a class="anchor" aria-label="anchor" href="#fit-the-historical-model"></a>
 </h2>
-<p>Here, we demonstrate how to fit the historical model using the stan
-script <code>random_beta0_invGamma.stan</code> which allows
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>
-to be estimated from the data and uses inverse gamma prior for the
-variance parameters.</p>
-<p>First, we reshape the data into a list of observed treatment effects
-and covariance matrices for each study. The observed treatment effects
-are stored in a list of vectors, where each vector contains the observed
-treatment effects on the clinical endpoint, chronic slope, and acute
-slope for a given study. The observed covariance matrices are stored in
-a list of matrices, where each matrix contains the variances and
-covariances of the observed treatment effects for a given study.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mc-stan.org/cmdstanr/" class="external-link">cmdstanr</a></span><span class="op">)</span></span>
+<p>For this example, trial 1 is treated as a new trial and the
+historical model is fit to the remaining 65 trials. The call below uses
+the manuscript’s initial random-intercept, inverse-gamma specification.
+It is not run while building the vignette because it requires CmdStan
+and several minutes of computation.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">historical_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/historical_model_fit_2surrogates.html">historical_model_fit_2surrogates</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span>,</span>
+<span>  random_intercept <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  prior_for_uncertainty <span class="op">=</span> <span class="st">"inverse_gamma"</span>,</span>
+<span>  nchains <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  ncores <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  niter <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>  nwarmup <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">2026</span>,</span>
+<span>  adapt_delta <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  max_treedepth <span class="op">=</span> <span class="fl">15</span></span>
+<span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">historical_fit</span><span class="op">$</span><span class="va">diagnostics</span></span>
+<span><span class="va">historical_fit</span><span class="op">$</span><span class="va">summary</span></span>
 <span></span>
-<span><span class="co"># Generate data for Stan model fitting. The data is a list of the following elements:</span></span>
-<span></span>
-<span><span class="co"># observed treatment effect per study</span></span>
-<span><span class="va">obs_mean</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">trial_sim_dat</span><span class="op">)</span>,<span class="kw">function</span><span class="op">(</span><span class="va">j</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">trial_sim_dat</span><span class="op">[</span><span class="va">j</span>,<span class="fu">.</span><span class="op">(</span><span class="va">CE_est</span>,      <span class="co">## observed Clinical endpoint</span></span>
-<span>                    <span class="va">Sur1_est</span>,     <span class="co">## observed chronic slope</span></span>
-<span>                    <span class="va">Sur2_est</span>      <span class="co">## observed acute slope</span></span>
-<span>  <span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="co"># observed covariance matrix per study</span></span>
-<span><span class="va">obs_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">trial_sim_dat</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">j</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># vector of SEs</span></span>
-<span>  <span class="va">sample_dat</span><span class="op">&lt;-</span><span class="va">trial_sim_dat</span><span class="op">[</span><span class="va">j</span>,<span class="fu">.</span><span class="op">(</span><span class="va">CE_se</span>, <span class="co">#SE for Clinical endpoint</span></span>
-<span>                         <span class="va">Sur1_se</span>, <span class="co">#SE for chronic slope</span></span>
-<span>                         <span class="va">Sur2_se</span>, <span class="co">#SE for acute slope</span></span>
-<span>                         <span class="va">Cor_CE_Sur1</span>, <span class="co">#correlation of chronic slope &amp; clinical endpoint</span></span>
-<span>                         <span class="va">Cor_CE_Sur2</span>, <span class="co">#correlation of acute slope &amp; clinical endpoint</span></span>
-<span>                         <span class="va">Cor_Sur1_Sur2</span>  <span class="co">#correlation of acute &amp; chronic slope</span></span>
-<span>  <span class="op">)</span><span class="op">]</span></span>
-<span></span>
-<span></span>
-<span>  <span class="va">sample_dat</span><span class="op">[</span></span>
-<span>    ,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">CE_se</span><span class="op">^</span><span class="fl">2</span>, <span class="va">Cor_CE_Sur1</span><span class="op">*</span><span class="va">CE_se</span><span class="op">*</span><span class="va">Sur1_se</span>,  <span class="va">Cor_CE_Sur2</span><span class="op">*</span><span class="va">CE_se</span><span class="op">*</span><span class="va">Sur2_se</span>,</span>
-<span>        <span class="va">Cor_CE_Sur1</span><span class="op">*</span><span class="va">CE_se</span><span class="op">*</span><span class="va">Sur1_se</span>, <span class="va">Sur1_se</span><span class="op">^</span><span class="fl">2</span>, <span class="va">Sur1_se</span><span class="op">*</span><span class="va">Sur2_se</span><span class="op">*</span><span class="va">Cor_Sur1_Sur2</span>,</span>
-<span>        <span class="va">Cor_CE_Sur2</span><span class="op">*</span><span class="va">CE_se</span><span class="op">*</span><span class="va">Sur2_se</span>, <span class="va">Sur1_se</span><span class="op">*</span><span class="va">Sur2_se</span><span class="op">*</span><span class="va">Cor_Sur1_Sur2</span>,<span class="va">Sur2_se</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
-<span>      nrow<span class="op">=</span><span class="fl">3</span>,ncol <span class="op">=</span> <span class="fl">3</span>, byrow<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span>
-<span>  <span class="op">]</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="co">#collect them together as a more comprehensive list</span></span>
-<span><span class="co">#Exclude the first RCT from the list</span></span>
-<span><span class="va">data_sub</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  N<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">trial_sim_dat</span><span class="op">)</span> <span class="op">-</span><span class="fl">1</span>,</span>
-<span>  obs_mean <span class="op">=</span> <span class="va">obs_mean</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span>  obs_var <span class="op">=</span> <span class="va">obs_var</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
-<span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Now that we have the data in the correct format, we can fit the
-historical model using the <code>cmdstanr</code> package. We will use
-the <code>random_beta0_invGamma.stan</code> script to fit the model,
-which allows for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>
-to be estimated from the data and uses an inverse gamma prior for the
-variance parameters.</p>
-<p>To fit the model, we use our MCMC function on the sample data.
-<em>Note: This step may take several minutes to run on your
-machine.</em></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># Read in the stan code: historical model with inverse gamma prior for variance parameters and model $\beta_0$ as a random parameter</span></span>
-<span><span class="va">mod_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"stan"</span>, <span class="st">"random_beta0_invGamma.stan"</span>, package <span class="op">=</span> <span class="st">"MBE"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">mod_path</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; // One clinical endpoint + exactly two surrogate endpoints.</span></span>
-<span><span class="co">#&gt; // Estimate beta0 and use inverse-gamma priors for variances.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data {</span></span>
-<span><span class="co">#&gt;   int&lt;lower=1&gt; N;                        // number of studies</span></span>
-<span><span class="co">#&gt;   array[N] vector[3] obs_mean;           // fixed order: CE, surrogate 1, surrogate 2</span></span>
-<span><span class="co">#&gt;   array[N] matrix[3, 3] obs_var;         // covariance for those three effects</span></span>
-<span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; parameters{</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   //Population mean</span></span>
-<span><span class="co">#&gt;   real muSur2;              // mean for acute slope</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   //meta-regression for modeling chronic slope ~ acute slope</span></span>
-<span><span class="co">#&gt;   real alphaSur1onSur2;     // intercept</span></span>
-<span><span class="co">#&gt;   real bSur1onSur2;         // slope</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; //meta-regression for modeling clinical endpoints ~ chronic slope + acute slope</span></span>
-<span><span class="co">#&gt;   real alphaCEonSur1Sur2;   // intercept (= beta0)</span></span>
-<span><span class="co">#&gt;   real b1CEonSur1Sur2;      // slope for chronic slope</span></span>
-<span><span class="co">#&gt;   real b2CEonSur1Sur2;      // slope for acute slope</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   // Variance components</span></span>
-<span><span class="co">#&gt;   real&lt;lower=0&gt; sigSqSur2;          //variance for acute slope</span></span>
-<span><span class="co">#&gt;   real&lt;lower=0&gt; SigSqSur1onSur2;    //conditional variance for modeling chronic slope</span></span>
-<span><span class="co">#&gt;   real&lt;lower=0&gt; SigSqCEonSur1Sur2;  //conditional variance for modeling Clinical endpoint</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   // standard normal distribution to construct psi later</span></span>
-<span><span class="co">#&gt;   matrix[3, N] z;</span></span>
-<span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; transformed parameters {</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   // Construct 'psi' here using the non-centered parameterization</span></span>
-<span><span class="co">#&gt;   array[N] vector[3] psi;  // Latent values per study (now an array of vectors)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   // Construct psi using the reparameterization formula: psi = mu + sqrt(variance) * z</span></span>
-<span><span class="co">#&gt;   // We loop through each study (column of z)</span></span>
-<span><span class="co">#&gt;   for (i in 1:N) {</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     psi[i][3]=muSur2+sqrt(sigSqSur2)*z[3,i];</span></span>
-<span><span class="co">#&gt;     psi[i][2]=alphaSur1onSur2 + bSur1onSur2*psi[i][3]+sqrt(SigSqSur1onSur2)*z[2,i];</span></span>
-<span><span class="co">#&gt;     psi[i][1]=alphaCEonSur1Sur2 + b1CEonSur1Sur2*  psi[i][2]   + b2CEonSur1Sur2* psi[i][3]+sqrt(SigSqCEonSur1Sur2)*z[1,i];</span></span>
-<span><span class="co">#&gt;   }</span></span>
-<span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; model {</span></span>
-<span><span class="co">#&gt;   // Priors</span></span>
-<span><span class="co">#&gt;   muSur2 ~ normal(0, 100);</span></span>
-<span><span class="co">#&gt;   sigSqSur2~ inv_gamma(0.261, 0.005);</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   alphaSur1onSur2 ~ normal(0, 100);</span></span>
-<span><span class="co">#&gt;   bSur1onSur2 ~ normal(0, 100);</span></span>
-<span><span class="co">#&gt;   SigSqSur1onSur2~ inv_gamma(0.261, 0.005);</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   alphaCEonSur1Sur2 ~ normal(0, 100);</span></span>
-<span><span class="co">#&gt;   b1CEonSur1Sur2 ~ normal(0, 100);</span></span>
-<span><span class="co">#&gt;   b2CEonSur1Sur2 ~ normal(0, 100);</span></span>
-<span><span class="co">#&gt;   SigSqCEonSur1Sur2 ~ inv_gamma(0.261, 0.000408);</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   to_vector(z) ~ std_normal();</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   // The Stage 1 model (psi ~ multi_normal(mu, Sigma)) is now implicitly</span></span>
-<span><span class="co">#&gt;   // defined by the construction of psi in the transformed parameters block.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   // Stage 2 model (Likelihood) - this remains the same</span></span>
-<span><span class="co">#&gt;   for (i in 1:N) {</span></span>
-<span><span class="co">#&gt;     obs_mean[i] ~ multi_normal(psi[i], obs_var[i]);</span></span>
-<span><span class="co">#&gt;   }</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; generated quantities {</span></span>
-<span><span class="co">#&gt;   vector[N] log_lik;</span></span>
-<span><span class="co">#&gt;   for (i in 1:N) {</span></span>
-<span><span class="co">#&gt;     // The log-likelihood of the observed data. Used for leave-one-out cross-validation or other model comparison metrics.</span></span>
-<span><span class="co">#&gt;     log_lik[i] = multi_normal_lpdf(obs_mean[i] | psi[i], obs_var[i]);</span></span>
-<span><span class="co">#&gt;   }</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   //Derive marginal variance for Sur1 and CE</span></span>
-<span><span class="co">#&gt;   real sigSqSur1 = SigSqSur1onSur2 + square(bSur1onSur2)*sigSqSur2;</span></span>
-<span><span class="co">#&gt;   real sigSqClin = SigSqCEonSur1Sur2 +</span></span>
-<span><span class="co">#&gt;                     square(b1CEonSur1Sur2)*sigSqSur1 +</span></span>
-<span><span class="co">#&gt;                     square(b2CEonSur1Sur2)*sigSqSur2 +</span></span>
-<span><span class="co">#&gt;                     2.0 * b1CEonSur1Sur2 * b2CEonSur1Sur2 * bSur1onSur2 * sigSqSur2;</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   //R^2 for regression on CE~sur1 + sur2</span></span>
-<span><span class="co">#&gt;   real R2CEonSur1Sur2 = 1.0 - (SigSqCEonSur1Sur2/sigSqClin);</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   //RMSE for regression on CE~sur1 + sur2</span></span>
-<span><span class="co">#&gt;   real RMSECEonSur1Sur2 = sqrt(SigSqCEonSur1Sur2);</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; }</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span></span>
-<span><span class="co"># Run the MCMC sampling</span></span>
-<span></span>
-<span><span class="va">ncores</span><span class="op">&lt;-</span><span class="fl">4</span> <span class="co">#Number of cores to run chains parallely</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="va">ncores</span><span class="op">)</span> <span class="co">#necessary for setting parallel</span></span>
-<span><span class="va">num.iter</span><span class="op">=</span><span class="fl">40000</span> <span class="co">#number of iterations for each chain. You can change this number as you like. We recommend to have at least 40,000 iterations for the historical model fitting.</span></span>
-<span><span class="va">num.warmup</span><span class="op">=</span><span class="va">num.iter</span><span class="op">/</span><span class="fl">2</span> <span class="co">#number of warmup iterations. The default is half of the total number of iterations, but you can change this number as you like. We recommend to have at least 20,000 warmup iterations for the historical model fitting.</span></span>
-<span><span class="va">num.chains</span><span class="op">&lt;-</span><span class="va">ncores</span></span>
-<span><span class="va">num.thin</span><span class="op">&lt;-</span><span class="fl">1</span> <span class="co">#thinning number. The default is 1, which means no thinning. You can change this number as you like. We recommend to have no thinning for the historical model fitting.</span></span>
-<span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="co">#Change seed number as you like</span></span>
-<span></span>
-<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="va">mod</span><span class="op">$</span><span class="fu">sample</span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">data_sub</span>,</span>
-<span>  chains <span class="op">=</span> <span class="va">num.chains</span>,</span>
-<span>  parallel_chains <span class="op">=</span> <span class="va">num.chains</span>,</span>
-<span>  iter_warmup <span class="op">=</span> <span class="va">num.warmup</span>,</span>
-<span>  iter_sampling <span class="op">=</span> <span class="va">num.warmup</span>,</span>
-<span>  adapt_delta <span class="op">=</span> <span class="fl">0.99</span>,</span>
-<span>  max_treedepth<span class="op">=</span><span class="fl">25</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"."</span>,  <span class="co">#current working directory is where the STAN output will be saved.</span></span>
-<span>  output_basename<span class="op">=</span><span class="st">"historical_fit"</span> <span class="co">#the STAN files are saved with "historical_fit" as a base name</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; All 4 chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 118.0 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 144.6 seconds.</span></span>
-<span><span class="co">#&gt; 149.839 sec elapsed</span></span></code></pre>
-<p>Inspect the posterior distribution of all parameters in the
-historical model.:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">all_pars</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"alphaCEonSur1Sur2"</span> ,</span>
+<span><span class="va">historical_posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">historical_fit</span><span class="op">$</span><span class="va">posterior_samples</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"alphaCEonSur1Sur2"</span>,</span>
 <span>  <span class="st">"b1CEonSur1Sur2"</span>,</span>
 <span>  <span class="st">"b2CEonSur1Sur2"</span>,</span>
 <span>  <span class="st">"SigSqCEonSur1Sur2"</span>,</span>
@@ -405,142 +129,85 @@ historical model.:</p>
 <span>  <span class="st">"SigSqSur1onSur2"</span>,</span>
 <span>  <span class="st">"muSur2"</span>,</span>
 <span>  <span class="st">"sigSqSur2"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#first, we can draw the historical posterior samples if we'd like</span></span>
-<span><span class="va">historical_posterior</span><span class="op">&lt;-</span><span class="va">fit</span><span class="op">$</span><span class="fu">draws</span><span class="op">(</span>variables <span class="op">=</span> <span class="va">all_pars</span>, format <span class="op">=</span> <span class="st">"draws_df"</span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="co"># Generate the summary locally</span></span>
-<span><span class="va">summary_df</span> <span class="op">&lt;-</span> <span class="va">fit</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span>variables <span class="op">=</span> <span class="va">all_pars</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Load and print the tiny summary table</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">summary_df</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 × 10</span></span></span>
-<span><span class="co">#&gt;   variable         mean   median      sd     mad       q5     q95  rhat ess_bulk</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> alphaCEonSu… -<span style="color: #BB0000;">0.067</span><span style="color: #BB0000; text-decoration: underline;">1</span>  -<span style="color: #BB0000;">0.067</span><span style="color: #BB0000; text-decoration: underline;">0</span>  0.048<span style="text-decoration: underline;">2</span>  0.047<span style="text-decoration: underline;">1</span>  -<span style="color: #BB0000;">1.46</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span>  0.011<span style="text-decoration: underline;">9</span>  1.00   <span style="text-decoration: underline;">35</span>932.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> b1CEonSur1S… -<span style="color: #BB0000;">0.295</span>   -<span style="color: #BB0000;">0.296</span>   0.063<span style="text-decoration: underline;">9</span>  0.062<span style="text-decoration: underline;">4</span>  -<span style="color: #BB0000;">3.98</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> -<span style="color: #BB0000;">0.189</span>   1.00   <span style="text-decoration: underline;">34</span>155.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> b2CEonSur1S… -<span style="color: #BB0000;">0.035</span><span style="color: #BB0000; text-decoration: underline;">3</span>  -<span style="color: #BB0000;">0.035</span><span style="color: #BB0000; text-decoration: underline;">3</span>  0.004<span style="text-decoration: underline;">95</span> 0.004<span style="text-decoration: underline;">89</span> -<span style="color: #BB0000;">4.33</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">0.027</span><span style="color: #BB0000; text-decoration: underline;">1</span>  1.00   <span style="text-decoration: underline;">46</span>408.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> SigSqCEonSu…  0.004<span style="text-decoration: underline;">04</span>  0.002<span style="text-decoration: underline;">69</span> 0.004<span style="text-decoration: underline;">11</span> 0.002<span style="text-decoration: underline;">83</span>  3.18<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span>  0.012<span style="text-decoration: underline;">3</span>  1.00   <span style="text-decoration: underline;">26</span>435.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> alphaSur1on…  0.643    0.643   0.088<span style="text-decoration: underline;">0</span>  0.086<span style="text-decoration: underline;">8</span>   5.00<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span>  0.788   1.00   <span style="text-decoration: underline;">16</span>787.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> bSur1onSur2   0.023<span style="text-decoration: underline;">2</span>   0.023<span style="text-decoration: underline;">3</span>  0.015<span style="text-decoration: underline;">9</span>  0.015<span style="text-decoration: underline;">6</span>  -<span style="color: #BB0000;">3.13</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span>  0.049<span style="text-decoration: underline;">1</span>  1.00   <span style="text-decoration: underline;">15</span>326.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> SigSqSur1on…  0.254    0.242   0.079<span style="text-decoration: underline;">4</span>  0.073<span style="text-decoration: underline;">3</span>   1.46<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span>  0.401   1.00   <span style="text-decoration: underline;">22</span>123.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> muSur2       -<span style="color: #BB0000;">2.49</span>    -<span style="color: #BB0000;">2.49</span>    0.772   0.766   -<span style="color: #BB0000;">3.77</span><span style="color: #949494;">e</span>+0 -<span style="color: #BB0000;">1.24</span>    1.00    <span style="text-decoration: underline;">9</span>379.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">9</span> sigSqSur2    30.0     29.2     6.47    6.15     2.09<span style="color: #949494;">e</span>+1 41.8     1.00   <span style="text-decoration: underline;">14</span>417.</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: ess_tail &lt;dbl&gt;</span></span></span></code></pre></div>
+<span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<p>The package’s <code>historical_posterior</code> dataset contains
+compatible precomputed draws from this specification with trial 1 held
+out.</p>
 </div>
 <div class="section level2">
-<h2 id="estimating-posterior-distribution-of-mbe">Estimating Posterior Distribution of MBE<a class="anchor" aria-label="anchor" href="#estimating-posterior-distribution-of-mbe"></a>
+<h2 id="update-the-mbe">Update the MBE<a class="anchor" aria-label="anchor" href="#update-the-mbe"></a>
 </h2>
-<p>Now that we have historical posteriors, we use the <code>MBE</code>
-function to estimate the posterior distribution of MBE for a new trial.
-We will use the first trial in the <code>trial_sim_dat</code> dataset as
-our new trial and use the remaining trials to fit the historical
-model.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Put the new trial into the appropriate format</span></span>
-<span></span>
-<span><span class="va">one_sim_dat</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  </span>
-<span><span class="co"># treatment effect on CE</span></span>
-<span>ClnEst<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span>ClnSE<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span></span>
-<span><span class="co"># treatment effect on chronic slope</span></span>
-<span>Sur1Est<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur1_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span>Sur1SE<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur1_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span></span>
-<span><span class="co"># treatment effect on acute slope</span></span>
-<span>Sur2Est<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur2_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span>Sur2SE<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur2_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span></span>
-<span><span class="co"># correlation between CE and chronic slope</span></span>
-<span>R1Clin<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_CE_Sur1</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span></span>
-<span><span class="co"># correlation between CE and acute slope</span></span>
-<span>R2Clin<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_CE_Sur2</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span></span>
-<span><span class="co"># correlation between chronic slope and acute slope</span></span>
-<span>R12<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_Sur1_Sur2</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<p>Construct the new-trial input from the held-out row:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">new_trial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  ClnEst <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  ClnSE <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  Sur1Est <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur1_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  Sur1SE <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur1_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  Sur2Est <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur2_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  Sur2SE <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur2_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  R1Clin <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_CE_Sur1</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  R2Clin <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_CE_Sur2</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  R12 <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_Sur1_Sur2</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Then update the historical distribution with the new-trial
+estimates:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">mbe_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MBE.html">MBE</a></span><span class="op">(</span></span>
+<span>  mcmc_dat <span class="op">=</span> <span class="va">historical_posterior</span>,</span>
+<span>  sample_dat <span class="op">=</span> <span class="va">new_trial</span>,</span>
+<span>  diffuse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  diffuse_se <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  intercept0 <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span></span>
-<span><span class="co">#Estimate MBE</span></span>
-<span><span class="va">MBE_distribution</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/MBE.html">MBE</a></span><span class="op">(</span></span>
-<span>mcmc_dat <span class="op">=</span> <span class="va">historical_posterior</span>,</span>
-<span>sample_dat<span class="op">=</span><span class="va">one_sim_dat</span>,</span>
-<span>diffuse_se <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>diffuse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>intercept0 <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>In the above <code><a href="../reference/MBE.html">MBE()</a></code> function, we set
-<code>intercept0=TRUE</code>, which centers the distribution of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>
-at zero (the <code>alphaCEonSur1Sur2</code> column in
-<code>historical_posterior</code>). We use a diffuse prior for the two
-surrogate effects (<code>diffuse=TRUE</code> and
-<code>diffuse_se=100</code>) to avoid strong prior information about
-those effects. The diffuse prior is bivariate normal with mean zero and
-marginal standard deviation 100. The <code><a href="../reference/MBE.html">MBE()</a></code> function returns
-the posterior distribution stored in <code>MBE_distribution</code>.</p>
-<p>The posterior distribution is trivariate normal with mean and
-variance as below:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># print out mean</span></span>
-<span><span class="va">MBE_distribution</span><span class="op">$</span><span class="va">post_mean</span></span>
+<span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">post_mean</span></span>
 <span><span class="co">#&gt;                  [,1]</span></span>
 <span><span class="co">#&gt; clinical   -0.1013294</span></span>
 <span><span class="co">#&gt; surrogate1  0.6837417</span></span>
 <span><span class="co">#&gt; surrogate2 -5.4760921</span></span>
-<span></span>
-<span><span class="co"># print out variance</span></span>
-<span><span class="va">MBE_distribution</span><span class="op">$</span><span class="va">post_var</span></span>
+<span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">post_var</span></span>
 <span><span class="co">#&gt;               clinical   surrogate1   surrogate2</span></span>
 <span><span class="co">#&gt; clinical    0.01196417 -0.019592518 -0.091338433</span></span>
 <span><span class="co">#&gt; surrogate1 -0.01959252  0.060139164 -0.009146439</span></span>
-<span><span class="co">#&gt; surrogate2 -0.09133843 -0.009146439  3.981621682</span></span></code></pre></div>
-<p>Thus, the posterior distribution of MBE on the treatment effect on
-the clinical endpoint is normal with mean -0.101 and variance 0.012.
-Similarly, the posterior distribution of MBE on the treatment effect on
-the chronic slope is $N($0.684,0.060
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo stretchy="false" form="postfix">)</mo><annotation encoding="application/x-tex">)</annotation></semantics></math>.
-The posterior distribution of MBE on the treatment effect on the acute
-slope
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo stretchy="false" form="prefix">(</mo></mrow><annotation encoding="application/x-tex">N(</annotation></semantics></math>-5.476,
-3.982
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo stretchy="false" form="postfix">)</mo><annotation encoding="application/x-tex">)</annotation></semantics></math>.</p>
-<p>The posterior distribution samples can also be obtained with
-<code>MBE_distribution$post_psi0</code>, which has the same number of
-rows as the number of MCMC samples in the historical model fitting. Each
-row is a sample from the posterior distribution of MBE, and each column
-corresponds to the treatment effect on the clinical endpoint, chronic
-slope, and acute slope, respectively.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">MBE_distribution</span><span class="op">$</span><span class="va">post_psi0</span><span class="op">)</span></span>
+<span><span class="co">#&gt; surrogate2 -0.09133843 -0.009146439  3.981621682</span></span>
+<span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">post_quantiles_clinical</span></span>
+<span><span class="co">#&gt; quantile_0.025  quantile_0.05   quantile_0.1  quantile_0.25   quantile_0.5 </span></span>
+<span><span class="co">#&gt;    -0.31485836    -0.28123031    -0.24074706    -0.17402273    -0.09799387 </span></span>
+<span><span class="co">#&gt;  quantile_0.75   quantile_0.9  quantile_0.95 quantile_0.975 </span></span>
+<span><span class="co">#&gt;    -0.02681263     0.03707755     0.07905239     0.12341721</span></span>
+<span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">importance_diagnostics</span></span>
+<span><span class="co">#&gt;          effective_sample_size relative_effective_sample_size </span></span>
+<span><span class="co">#&gt;                   3.943574e+03                   9.858936e-01 </span></span>
+<span><span class="co">#&gt;      maximum_normalized_weight </span></span>
+<span><span class="co">#&gt;                   3.262557e-04</span></span></code></pre></div>
+<p>The rows of <code>post_mean</code> and <code>post_var</code> are
+ordered as the clinical endpoint, surrogate 1, and surrogate 2. The
+posterior is a mixture over historical-model draws;
+<code>post_mean</code> and <code>post_var</code> summarize its first two
+moments rather than asserting that the mixture itself is a single
+multivariate normal distribution.</p>
+<p>Posterior samples and normalized importance weights are also
+available:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">post_psi0</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         clinical surrogate1 surrogate2</span></span>
-<span><span class="co">#&gt; [1,] -0.01742418  0.4358344  -7.647448</span></span>
-<span><span class="co">#&gt; [2,] -0.05070114  0.3625249  -5.290546</span></span>
-<span><span class="co">#&gt; [3,] -0.21549799  0.9284195  -4.653444</span></span>
-<span><span class="co">#&gt; [4,] -0.22270912  1.0586468  -4.846612</span></span>
-<span><span class="co">#&gt; [5,] -0.02885444  0.6432777  -8.217527</span></span>
-<span><span class="co">#&gt; [6,] -0.22661395  0.9851503  -4.977536</span></span></code></pre></div>
-<p>The <code>MBE_distribution$weight_data</code> is a data.table which
-contains unweighted posterior draws and the associated weights for those
-draws. The <code>MBE_distribution$weight_data</code> has the following
-columns.:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">MBE_distribution</span><span class="op">$</span><span class="va">weight_data</span><span class="op">)</span></span>
-<span><span class="co">#&gt;       clinical surrogate1 surrogate2       norm_w         w</span></span>
-<span><span class="co">#&gt;          &lt;num&gt;      &lt;num&gt;      &lt;num&gt;        &lt;num&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: -0.08741164  0.8217200 -10.292497 0.0002672069 0.8190106</span></span>
-<span><span class="co">#&gt; 2: -0.21601529  0.8178430  -3.292377 0.0002656093 0.8141140</span></span>
-<span><span class="co">#&gt; 3: -0.20075066  0.7338019  -5.747120 0.0002099456 0.6435002</span></span>
-<span><span class="co">#&gt; 4: -0.07627662  0.5728434  -4.210812 0.0002687302 0.8236798</span></span>
-<span><span class="co">#&gt; 5:  0.12683662  0.1595884  -4.466493 0.0002484868 0.7616320</span></span>
-<span><span class="co">#&gt; 6: -0.18528890  0.7034575  -5.451308 0.0002695261 0.8261194</span></span></code></pre></div>
-<p>Please use the <code>norm_w</code> (normalized weight) to obtain the
-proper posterior distribution. The <code>w</code> is unnormalized
-weight.</p>
+<span><span class="co">#&gt; [1,]  0.08370764  0.3990721  -7.852443</span></span>
+<span><span class="co">#&gt; [2,] -0.11376674  0.8685964  -5.930684</span></span>
+<span><span class="co">#&gt; [3,] -0.17713234  0.7999603  -7.862937</span></span>
+<span><span class="co">#&gt; [4,] -0.02946255  0.2816377  -5.191110</span></span>
+<span><span class="co">#&gt; [5,]  0.06848906  0.3584364  -5.859788</span></span>
+<span><span class="co">#&gt; [6,] -0.17410827  0.7329111  -2.059854</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">weight_data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"clinical"</span>, <span class="st">"surrogate1"</span>, <span class="st">"surrogate2"</span>, <span class="st">"norm_w"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       clinical surrogate1 surrogate2       norm_w</span></span>
+<span><span class="co">#&gt;          &lt;num&gt;      &lt;num&gt;      &lt;num&gt;        &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: -0.10720750  0.7560167  -7.127875 0.0002672069</span></span>
+<span><span class="co">#&gt; 2:  0.01877278  0.6573292  -7.300413 0.0002656093</span></span>
+<span><span class="co">#&gt; 3: -0.11400997  0.8274257  -4.235286 0.0002099456</span></span>
+<span><span class="co">#&gt; 4: -0.21420967  1.0618332  -4.698719 0.0002687302</span></span>
+<span><span class="co">#&gt; 5: -0.04365231  0.1859734  -3.115996 0.0002484868</span></span>
+<span><span class="co">#&gt; 6: -0.14840752  0.6815660  -3.572072 0.0002695261</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

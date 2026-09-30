@@ -18,12 +18,13 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/interim-analysis-example.html">Interim Analysis Example</a></li>
-    <li><a class="dropdown-item" href="../articles/MBE-manuscript-to-code.html">Mapping the MBE manuscript to Rcode</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/MBE-manuscript-to-code.html">Mapping the MBE Manuscript to the Package</a></li>
     <li><a class="dropdown-item" href="../articles/simulation-example.html">Simulation Example</a></li>
+    <li><a class="dropdown-item" href="../articles/interim-analysis-example.html">Interim Analysis Example</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/hyejung0/MBE/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -36,7 +37,7 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="model-fitting-and-updating">Model fitting and updating<a class="anchor" aria-label="anchor" href="#model-fitting-and-updating"></a></h2>
 
 
 
@@ -47,13 +48,6 @@
 
       <dl><dt>
 
-          <code><a href="MBE.html">MBE()</a></code>
-
-        </dt>
-        <dd>Estimate an MBE Posterior with Two Surrogate Endpoints</dd>
-
-        <dt>
-
           <code><a href="historical_model_fit_2surrogates.html">historical_model_fit_2surrogates()</a></code>
 
         </dt>
@@ -61,10 +55,56 @@
 
         <dt>
 
+          <code><a href="MBE.html">MBE()</a></code>
+
+        </dt>
+        <dd>Estimate an MBE Posterior with Two Surrogate Endpoints</dd>
+      </dl></div><div class="section level2">
+      <h2 id="historical-model-assessment">Historical-model assessment<a class="anchor" aria-label="anchor" href="#historical-model-assessment"></a></h2>
+
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="fit_loo_historical_models.html">fit_loo_historical_models()</a></code>
+
+        </dt>
+        <dd>Fit Random-Intercept Inverse-Gamma Models for Leave-One-Out Assessment</dd>
+
+        <dt>
+
+          <code><a href="loo_cv_model_assessment.html">loo_cv_model_assessment()</a></code>
+
+        </dt>
+        <dd>Calculate LOO-CV RMSE and Tolerance-Interval Coverage</dd>
+      </dl></div><div class="section level2">
+      <h2 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a></h2>
+
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
           <code><a href="historical_posterior.html">historical_posterior</a></code>
 
         </dt>
         <dd>Historical Posterior for Two Surrogate Endpoints</dd>
+
+        <dt>
+
+          <code><a href="trial_sim_dat.html">trial_sim_dat</a></code>
+
+        </dt>
+        <dd>Simulated Trial-Level Data for Two Surrogate Endpoints</dd>
 
         <dt>
 
@@ -75,12 +115,20 @@
 
         <dt>
 
-          <code><a href="trial_sim_dat.html">trial_sim_dat</a></code>
+          <code><a href="loo_assessment_summary.html">loo_assessment_summary</a></code>
 
         </dt>
-        <dd>Simulated Trial-Level Data for Two Surrogate Endpoints</dd>
+        <dd>Aggregate Leave-One-Out Historical-Model Assessment</dd>
+
+        <dt>
+
+          <code><a href="loo_assessment_by_trial.html">loo_assessment_by_trial</a></code>
+
+        </dt>
+        <dd>Trial-Level Leave-One-Out Historical-Model Assessment</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

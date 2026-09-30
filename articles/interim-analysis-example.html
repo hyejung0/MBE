@@ -33,9 +33,9 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/interim-analysis-example.html">Interim Analysis Example</a></li>
-    <li><a class="dropdown-item" href="../articles/MBE-manuscript-to-code.html">Mapping the MBE manuscript to Rcode</a></li>
+<li><a class="dropdown-item" href="../articles/MBE-manuscript-to-code.html">Mapping the MBE Manuscript to the Package</a></li>
     <li><a class="dropdown-item" href="../articles/simulation-example.html">Simulation Example</a></li>
+    <li><a class="dropdown-item" href="../articles/interim-analysis-example.html">Interim Analysis Example</a></li>
   </ul>
 </li>
       </ul>
@@ -43,6 +43,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/hyejung0/MBE/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -59,32 +60,64 @@
       <h1>Interim Analysis Example</h1>
             
       
-
+      <small class="dont-index">Source: <a href="https://github.com/hyejung0/MBE/blob/main/vignettes/interim-analysis-example.Rmd" class="external-link"><code>vignettes/interim-analysis-example.Rmd</code></a></small>
       <div class="d-none name"><code>interim-analysis-example.Rmd</code></div>
     </div>
 
     
     
+<p><code>interim_sim_dat</code> contains simulated interim analyses for
+eight scenarios. Each row has one clinical endpoint and exactly two
+surrogate endpoints: chronic (<code>Sur1</code>) and acute
+(<code>Sur2</code>) eGFR slopes. Some early analyses have missing
+clinical estimates because too few clinical events had occurred; those
+rows are not yet eligible for an MBE update.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://hyejung0.github.io/MBE/">MBE</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'data.table'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     %notin%</span></span></code></pre></div>
-<p>We use the simulated data provided in the package to demonstrate the
-input structure for an interim MBE analysis. The packaged data contain
-one clinical endpoint and exactly two surrogate endpoints: chronic
-(<code>Sur1</code>) and acute (<code>Sur2</code>) eGFR slopes. No third
-surrogate is used. The simulation scenarios are summarized in the
-documentation for <code>interim_sim_dat</code>.</p>
+<code class="sourceCode R"><span><span class="va">new_trial_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"ClnEst"</span>, <span class="st">"ClnSE"</span>,</span>
+<span>  <span class="st">"Sur1Est"</span>, <span class="st">"Sur1SE"</span>,</span>
+<span>  <span class="st">"Sur2Est"</span>, <span class="st">"Sur2SE"</span>,</span>
+<span>  <span class="st">"R1Clin"</span>, <span class="st">"R2Clin"</span>, <span class="st">"R12"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">interim_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">interim_sim_dat</span><span class="op">)</span></span>
+<span><span class="va">eligible</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">interim_data</span><span class="op">[</span>, <span class="va">new_trial_fields</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">eligible</span><span class="op">)</span></span>
+<span><span class="co">#&gt; eligible</span></span>
+<span><span class="co">#&gt; FALSE  TRUE </span></span>
+<span><span class="co">#&gt;   123   405</span></span></code></pre></div>
+<p>The first complete interim analysis can be updated using the
+historical posterior supplied with the package:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"interim_sim_dat"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">interim_sim_dat</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "case"           "analysis.month" "R1Clin"         "R2Clin"        </span></span>
-<span><span class="co">#&gt;  [5] "R12"            "ClnEst"         "ClnSE"          "Sur2Est"       </span></span>
-<span><span class="co">#&gt;  [9] "Sur2SE"         "Sur1Est"        "Sur1SE"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">first_complete</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">eligible</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="va">new_trial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">interim_data</span><span class="op">[</span><span class="va">first_complete</span>, <span class="va">new_trial_fields</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">interim_mbe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MBE.html">MBE</a></span><span class="op">(</span></span>
+<span>  mcmc_dat <span class="op">=</span> <span class="va">historical_posterior</span>,</span>
+<span>  sample_dat <span class="op">=</span> <span class="va">new_trial</span>,</span>
+<span>  diffuse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  diffuse_se <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  intercept0 <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">interim_data</span><span class="op">[</span><span class="va">first_complete</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"case"</span>, <span class="st">"analysis.month"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;    case analysis.month</span></span>
+<span><span class="co">#&gt; 19    1             25</span></span>
+<span><span class="va">interim_mbe</span><span class="op">$</span><span class="va">post_mean</span></span>
+<span><span class="co">#&gt;                   [,1]</span></span>
+<span><span class="co">#&gt; clinical    0.00675136</span></span>
+<span><span class="co">#&gt; surrogate1 -0.00804139</span></span>
+<span><span class="co">#&gt; surrogate2 -0.14778649</span></span>
+<span><span class="va">interim_mbe</span><span class="op">$</span><span class="va">post_quantiles_clinical</span></span>
+<span><span class="co">#&gt; quantile_0.025  quantile_0.05   quantile_0.1  quantile_0.25   quantile_0.5 </span></span>
+<span><span class="co">#&gt;   -0.304055269   -0.252149305   -0.195916295   -0.100410823    0.007711854 </span></span>
+<span><span class="co">#&gt;  quantile_0.75   quantile_0.9  quantile_0.95 quantile_0.975 </span></span>
+<span><span class="co">#&gt;    0.113076436    0.210184273    0.270522806    0.329201746</span></span></code></pre></div>
+<p>For a sequence of interim analyses, repeat the construction of
+<code>new_trial</code> for each complete row. The historical posterior
+can be reused, but the treatment effect estimates, standard errors, and
+correlations must all correspond to the same interim time point.</p>
   </main>
 </div>
 

@@ -142,6 +142,15 @@ densities: \$\$\gamma\_{i, 2} \sim N(\mu_2, \sigma_2^2)\$\$
 This function fits the model using MCMC sampling on historical RCTs and
 returns the posterior distribution of the model parameters.
 
+The `loo` and `waic` components use the Stan `log_lik` values
+conditional on each trial's latent treatment-effect vector. They
+therefore describe conditional model fit. For prediction to a completely
+held-out trial, use
+[`fit_loo_historical_models()`](https://hyejung0.github.io/MBE/reference/fit_loo_historical_models.md)
+and
+[`loo_cv_model_assessment()`](https://hyejung0.github.io/MBE/reference/loo_cv_model_assessment.md),
+which refit the model after removing each trial.
+
 ## Examples
 
 ``` r
