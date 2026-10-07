@@ -37,8 +37,21 @@ A data frame with 1 row and 4 variables:
 
 ## Source
 
-Derived from `trial_sim_dat` using
-[`fit_loo_historical_models()`](https://hyejung0.github.io/MBE/reference/fit_loo_historical_models.md)
-and
-[`loo_cv_model_assessment()`](https://hyejung0.github.io/MBE/reference/loo_cv_model_assessment.md)
-with seed 2026.
+Archived 66-fit analysis of `trial_sim_dat` with seed 2026, saved in
+`data-raw/loo-random-inverse-gamma/loo_assessment.rds`. See the
+preparation script `data-raw/loo_assessment.R` in the source repository.
+
+## Details
+
+Archived results from the earlier development assessment. RMSE uses
+full-carryover MBE posterior means, incorporating the held-out clinical
+estimate. Coverage used empirical-percentile indicators and an
+unweighted surrogate-update simulation. The current
+[`clinical_predictive_distribution()`](https://hyejung0.github.io/MBE/reference/clinical_predictive_distribution.md)
+uses joint conditioning and surrogate-likelihood weights, and
+[`tolerance_interval_coverage()`](https://hyejung0.github.io/MBE/reference/tolerance_interval_coverage.md)
+checks inclusive quantile bounds. This table is retained unchanged and
+is not a result of the current coverage function. These are internal
+cross-validation results on simulated data, not external validation.
+Model specification here describes only this archived dataset; the
+current assessment functions do not prescribe an intercept or prior.

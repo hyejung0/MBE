@@ -9,11 +9,13 @@
 
 ## Historical-model assessment
 
-- [`fit_loo_historical_models()`](https://hyejung0.github.io/MBE/reference/fit_loo_historical_models.md)
-  : Fit Random-Intercept Inverse-Gamma Models for Leave-One-Out
-  Assessment
-- [`loo_cv_model_assessment()`](https://hyejung0.github.io/MBE/reference/loo_cv_model_assessment.md)
-  : Calculate LOO-CV RMSE and Tolerance-Interval Coverage
+- [`loo_cv_rmse()`](https://hyejung0.github.io/MBE/reference/loo_cv_rmse.md)
+  : Calculate RMSE from Paired Observed and Estimated Clinical Effects
+- [`clinical_predictive_distribution()`](https://hyejung0.github.io/MBE/reference/clinical_predictive_distribution.md)
+  : Predict an Observed Clinical Effect from Two Observed Surrogate
+  Effects
+- [`tolerance_interval_coverage()`](https://hyejung0.github.io/MBE/reference/tolerance_interval_coverage.md)
+  : Check Capture of an Observed Clinical Effect in Predictive Intervals
 
 ## Example data
 
@@ -21,8 +23,6 @@
   : Historical Posterior for Two Surrogate Endpoints
 - [`trial_sim_dat`](https://hyejung0.github.io/MBE/reference/trial_sim_dat.md)
   : Simulated Trial-Level Data for Two Surrogate Endpoints
-- [`interim_sim_dat`](https://hyejung0.github.io/MBE/reference/interim_sim_dat.md)
-  : Simulated Data for Interim Analysis
 - [`loo_assessment_summary`](https://hyejung0.github.io/MBE/reference/loo_assessment_summary.md)
   : Aggregate Leave-One-Out Historical-Model Assessment
 - [`loo_assessment_by_trial`](https://hyejung0.github.io/MBE/reference/loo_assessment_by_trial.md)

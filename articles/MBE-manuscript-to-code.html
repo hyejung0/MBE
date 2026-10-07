@@ -35,9 +35,9 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/MBE-manuscript-to-code.html">Mapping the MBE Manuscript to the Package</a></li>
     <li><a class="dropdown-item" href="../articles/simulation-example.html">Simulation Example</a></li>
-    <li><a class="dropdown-item" href="../articles/interim-analysis-example.html">Interim Analysis Example</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -85,8 +85,9 @@ acute eGFR slopes.</p>
 <div class="section level2">
 <h2 id="input-data">Input data<a class="anchor" aria-label="anchor" href="#input-data"></a>
 </h2>
-<p><code><a href="../reference/historical_model_fit_2surrogates.html">historical_model_fit_2surrogates()</a></code> expects one row per
-historical trial and the following nine columns:</p>
+<p>The historical dataset should be either a <code>data.table</code> or
+<code>data.frame</code> with the columns names exactly as described
+below.:</p>
 <table class="table">
 <colgroup>
 <col width="50%">
@@ -98,37 +99,52 @@ historical trial and the following nine columns:</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">
-<code>CE_est</code>, <code>CE_se</code>
-</td>
-<td align="left">Clinical treatment-effect estimate and standard
-error</td>
+<td align="left"><code>CE_est</code></td>
+<td align="left">Estimate of the treatment effect on the clinical
+endpoint</td>
 </tr>
 <tr class="even">
-<td align="left">
-<code>Sur1_est</code>, <code>Sur1_se</code>
-</td>
-<td align="left">Surrogate 1 estimate and standard error</td>
+<td align="left"><code>CE_se</code></td>
+<td align="left">Standard error of the estimated treatment effect on the
+clinical endpoint</td>
 </tr>
 <tr class="odd">
-<td align="left">
-<code>Sur2_est</code>, <code>Sur2_se</code>
-</td>
-<td align="left">Surrogate 2 estimate and standard error</td>
+<td align="left"><code>Sur1_est</code></td>
+<td align="left">Estimate of the treatment effect on the first surrogate
+endpoint</td>
 </tr>
 <tr class="even">
+<td align="left"><code>Sur1_se</code></td>
+<td align="left">Standard error of the estimated treatment effect on the
+first surrogate endpoint</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>Sur2_est</code></td>
+<td align="left">Estimate of the treatment effect on the second
+surrogate endpoint</td>
+</tr>
+<tr class="even">
+<td align="left"><code>Sur2_se</code></td>
+<td align="left">Standard error of the estimated treatment effect on the
+second surrogate endpoint</td>
+</tr>
+<tr class="odd">
 <td align="left"><code>Cor_CE_Sur1</code></td>
-<td align="left">Sampling correlation between the clinical endpoint and
-surrogate 1</td>
-</tr>
-<tr class="odd">
-<td align="left"><code>Cor_CE_Sur2</code></td>
-<td align="left">Sampling correlation between the clinical endpoint and
-surrogate 2</td>
+<td align="left">Sampling correlation between <code>CE_est</code> and
+<code>Sur1_est</code>
+</td>
 </tr>
 <tr class="even">
+<td align="left"><code>Cor_CE_Sur2</code></td>
+<td align="left">Sampling correlation between <code>CE_est</code> and
+<code>Sur2_est</code>
+</td>
+</tr>
+<tr class="odd">
 <td align="left"><code>Cor_Sur1_Sur2</code></td>
-<td align="left">Sampling correlation between the two surrogates</td>
+<td align="left">Sampling correlation between <code>Sur1_est</code> and
+<code>Sur2_est</code>
+</td>
 </tr>
 </tbody>
 </table>
@@ -141,18 +157,24 @@ motivating analysis are not distributed with the package.</p>
 </h2>
 <p>The historical model can use a fixed or estimated clinical intercept
 and either half-normal or inverse-gamma priors for its uncertainty
-parameters. The manuscript’s initial specification uses an estimated
-(random) intercept and inverse-gamma priors. The first simulated trial
-can be held out as follows:</p>
+parameters. The manuscript’s initial specification uses an random
+intercept
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>
+and inverse-gamma priors on the variance parameters. The first simulated
+trial can be held out as follows:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">historical_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/historical_model_fit_2surrogates.html">historical_model_fit_2surrogates</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="op">]</span>,</span>
-<span>  random_intercept <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  prior_for_uncertainty <span class="op">=</span> <span class="st">"inverse_gamma"</span>,</span>
-<span>  nchains <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  ncores <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  niter <span class="op">=</span> <span class="fl">2000</span>,</span>
-<span>  nwarmup <span class="op">=</span> <span class="fl">1000</span>,</span>
+<code class="sourceCode R"><span><span class="va">historical_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"CE_est"</span>, <span class="st">"CE_se"</span>, <span class="st">"Sur1_est"</span>, <span class="st">"Sur1_se"</span>, <span class="st">"Sur2_est"</span>, <span class="st">"Sur2_se"</span>,</span>
+<span>  <span class="st">"Cor_CE_Sur1"</span>, <span class="st">"Cor_CE_Sur2"</span>, <span class="st">"Cor_Sur1_Sur2"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">historical_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/historical_model_fit_2surrogates.html">historical_model_fit_2surrogates</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">trial_sim_dat</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="va">historical_fields</span><span class="op">]</span>,</span>
+<span>  random_intercept <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co">#allow for a random intercept. Set to FALSE to fix the intercept at zero.</span></span>
+<span>  prior_for_uncertainty <span class="op">=</span> <span class="st">"inverse_gamma"</span>, <span class="co">#prior for the variance parameters. If set as "half_normal", then half normal distribution will be modeled on the standard deviation parameters.</span></span>
+<span>  nchains <span class="op">=</span> <span class="fl">4</span>, <span class="co">#Number of chains</span></span>
+<span>  ncores <span class="op">=</span> <span class="fl">4</span>, <span class="co">#Number of cores for parallel computation. One core per chain is recommended. If set to 1, then all chains will be run sequentially on a single core.</span></span>
+<span>  niter <span class="op">=</span> <span class="fl">2000</span>, <span class="co">#Number of post-warmup samples to save for each chain</span></span>
+<span>  nwarmup <span class="op">=</span> <span class="fl">1000</span>, <span class="co">#Number of warmup samples to discard for each chain</span></span>
 <span>  seed <span class="op">=</span> <span class="fl">2026</span>,</span>
 <span>  adapt_delta <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  max_treedepth <span class="op">=</span> <span class="fl">15</span></span>
@@ -170,12 +192,78 @@ checking convergence and sampler warnings.</p>
 </h2>
 <p>The package includes <code>historical_posterior</code>, a compact set
 of compatible draws from the random-intercept, inverse-gamma model with
-trial 1 held out. The held-out trial is converted to the naming
-convention used by <code><a href="../reference/MBE.html">MBE()</a></code>:</p>
+trial 1 held out.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"historical_posterior"</span>, package <span class="op">=</span> <span class="st">"MBE"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">new_trial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">historical_posterior</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    alphaCEonSur1Sur2 b1CEonSur1Sur2 b2CEonSur1Sur2 SigSqCEonSur1Sur2</span></span>
+<span><span class="co">#&gt;                &lt;num&gt;          &lt;num&gt;          &lt;num&gt;             &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:      -0.060657298     -0.2923658    -0.02577700      0.0028743436</span></span>
+<span><span class="co">#&gt; 2:      -0.050034948     -0.3666507    -0.02581211      0.0056530292</span></span>
+<span><span class="co">#&gt; 3:      -0.021949313     -0.3229995    -0.02961769      0.0057219772</span></span>
+<span><span class="co">#&gt; 4:      -0.003291189     -0.3301485    -0.02263008      0.0004533587</span></span>
+<span><span class="co">#&gt; 5:      -0.045876147     -0.3155187    -0.02901523      0.0026134902</span></span>
+<span><span class="co">#&gt; 6:      -0.023826164     -0.3730042    -0.02878529      0.0020488892</span></span>
+<span><span class="co">#&gt;    alphaSur1onSur2  bSur1onSur2 SigSqSur1onSur2    muSur2 sigSqSur2</span></span>
+<span><span class="co">#&gt;              &lt;num&gt;        &lt;num&gt;           &lt;num&gt;     &lt;num&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:       0.4020287 -0.015995178       0.5994535 -1.708699  51.72702</span></span>
+<span><span class="co">#&gt; 2:       0.3225021  0.002805734       0.5720484 -2.771109  47.25131</span></span>
+<span><span class="co">#&gt; 3:       0.4069362  0.022673745       0.5007477 -2.547149  66.52862</span></span>
+<span><span class="co">#&gt; 4:       0.3851224  0.022911445       0.5374545 -1.564569  53.40327</span></span>
+<span><span class="co">#&gt; 5:       0.4598896  0.019820946       0.3365655 -1.126421  47.99716</span></span>
+<span><span class="co">#&gt; 6:       0.4878410  0.029780083       0.3707338 -1.543360  54.41675</span></span></code></pre></div>
+<p>The column names of this posterior datasets are different from what’s
+used in the manuscript. Here’s the mapping:</p>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Manuscript name</th>
+<th align="left">Programming name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math></td>
+<td align="left"><code>alphaCEonSur1Sur2</code></td>
+</tr>
+<tr class="even">
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\beta_1</annotation></semantics></math></td>
+<td align="left"><code>b1CEonSur1Sur2</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>2</mn></msub><annotation encoding="application/x-tex">\beta_2</annotation></semantics></math></td>
+<td align="left"><code>b2CEonSur1Sur2</code></td>
+</tr>
+<tr class="even">
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>λ</mi><mi>θ</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\lambda^2_\theta</annotation></semantics></math></td>
+<td align="left"><code>SigSqCEonSur1Sur2</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\alpha_0</annotation></semantics></math></td>
+<td align="left"><code>alphaSur1onSur2</code></td>
+</tr>
+<tr class="even">
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\alpha_1</annotation></semantics></math></td>
+<td align="left"><code>bSur1onSur2</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>λ</mi><mi>γ</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\lambda^2_\gamma</annotation></semantics></math></td>
+<td align="left"><code>SigSqSur1onSur2</code></td>
+</tr>
+<tr class="even">
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>μ</mi><mrow><mi>γ</mi><mn>2</mn></mrow></msub><annotation encoding="application/x-tex">\mu_{\gamma 2}</annotation></semantics></math></td>
+<td align="left"><code>muSur2</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>σ</mi><mrow><mi>γ</mi><mn>2</mn></mrow><mn>2</mn></msubsup><annotation encoding="application/x-tex">\sigma^2_{\gamma 2}</annotation></semantics></math></td>
+<td align="left"><code>sigSqSur2</code></td>
+</tr>
+</tbody>
+</table>
+<p>This posterior distribution is used as prior for estimating the
+treatment effect on the clinical endpoint for the held-out trial. The
+held-out trial is converted to the naming convention used by
+<code><a href="../reference/MBE.html">MBE()</a></code>:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">new_trial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  ClnEst <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>  ClnSE <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>  Sur1Est <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur1_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
@@ -217,64 +305,237 @@ convention used by <code><a href="../reference/MBE.html">MBE()</a></code>:</p>
 <span><span class="co">#&gt;      maximum_normalized_weight </span></span>
 <span><span class="co">#&gt;                   3.262557e-04</span></span></code></pre></div>
 <p><code>post_mean</code> and <code>post_var</code> are the mean and
-covariance of the updated posterior mixture. <code>post_psi0</code>
-contains resampled posterior draws in the fixed order clinical endpoint,
-surrogate 1, and surrogate 2. <code>weight_data$norm_w</code> contains
-the normalized importance weights. <code>importance_diagnostics</code>
-helps identify whether those weights are concentrated in only a small
-number of historical draws.</p>
+covariance of the updated posterior mixture. These quantities are
+calculated using weighted sampling method shown in Appendix B of the
+manuscript. <code>post_psi0</code> contains resampled posterior draws in
+the fixed order clinical endpoint, surrogate 1, and surrogate 2.
+<code>weight_data$norm_w</code> is the set of normalized weights,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><msup><mover><mi>w</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{ \tilde{w}^{(b)} \}</annotation></semantics></math>.
+<code>importance_diagnostics</code> helps identify whether those weights
+are concentrated in only a small number of historical draws.</p>
 </div>
 <div class="section level2">
 <h2 id="historical-model-fit-assessment">Historical-model fit assessment<a class="anchor" aria-label="anchor" href="#historical-model-fit-assessment"></a>
 </h2>
-<p>The historical model is assessed by holding out each of the 66 trials
-in turn. <code><a href="../reference/fit_loo_historical_models.html">fit_loo_historical_models()</a></code> fits the
-random-intercept, inverse-gamma model to the other 65 trials and saves
-the posterior columns required for assessment. The batch is restartable:
-existing trial files are reused unless
-<code>overwrite = TRUE</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">loo_paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_loo_historical_models.html">fit_loo_historical_models</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">trial_sim_dat</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="st">"data-raw/loo-random-inverse-gamma"</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">2026</span>,</span>
-<span>  nchains <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  ncores <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  niter <span class="op">=</span> <span class="fl">2000</span>,</span>
-<span>  nwarmup <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  adapt_delta <span class="op">=</span> <span class="fl">0.95</span>,</span>
-<span>  max_treedepth <span class="op">=</span> <span class="fl">15</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="../reference/loo_cv_model_assessment.html">loo_cv_model_assessment()</a></code> calculates two quantities:</p>
-<ul>
-<li>LOO-CV RMSE compares each held-out clinical estimate with its
-posterior mean from the full-carryover MBE update.</li>
-<li>Tolerance coverage predicts the held-out observed clinical estimate
-after conditioning on only its two observed surrogate estimates.</li>
-</ul>
-<p>For posterior draw
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>,
-the predictive clinical estimate has distribution</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>β</mi><mn>0</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>β</mi><mn>1</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><msubsup><mi>γ</mi><mn>01</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>β</mi><mn>2</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><msubsup><mi>γ</mi><mn>02</mn><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>,</mo><msubsup><mi>λ</mi><mi>θ</mi><mrow><mn>2</mn><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>σ</mi><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
-N\left(
-  \beta_0^{(b)} + \beta_1^{(b)}\gamma_{01}^{(b)} +
-  \beta_2^{(b)}\gamma_{02}^{(b)},
-  \lambda_{\theta}^{2(b)} + \sigma^2_{\hat{\theta}_0}
-\right).
-</annotation></semantics></math></p>
-<p>The variance therefore includes both the historical model’s residual
-clinical heterogeneity and the held-out trial’s clinical sampling
-variance.</p>
+<p>Fitting and assessment are separate steps. Choose the
+historical-model intercept and uncertainty prior, then fit the model to
+all but one trial using <code><a href="../reference/historical_model_fit_2surrogates.html">historical_model_fit_2surrogates()</a></code>.
+Repeat for each held-out trial. The two assessment functions,
+<code><a href="../reference/loo_cv_rmse.html">loo_cv_rmse()</a></code> and
+<code><a href="../reference/tolerance_interval_coverage.html">tolerance_interval_coverage()</a></code>, only summarize inputs
+supplied by the user; they never fit models or select priors.</p>
+<p>This is internal leave-one-trial-out assessment: each held-out trial
+serves as a pseudo-new trial. The package uses simulated trials, so its
+results are not expected to match the manuscript’s CKD trial
+results.</p>
+<div class="section level3">
+<h3 id="prepare-the-fits-and-point-estimates-yourself">Prepare the fits and point estimates yourself<a class="anchor" aria-label="anchor" href="#prepare-the-fits-and-point-estimates-yourself"></a>
+</h3>
+<p>The following example shows the fitting loop explicitly. The settings
+below are illustrative and can be changed independently of the
+assessment functions. <code>niter</code> is the number of saved
+post-warmup draws per chain. Run this expensive step only when new fits
+are needed; it is not run when building the vignette.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">loo_assessment</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loo_cv_model_assessment.html">loo_cv_model_assessment</a></span><span class="op">(</span></span>
-<span>  loo_posteriors <span class="op">=</span> <span class="st">"data-raw/loo-random-inverse-gamma"</span>,</span>
-<span>  data <span class="op">=</span> <span class="va">trial_sim_dat</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">2026</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>The completed, converged 66-trial assessment is included as two
-compact package datasets so users do not need to rerun all 66 Stan
-models:</p>
+<code class="sourceCode R"><span><span class="va">historical_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"CE_est"</span>, <span class="st">"CE_se"</span>, <span class="st">"Sur1_est"</span>, <span class="st">"Sur1_se"</span>, <span class="st">"Sur2_est"</span>, <span class="st">"Sur2_se"</span>,</span>
+<span>  <span class="st">"Cor_CE_Sur1"</span>, <span class="st">"Cor_CE_Sur2"</span>, <span class="st">"Cor_Sur1_Sur2"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">trials</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">trial_sim_dat</span><span class="op">)</span></span>
+<span><span class="va">historical_data</span> <span class="op">&lt;-</span> <span class="va">trials</span><span class="op">[</span>, <span class="va">historical_fields</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Your choices for this analysis; the metric functions do not set these.</span></span>
+<span><span class="va">use_random_intercept</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span>
+<span><span class="va">uncertainty_prior</span> <span class="op">&lt;-</span> <span class="st">"inverse_gamma"</span></span>
+<span><span class="va">use_diffuse_surrogate_prior</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span>
+<span><span class="va">center_clinical_intercept</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span>
+<span></span>
+<span><span class="va">paired_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  observed <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">CE_est</span>,</span>
+<span>  estimated <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA_real_</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">trials</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">trials</span><span class="op">$</span><span class="va">trial_id</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">loo_draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">trials</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">loo_draws</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">trials</span><span class="op">$</span><span class="va">trial_id</span><span class="op">)</span></span>
+<span><span class="va">loo_diagnostics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">trials</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">trials</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">historical_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/historical_model_fit_2surrogates.html">historical_model_fit_2surrogates</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">historical_data</span><span class="op">[</span><span class="op">-</span><span class="va">i</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,</span>
+<span>    random_intercept <span class="op">=</span> <span class="va">use_random_intercept</span>,</span>
+<span>    prior_for_uncertainty <span class="op">=</span> <span class="va">uncertainty_prior</span>,</span>
+<span>    nchains <span class="op">=</span> <span class="fl">4</span>, ncores <span class="op">=</span> <span class="fl">4</span>, niter <span class="op">=</span> <span class="fl">2000</span>, nwarmup <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>    seed <span class="op">=</span> <span class="fl">2026</span> <span class="op">+</span> <span class="va">i</span> <span class="op">-</span> <span class="fl">1</span>,</span>
+<span>    adapt_delta <span class="op">=</span> <span class="fl">0.95</span>, max_treedepth <span class="op">=</span> <span class="fl">15</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="va">loo_draws</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">historical_fit</span><span class="op">$</span><span class="va">posterior_samples</span></span>
+<span>  <span class="va">loo_diagnostics</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    sampler <span class="op">=</span> <span class="va">historical_fit</span><span class="op">$</span><span class="va">diagnostics</span>,</span>
+<span>    convergence <span class="op">=</span> <span class="va">historical_fit</span><span class="op">$</span><span class="va">fit</span><span class="op">$</span><span class="fu">summary</span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">held_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    ClnEst <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">CE_est</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, ClnSE <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">CE_se</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>    Sur1Est <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Sur1_est</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, Sur1SE <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Sur1_se</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>    Sur2Est <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Sur2_est</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, Sur2SE <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Sur2_se</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>    R1Clin <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Cor_CE_Sur1</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>    R2Clin <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Cor_CE_Sur2</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, R12 <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Cor_Sur1_Sur2</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2026</span> <span class="op">+</span> <span class="va">i</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="va">updated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MBE.html">MBE</a></span><span class="op">(</span></span>
+<span>    mcmc_dat <span class="op">=</span> <span class="va">loo_draws</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, sample_dat <span class="op">=</span> <span class="va">held_out</span>,</span>
+<span>    diffuse <span class="op">=</span> <span class="va">use_diffuse_surrogate_prior</span>,</span>
+<span>    intercept0 <span class="op">=</span> <span class="va">center_clinical_intercept</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="va">paired_effects</span><span class="op">$</span><span class="va">estimated</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">updated</span><span class="op">$</span><span class="va">post_mean</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Inspect diagnostics and resolve fitting issues before interpreting the metric.</span></span>
+<span><span class="va">loo_diagnostics</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="fu"><a href="../reference/loo_cv_rmse.html">loo_cv_rmse</a></span><span class="op">(</span><span class="va">paired_effects</span><span class="op">)</span></span></code></pre></div>
+<p>If you already have fits, reuse their posterior draws in the
+<code><a href="../reference/MBE.html">MBE()</a></code> calls; there is no need to repeat the historical
+fitting step. Saved records from the earlier development workflow can
+still be read with <code>readRDS(path)$posterior_draws</code>.</p>
+<p>For example, if the original 66 saved records are on your computer,
+load them directly instead of running the fitting loop:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trials</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">trial_sim_dat</span><span class="op">)</span></span>
+<span><span class="va">loo_draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">trials</span><span class="op">$</span><span class="va">trial_id</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">id</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">record</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span></span>
+<span>    <span class="st">"data-raw/loo-random-inverse-gamma"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"heldout_trial_"</span>, <span class="va">id</span>, <span class="st">".rds"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">record</span><span class="op">$</span><span class="va">held_out_trial</span><span class="op">)</span>, <span class="va">id</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">record</span><span class="op">$</span><span class="va">posterior_draws</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">loo_draws</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">trials</span><span class="op">$</span><span class="va">trial_id</span><span class="op">)</span></span>
+<span><span class="va">use_diffuse_surrogate_prior</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span>
+<span><span class="va">center_clinical_intercept</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="calculate-rmse-from-a-two-column-table">Calculate RMSE from a two-column table<a class="anchor" aria-label="anchor" href="#calculate-rmse-from-a-two-column-table"></a>
+</h3>
+<p>Supply one row per trial and two columns named <code>observed</code>
+and <code>estimated</code>. A data frame or numeric matrix is accepted,
+with columns in either order. Match trial IDs before assembling the
+pairs. The estimate is chosen by the user; the example uses the
+posterior mean from <code><a href="../reference/MBE.html">MBE()</a></code>, an estimate of the true effect
+rather than a known true effect.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"loo_assessment_by_trial"</span>, package <span class="op">=</span> <span class="st">"MBE"</span><span class="op">)</span></span>
+<span><span class="va">paired_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  observed <span class="op">=</span> <span class="va">loo_assessment_by_trial</span><span class="op">$</span><span class="va">observed_clinical</span>,</span>
+<span>  estimated <span class="op">=</span> <span class="va">loo_assessment_by_trial</span><span class="op">$</span><span class="va">posterior_mean_clinical</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/loo_cv_rmse.html">loo_cv_rmse</a></span><span class="op">(</span><span class="va">paired_effects</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.2385382</span></span>
+<span><span class="fu"><a href="../reference/loo_cv_rmse.html">loo_cv_rmse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">paired_effects</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.2385382</span></span></code></pre></div>
+<p>The calculation is <code>sqrt(mean((observed - estimated)^2))</code>.
+With a full MBE update, the held-out clinical estimate contributes to
+its own posterior mean. This measures agreement after updating, rather
+than prediction from surrogates alone. Calling the metric LOO-CV assumes
+the corresponding trial was excluded from historical fitting; the metric
+function cannot verify that step.</p>
+</div>
+<div class="section level3">
+<h3 id="generate-the-clinical-predictive-distribution-and-check-capture">Generate the clinical predictive distribution and check capture<a class="anchor" aria-label="anchor" href="#generate-the-clinical-predictive-distribution-and-check-capture"></a>
+</h3>
+<p><code><a href="../reference/clinical_predictive_distribution.html">clinical_predictive_distribution()</a></code> takes historical
+posterior draws and the held-out trial’s surrogate estimates, standard
+errors, and sampling correlations. It generates draws for the observed
+clinical estimate conditional on the two surrogate estimates. The
+clinical estimate itself is ignored even if <code>ClnEst</code> is
+present in the input list. This example reuses
+<code>historical_posterior</code> and <code>new_trial</code> from above;
+trial 1 was excluded from that historical fit:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">predictive_draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clinical_predictive_distribution.html">clinical_predictive_distribution</a></span><span class="op">(</span></span>
+<span>  mcmc_dat <span class="op">=</span> <span class="va">historical_posterior</span>, sample_dat <span class="op">=</span> <span class="va">new_trial</span>,</span>
+<span>  diffuse <span class="op">=</span> <span class="cn">FALSE</span>, intercept0 <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  n_draws <span class="op">=</span> <span class="fl">4000</span>, seed <span class="op">=</span> <span class="fl">2026</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">predictive_draws</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       2.5%      97.5% </span></span>
+<span><span class="co">#&gt; -0.3745658  0.1562384</span></span></code></pre></div>
+<p><code><a href="../reference/tolerance_interval_coverage.html">tolerance_interval_coverage()</a></code> calls this prediction
+function internally. Supply the desired lower and upper quantile
+probabilities: <code>c(0.025, 0.975)</code> for a 95% interval, or one
+row per interval in a two-column matrix. Asymmetric intervals are also
+supported.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">interval_probs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span>,  <span class="co"># 95%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span>,    <span class="co"># 90%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.075</span>, <span class="fl">0.925</span><span class="op">)</span>   <span class="co"># 85%</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/tolerance_interval_coverage.html">tolerance_interval_coverage</a></span><span class="op">(</span></span>
+<span>  observed <span class="op">=</span> <span class="va">new_trial</span><span class="op">$</span><span class="va">ClnEst</span>,</span>
+<span>  mcmc_dat <span class="op">=</span> <span class="va">historical_posterior</span>, sample_dat <span class="op">=</span> <span class="va">new_trial</span>,</span>
+<span>  probs <span class="op">=</span> <span class="va">interval_probs</span>,</span>
+<span>  diffuse <span class="op">=</span> <span class="cn">FALSE</span>, intercept0 <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  n_draws <span class="op">=</span> <span class="fl">4000</span>, seed <span class="op">=</span> <span class="fl">2026</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;   lower_prob upper_prob level   observed      lower      upper covered</span></span>
+<span><span class="co">#&gt; 1      0.025      0.975    95 -0.1337531 -0.3745658 0.15623836    TRUE</span></span>
+<span><span class="co">#&gt; 2      0.050      0.950    90 -0.1337531 -0.3326389 0.10673561    TRUE</span></span>
+<span><span class="co">#&gt; 3      0.075      0.925    85 -0.1337531 -0.3078896 0.07480282    TRUE</span></span></code></pre></div>
+<p>The result has one row per probability pair: <code>lower_prob</code>,
+<code>upper_prob</code>, <code>level</code> (as a percentage),
+<code>observed</code>, <code>lower</code>, <code>upper</code>, and
+logical <code>covered</code>. Bounds use
+<code>stats::quantile(type = 7)</code>, and both endpoints count as
+covered. The function generates predictive draws once per trial, then
+uses the same draws for all requested intervals. A fixed seed makes
+simulation reproducible.</p>
+<p>For multiple trials, reuse the <code>loo_draws</code> list from the
+fitting example, match it to the trial IDs, and combine single-trial
+results:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span></span>
+<span>  <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">loo_draws</span><span class="op">)</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html" class="external-link">anyDuplicated</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">loo_draws</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html" class="external-link">anyDuplicated</a></span><span class="op">(</span><span class="va">trials</span><span class="op">$</span><span class="va">trial_id</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setequal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">trials</span><span class="op">$</span><span class="va">trial_id</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">loo_draws</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">loo_draws</span> <span class="op">&lt;-</span> <span class="va">loo_draws</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">trials</span><span class="op">$</span><span class="va">trial_id</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">capture</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">trials</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">held_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    ClnSE <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">CE_se</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>    Sur1Est <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Sur1_est</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, Sur1SE <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Sur1_se</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>    Sur2Est <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Sur2_est</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, Sur2SE <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Sur2_se</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>    R1Clin <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Cor_CE_Sur1</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>    R2Clin <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Cor_CE_Sur2</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, R12 <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">Cor_Sur1_Sur2</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tolerance_interval_coverage.html">tolerance_interval_coverage</a></span><span class="op">(</span></span>
+<span>    observed <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">CE_est</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>    mcmc_dat <span class="op">=</span> <span class="va">loo_draws</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, sample_dat <span class="op">=</span> <span class="va">held_out</span>,</span>
+<span>    probs <span class="op">=</span> <span class="va">interval_probs</span>, n_draws <span class="op">=</span> <span class="fl">8000</span>, seed <span class="op">=</span> <span class="fl">2026</span> <span class="op">+</span> <span class="va">i</span> <span class="op">-</span> <span class="fl">1</span>,</span>
+<span>    diffuse <span class="op">=</span> <span class="va">use_diffuse_surrogate_prior</span>,</span>
+<span>    intercept0 <span class="op">=</span> <span class="va">center_clinical_intercept</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>trial_id <span class="op">=</span> <span class="va">trials</span><span class="op">$</span><span class="va">trial_id</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">result</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">covered</span> <span class="op">~</span> <span class="va">lower_prob</span> <span class="op">+</span> <span class="va">upper_prob</span>, data <span class="op">=</span> <span class="va">capture</span>, FUN <span class="op">=</span> <span class="va">mean</span><span class="op">)</span></span></code></pre></div>
+<p>Prediction conditions the joint observed-effect distribution on the
+two surrogate estimates. It incorporates residual clinical
+heterogeneity, clinical sampling variance, surrogate uncertainty, and
+the supplied sampling correlations. Historical draws are weighted by the
+likelihood of the observed surrogates. This is different from passing
+latent-effect draws from <code>MBE()$post_psi0</code>, which already
+condition on the observed clinical estimate.</p>
+</div>
+<div class="section level3">
+<h3 id="archived-example-results">Archived example results<a class="anchor" aria-label="anchor" href="#archived-example-results"></a>
+</h3>
+<p>The completed 66-trial assessment remains available as two compact
+datasets. Their provenance is the random-intercept, inverse-gamma
+specification; neither new metric requires that specification. The
+archived coverage used an empirical percentile rule and an unweighted
+surrogate-update simulation. The new function uses joint conditioning,
+surrogate-based weights, and inclusive quantile bounds. Those
+differences can change coverage. Archived results are preserved, not
+recalculated or relabeled as results of the new prediction function.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"loo_assessment_summary"</span>, package <span class="op">=</span> <span class="st">"MBE"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"loo_assessment_by_trial"</span>, package <span class="op">=</span> <span class="st">"MBE"</span><span class="op">)</span></span>
 <span></span>
@@ -293,7 +554,7 @@ models:</p>
 <td align="right">0.9091</td>
 </tr></tbody>
 </table>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">coverage_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  interval <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"95%"</span>, <span class="st">"90%"</span><span class="op">)</span>,</span>
@@ -326,6 +587,7 @@ models:</p>
 <p>Only these small derived tables are installed with MBE. The complete
 leave-one-out posterior files remain in <code>data-raw/</code> or
 suitable external archival storage.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

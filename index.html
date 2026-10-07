@@ -37,9 +37,9 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/MBE-manuscript-to-code.html">Mapping the MBE Manuscript to the Package</a></li>
     <li><a class="dropdown-item" href="articles/simulation-example.html">Simulation Example</a></li>
-    <li><a class="dropdown-item" href="articles/interim-analysis-example.html">Interim Analysis Example</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -83,6 +83,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"historical_posterior"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"trial_sim_dat"</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co">#Construct a list for the new trial's observed data, using the first row of the simulated dataset.</span></span>
 <span><span class="va">new_trial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  ClnEst <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>  ClnSE <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
@@ -95,56 +96,49 @@
 <span>  R12 <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_Sur1_Sur2</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="co">#Estimate the posterior distribution of the MBE for the new trial using the historical posterior draws.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/MBE.html">MBE</a></span><span class="op">(</span><span class="va">historical_posterior</span>, <span class="va">new_trial</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Mean of the posterior distribution for the clinical endpoint, surrogate 1, and surrogate 2.</span></span>
 <span><span class="va">fit</span><span class="op">$</span><span class="va">post_mean</span></span>
 <span><span class="co">#&gt;                  [,1]</span></span>
 <span><span class="co">#&gt; clinical   -0.1013294</span></span>
 <span><span class="co">#&gt; surrogate1  0.6837417</span></span>
 <span><span class="co">#&gt; surrogate2 -5.4760921</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span></span>
-<span>  <span class="st">"%s: %.3f\n"</span>,</span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">importance_diagnostics</span><span class="op">)</span>,</span>
-<span>  <span class="va">fit</span><span class="op">$</span><span class="va">importance_diagnostics</span></span>
-<span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; effective_sample_size: 3943.574</span></span>
-<span><span class="co">#&gt;  relative_effective_sample_size: 0.986</span></span>
-<span><span class="co">#&gt;  maximum_normalized_weight: 0.000</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="historical-model-assessment">Historical-model assessment<a class="anchor" aria-label="anchor" href="#historical-model-assessment"></a>
-</h2>
-<p>The package provides a restartable workflow for fitting one historical model per held-out trial and calculating LOO-CV RMSE and 90% and 95% predictive interval coverage. See <code><a href="reference/fit_loo_historical_models.html">?fit_loo_historical_models</a></code> and <code><a href="reference/loo_cv_model_assessment.html">?loo_cv_model_assessment</a></code> for the computational workflow.</p>
-<p>The completed 66-trial assessment is included as two compact datasets:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"loo_assessment_summary"</span>, package <span class="op">=</span> <span class="st">"MBE"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"loo_assessment_by_trial"</span>, package <span class="op">=</span> <span class="st">"MBE"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">loo_assessment_summary</span></span>
-<span><span class="co">#&gt;   n_trials loo_cv_rmse coverage_95 coverage_90</span></span>
-<span><span class="co">#&gt; 1       66   0.2385382    0.969697   0.9090909</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">loo_assessment_by_trial</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   trial_id observed_clinical posterior_mean_clinical squared_error</span></span>
-<span><span class="co">#&gt; 1        1        -0.1337531             -0.09656727   0.001382784</span></span>
-<span><span class="co">#&gt; 2        2         0.3126354              0.06360662   0.062015334</span></span>
-<span><span class="co">#&gt; 3        3        -0.7966332             -0.62698427   0.028780758</span></span>
-<span><span class="co">#&gt; 4        4        -0.3433848             -0.44253095   0.009829956</span></span>
-<span><span class="co">#&gt; 5        5        -0.1624861             -0.06922007   0.008698544</span></span>
-<span><span class="co">#&gt; 6        6        -0.5146880             -0.44928852   0.004277089</span></span>
-<span><span class="co">#&gt;   predictive_percentile predictive_lower_95 predictive_lower_90</span></span>
-<span><span class="co">#&gt; 1              0.366625          -0.4208025          -0.3664697</span></span>
-<span><span class="co">#&gt; 2              0.956875          -0.5601490          -0.4838673</span></span>
-<span><span class="co">#&gt; 3              0.121375          -0.9534428          -0.8945087</span></span>
-<span><span class="co">#&gt; 4              0.579625          -1.3476991          -1.2068675</span></span>
-<span><span class="co">#&gt; 5              0.406125          -0.9828023          -0.8245005</span></span>
-<span><span class="co">#&gt; 6              0.254750          -0.7040234          -0.6563685</span></span>
-<span><span class="co">#&gt;   predictive_upper_90 predictive_upper_95 covered_95 covered_90</span></span>
-<span><span class="co">#&gt; 1           0.2232711           0.2789574       TRUE       TRUE</span></span>
-<span><span class="co">#&gt; 2           0.2948599           0.3647947       TRUE      FALSE</span></span>
-<span><span class="co">#&gt; 3          -0.2279492          -0.1651125       TRUE       TRUE</span></span>
-<span><span class="co">#&gt; 4           0.3414936           0.4838808       TRUE       TRUE</span></span>
-<span><span class="co">#&gt; 5           0.6862105           0.8377323       TRUE       TRUE</span></span>
-<span><span class="co">#&gt; 6          -0.1831045          -0.1363449       TRUE       TRUE</span></span></code></pre></div>
+<span><span class="co">#Corresponding variance matrix</span></span>
+<span><span class="va">fit</span><span class="op">$</span><span class="va">post_var</span></span>
+<span><span class="co">#&gt;               clinical   surrogate1   surrogate2</span></span>
+<span><span class="co">#&gt; clinical    0.01196417 -0.019592518 -0.091338433</span></span>
+<span><span class="co">#&gt; surrogate1 -0.01959252  0.060139164 -0.009146439</span></span>
+<span><span class="co">#&gt; surrogate2 -0.09133843 -0.009146439  3.981621682</span></span></code></pre></div>
+<p>A detailed example is provided in the package vignette <a href="https://hyejung0.github.io/MBE/articles/simulation-example.html">Simulation Example</a>.</p>
+<!-- ## Historical-model assessment -->
+<!-- Users fit each historical training set themselves with -->
+<!-- `historical_model_fit_2surrogates()`, choosing their intercept and uncertainty -->
+<!-- prior. Assessment is separate: `loo_cv_rmse()` accepts a two-column table named -->
+<!-- `observed` and `estimated`, and `tolerance_interval_coverage()` calls -->
+<!-- `clinical_predictive_distribution()` on existing posterior draws to check -->
+<!-- user-selected quantile intervals, such as `probs = c(0.025, 0.975)`. -->
+<!-- Each held-out trial serves as a pseudo-new trial in internal cross-validation. -->
+<!-- Results for the simulated package dataset are not expected to match the -->
+<!-- manuscript's CKD trial results. The manuscript-to-package article demonstrates -->
+<!-- the fitting loop, prediction, and aggregation of interval-capture indicators. -->
+<!-- The earlier completed 66-trial assessment is retained as two archived datasets. -->
+<!-- The RMSE can be recalculated directly from its paired effects. Archived -->
+<!-- coverage predates the current prediction and interval-checking method; see the -->
+<!-- dataset documentation before comparing it with new coverage calculations. -->
+<!-- ```{r loo-results} -->
+<!-- data("loo_assessment_summary", package = "MBE") -->
+<!-- data("loo_assessment_by_trial", package = "MBE") -->
+<!-- loo_assessment_summary -->
+<!-- head(loo_assessment_by_trial) -->
+<!-- loo_cv_rmse(data.frame( -->
+<!--   observed = loo_assessment_by_trial$observed_clinical, -->
+<!--   estimated = loo_assessment_by_trial$posterior_mean_clinical -->
+<!-- )) -->
+<!-- ``` -->
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

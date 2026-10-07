@@ -63,8 +63,16 @@ A data frame with 66 rows and 11 variables:
 
 ## Source
 
-Derived from `trial_sim_dat` using
-[`fit_loo_historical_models()`](https://hyejung0.github.io/MBE/reference/fit_loo_historical_models.md)
-and
-[`loo_cv_model_assessment()`](https://hyejung0.github.io/MBE/reference/loo_cv_model_assessment.md)
-with seed 2026.
+Archived 66-fit analysis of `trial_sim_dat` with seed 2026, saved in
+`data-raw/loo-random-inverse-gamma/loo_assessment.rds`. See the
+preparation script `data-raw/loo_assessment.R` in the source repository.
+
+## Details
+
+These archived results use the earlier empirical-percentile coverage
+calculation; see
+[loo_assessment_summary](https://hyejung0.github.io/MBE/reference/loo_assessment_summary.md)
+for provenance and its differences from the current prediction and
+coverage functions. The paired effects can still be supplied to
+[`loo_cv_rmse()`](https://hyejung0.github.io/MBE/reference/loo_cv_rmse.md)
+without refitting any model.

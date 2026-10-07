@@ -142,14 +142,18 @@ densities: \$\$\gamma\_{i, 2} \sim N(\mu_2, \sigma_2^2)\$\$
 This function fits the model using MCMC sampling on historical RCTs and
 returns the posterior distribution of the model parameters.
 
-The `loo` and `waic` components use the Stan `log_lik` values
-conditional on each trial's latent treatment-effect vector. They
-therefore describe conditional model fit. For prediction to a completely
-held-out trial, use
-[`fit_loo_historical_models()`](https://hyejung0.github.io/MBE/reference/fit_loo_historical_models.md)
-and
-[`loo_cv_model_assessment()`](https://hyejung0.github.io/MBE/reference/loo_cv_model_assessment.md),
-which refit the model after removing each trial.
+The `loo` and `waic` components are conditional model-fit measures based
+on the manuscript's Stan log-likelihood. They are distinct from the
+explicit internal leave-one-trial-out assessment. For that assessment,
+call this fitting function separately for each set of training trials,
+omitting the held-out trial. Then use
+[`loo_cv_rmse()`](https://hyejung0.github.io/MBE/reference/loo_cv_rmse.md)
+on paired effects and
+[`tolerance_interval_coverage()`](https://hyejung0.github.io/MBE/reference/tolerance_interval_coverage.md)
+with the already fitted posterior draws and held-out sampling inputs.
+The latter calls
+[`clinical_predictive_distribution()`](https://hyejung0.github.io/MBE/reference/clinical_predictive_distribution.md).
+The assessment functions do not fit models or choose priors.
 
 ## Examples
 
@@ -165,6 +169,7 @@ historical_data <- trial_sim_dat[, c(
 fit <- historical_model_fit_2surrogates(
   data = historical_data,
   random_intercept = TRUE,
+  prior_for_uncertainty = "half_normal",
   nchains = 4,
   ncores = 4,
   niter = 2000,
