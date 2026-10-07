@@ -62,6 +62,7 @@ library(MBE)
 data("historical_posterior")
 data("trial_sim_dat")
 
+#Construct a list for the new trial's observed data, using the first row of the simulated dataset.
 new_trial <- list(
   ClnEst = trial_sim_dat$CE_est[1],
   ClnSE = trial_sim_dat$CE_se[1],
@@ -74,29 +75,49 @@ new_trial <- list(
   R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
 )
 
+#Estimate the posterior distribution of the MBE for the new trial using the historical posterior draws.
 set.seed(1)
 fit <- MBE(historical_posterior, new_trial)
+
+#Mean of the posterior distribution for the clinical endpoint, surrogate 1, and surrogate 2.
 fit$post_mean
-cat(sprintf(
-  "%s: %.3f\n",
-  names(fit$importance_diagnostics),
-  fit$importance_diagnostics
-))
+
+#Corresponding variance matrix
+fit$post_var
 ```
 
-## Historical-model assessment
 
-The package provides a restartable workflow for fitting one historical model
-per held-out trial and calculating LOO-CV RMSE and 90% and 95% predictive
-interval coverage. See `?fit_loo_historical_models` and
-`?loo_cv_model_assessment` for the computational workflow.
+A detailed example is provided in the package vignette [Simulation Example](https://hyejung0.github.io/MBE/articles/simulation-example.html).
 
-The completed 66-trial assessment is included as two compact datasets:
 
-```{r loo-results}
-data("loo_assessment_summary", package = "MBE")
-data("loo_assessment_by_trial", package = "MBE")
+<!-- ## Historical-model assessment -->
 
-loo_assessment_summary
-head(loo_assessment_by_trial)
-```
+
+<!-- Users fit each historical training set themselves with -->
+<!-- `historical_model_fit_2surrogates()`, choosing their intercept and uncertainty -->
+<!-- prior. Assessment is separate: `loo_cv_rmse()` accepts a two-column table named -->
+<!-- `observed` and `estimated`, and `tolerance_interval_coverage()` calls -->
+<!-- `clinical_predictive_distribution()` on existing posterior draws to check -->
+<!-- user-selected quantile intervals, such as `probs = c(0.025, 0.975)`. -->
+
+<!-- Each held-out trial serves as a pseudo-new trial in internal cross-validation. -->
+<!-- Results for the simulated package dataset are not expected to match the -->
+<!-- manuscript's CKD trial results. The manuscript-to-package article demonstrates -->
+<!-- the fitting loop, prediction, and aggregation of interval-capture indicators. -->
+
+<!-- The earlier completed 66-trial assessment is retained as two archived datasets. -->
+<!-- The RMSE can be recalculated directly from its paired effects. Archived -->
+<!-- coverage predates the current prediction and interval-checking method; see the -->
+<!-- dataset documentation before comparing it with new coverage calculations. -->
+
+<!-- ```{r loo-results} -->
+<!-- data("loo_assessment_summary", package = "MBE") -->
+<!-- data("loo_assessment_by_trial", package = "MBE") -->
+
+<!-- loo_assessment_summary -->
+<!-- head(loo_assessment_by_trial) -->
+<!-- loo_cv_rmse(data.frame( -->
+<!--   observed = loo_assessment_by_trial$observed_clinical, -->
+<!--   estimated = loo_assessment_by_trial$posterior_mean_clinical -->
+<!-- )) -->
+<!-- ``` -->

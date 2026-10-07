@@ -84,12 +84,26 @@ cat(sprintf(
 
 ## Historical-model assessment
 
-The package provides a restartable workflow for fitting one historical
-model per held-out trial and calculating LOO-CV RMSE and 90% and 95%
-predictive interval coverage. See `?fit_loo_historical_models` and
-`?loo_cv_model_assessment` for the computational workflow.
+Users fit each historical training set themselves with
+`historical_model_fit_2surrogates()`, choosing their intercept and
+uncertainty prior. Assessment is separate: `loo_cv_rmse()` accepts a
+two-column table named `observed` and `estimated`, and
+`tolerance_interval_coverage()` calls
+`clinical_predictive_distribution()` on existing posterior draws to
+check user-selected quantile intervals, such as
+`probs = c(0.025, 0.975)`.
 
-The completed 66-trial assessment is included as two compact datasets:
+Each held-out trial serves as a pseudo-new trial in internal
+cross-validation. Results for the simulated package dataset are not
+expected to match the manuscript’s CKD trial results. The
+manuscript-to-package article demonstrates the fitting loop, prediction,
+and aggregation of interval-capture indicators.
+
+The earlier completed 66-trial assessment is retained as two archived
+datasets. The RMSE can be recalculated directly from its paired effects.
+Archived coverage predates the current prediction and interval-checking
+method; see the dataset documentation before comparing it with new
+coverage calculations.
 
 ``` r
 data("loo_assessment_summary", package = "MBE")
@@ -120,4 +134,9 @@ head(loo_assessment_by_trial)
 #> 4           0.3414936           0.4838808       TRUE       TRUE
 #> 5           0.6862105           0.8377323       TRUE       TRUE
 #> 6          -0.1831045          -0.1363449       TRUE       TRUE
+loo_cv_rmse(data.frame(
+  observed = loo_assessment_by_trial$observed_clinical,
+  estimated = loo_assessment_by_trial$posterior_mean_clinical
+))
+#> [1] 0.2385382
 ```

@@ -100,11 +100,14 @@ get_cmdstan_model <- function(model_name) {
 #' This function fits the model using MCMC sampling on historical RCTs and returns
 #' the posterior distribution of the model parameters.
 #'
-#' The `loo` and `waic` components use the Stan `log_lik` values conditional on
-#' each trial's latent treatment-effect vector. They therefore describe
-#' conditional model fit. For prediction to a completely held-out trial, use
-#' [fit_loo_historical_models()] and [loo_cv_model_assessment()], which refit the
-#' model after removing each trial.
+#' The `loo` and `waic` components are conditional model-fit measures based on
+#' the manuscript's Stan log-likelihood. They are distinct from the explicit
+#' internal leave-one-trial-out assessment. For that assessment, call this
+#' fitting function separately for each set of training trials, omitting the
+#' held-out trial. Then use [loo_cv_rmse()] on paired effects and
+#' [tolerance_interval_coverage()] with the already fitted posterior draws and
+#' held-out sampling inputs. The latter calls [clinical_predictive_distribution()].
+#' The assessment functions do not fit models or choose priors.
 #'
 #' @return A list containing the fitted model object and other relevant information:
 #' \describe{
@@ -129,6 +132,7 @@ get_cmdstan_model <- function(model_name) {
 #' fit <- historical_model_fit_2surrogates(
 #'   data = historical_data,
 #'   random_intercept = TRUE,
+#'   prior_for_uncertainty = "half_normal",
 #'   nchains = 4,
 #'   ncores = 4,
 #'   niter = 2000,

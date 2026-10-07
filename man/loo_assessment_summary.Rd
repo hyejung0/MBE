@@ -17,8 +17,9 @@ covered by the 90 percent predictive interval.}
 }
 }
 \source{
-Derived from \code{trial_sim_dat} using \code{\link[=fit_loo_historical_models]{fit_loo_historical_models()}} and
-\code{\link[=loo_cv_model_assessment]{loo_cv_model_assessment()}} with seed 2026.
+Archived 66-fit analysis of \code{trial_sim_dat} with seed 2026, saved in
+\code{data-raw/loo-random-inverse-gamma/loo_assessment.rds}. See the preparation
+script \code{data-raw/loo_assessment.R} in the source repository.
 }
 \usage{
 loo_assessment_summary
@@ -29,5 +30,17 @@ random-intercept historical model with inverse-gamma variance priors. Each of
 the 66 simulated trials was held out once. The tolerance-interval calculation
 includes both residual clinical heterogeneity and the held-out trial's
 clinical sampling variance.
+}
+\details{
+Archived results from the earlier development assessment. RMSE
+uses full-carryover MBE posterior means, incorporating the held-out clinical
+estimate. Coverage used empirical-percentile indicators and an unweighted
+surrogate-update simulation. The current \code{\link[=clinical_predictive_distribution]{clinical_predictive_distribution()}}
+uses joint conditioning and surrogate-likelihood weights, and
+\code{\link[=tolerance_interval_coverage]{tolerance_interval_coverage()}} checks inclusive quantile bounds. This table
+is retained unchanged and is not a result of the current coverage function.
+These are internal cross-validation results on simulated data, not external
+validation. Model specification here describes only this archived dataset;
+the current assessment functions do not prescribe an intercept or prior.
 }
 \keyword{datasets}

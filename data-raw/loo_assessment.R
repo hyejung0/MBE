@@ -12,7 +12,7 @@ assessment_path <- file.path(
 
 if (!file.exists(assessment_path)) {
   stop(
-    "Run `loo_cv_model_assessment()` and save `loo_assessment.rds` first.",
+    "The archived assessment is required; see the manuscript vignette for the current assessment workflow.",
     call. = FALSE
   )
 }
@@ -20,6 +20,12 @@ if (!file.exists(assessment_path)) {
 loo_assessment <- readRDS(assessment_path)
 loo_assessment_summary <- loo_assessment$summary
 loo_assessment_by_trial <- loo_assessment$per_trial
+
+# These tables preserve the original completed 66-fit assessment. Its coverage
+# indicators used empirical percentiles and an unweighted surrogate update;
+# the current prediction helper uses joint conditioning and surrogate-based
+# weights, and coverage tests inclusive quantile bounds. Do not overwrite these archived results by
+# treating them as a fresh calculation with the new interface.
 
 stopifnot(
   nrow(loo_assessment_summary) == 1L,

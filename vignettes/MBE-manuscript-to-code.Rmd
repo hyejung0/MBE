@@ -32,17 +32,20 @@ two surrogates are treatment effects on chronic and acute eGFR slopes.
 
 ## Input data
 
-`historical_model_fit_2surrogates()` expects one row per historical trial and
-the following nine columns:
+The historical dataset should be either a `data.table` or `data.frame` with the
+columns names exactly as described below.:
 
 | Column | Meaning |
 |:--|:--|
-| `CE_est`, `CE_se` | Clinical treatment-effect estimate and standard error |
-| `Sur1_est`, `Sur1_se` | Surrogate 1 estimate and standard error |
-| `Sur2_est`, `Sur2_se` | Surrogate 2 estimate and standard error |
-| `Cor_CE_Sur1` | Sampling correlation between the clinical endpoint and surrogate 1 |
-| `Cor_CE_Sur2` | Sampling correlation between the clinical endpoint and surrogate 2 |
-| `Cor_Sur1_Sur2` | Sampling correlation between the two surrogates |
+| `CE_est` | Estimate of the treatment effect on the clinical endpoint |
+| `CE_se` | Standard error of the estimated treatment effect on the clinical endpoint |
+| `Sur1_est` | Estimate of the treatment effect on the first surrogate endpoint |
+| `Sur1_se` | Standard error of the estimated treatment effect on the first surrogate endpoint |
+| `Sur2_est` | Estimate of the treatment effect on the second surrogate endpoint |
+| `Sur2_se` | Standard error of the estimated treatment effect on the second surrogate endpoint |
+| `Cor_CE_Sur1` | Sampling correlation between `CE_est` and `Sur1_est` |
+| `Cor_CE_Sur2` | Sampling correlation between `CE_est` and `Sur2_est` |
+| `Cor_Sur1_Sur2` | Sampling correlation between `Sur1_est` and `Sur2_est` |
 
 `trial_sim_dat` provides a shareable simulated example with 66 trials. The
 restricted CKD-EPI CT trial data used in the motivating analysis are not
@@ -52,18 +55,22 @@ distributed with the package.
 
 The historical model can use a fixed or estimated clinical intercept and either
 half-normal or inverse-gamma priors for its uncertainty parameters. The
-manuscript's initial specification uses an estimated (random) intercept and
-inverse-gamma priors. The first simulated trial can be held out as follows:
+manuscript's initial specification uses an random intercept $\beta_0$ and
+inverse-gamma priors on the variance parameters.  The first simulated trial can be held out as follows:
 
 ```{r historical-fit, eval=FALSE}
+historical_fields <- c(
+  "CE_est", "CE_se", "Sur1_est", "Sur1_se", "Sur2_est", "Sur2_se",
+  "Cor_CE_Sur1", "Cor_CE_Sur2", "Cor_Sur1_Sur2"
+)
 historical_fit <- historical_model_fit_2surrogates(
-  data = trial_sim_dat[-1, ],
-  random_intercept = TRUE,
-  prior_for_uncertainty = "inverse_gamma",
-  nchains = 4,
-  ncores = 4,
-  niter = 2000,
-  nwarmup = 1000,
+  data = as.data.frame(trial_sim_dat)[-1, historical_fields],
+  random_intercept = TRUE, #allow for a random intercept. Set to FALSE to fix the intercept at zero.
+  prior_for_uncertainty = "inverse_gamma", #prior for the variance parameters. If set as "half_normal", then half normal distribution will be modeled on the standard deviation parameters.
+  nchains = 4, #Number of chains
+  ncores = 4, #Number of cores for parallel computation. One core per chain is recommended. If set to 1, then all chains will be run sequentially on a single core.
+  niter = 2000, #Number of post-warmup samples to save for each chain
+  nwarmup = 1000, #Number of warmup samples to discard for each chain
   seed = 2026,
   adapt_delta = 0.95,
   max_treedepth = 15
@@ -81,12 +88,30 @@ and sampler warnings.
 ## Stage 2: update the MBE for a new trial
 
 The package includes `historical_posterior`, a compact set of compatible draws
-from the random-intercept, inverse-gamma model with trial 1 held out. The held-out
-trial is converted to the naming convention used by `MBE()`:
+from the random-intercept, inverse-gamma model with trial 1 held out.
+
+```{r historical-posterior}
+data("historical_posterior", package = "MBE")
+head(historical_posterior)
+```
+
+The column names of this posterior datasets are different from what's used in the manuscript. Here's the mapping:
+
+| Manuscript name | Programming name |
+|:--|:--|
+| $\beta_0$ | `alphaCEonSur1Sur2` |
+| $\beta_1$ | `b1CEonSur1Sur2` |
+| $\beta_2$ | `b2CEonSur1Sur2` |
+| $\lambda^2_\theta$ | `SigSqCEonSur1Sur2` |
+| $\alpha_0$ | `alphaSur1onSur2` |
+| $\alpha_1$ | `bSur1onSur2` |
+| $\lambda^2_\gamma$ | `SigSqSur1onSur2` |
+| $\mu_{\gamma 2}$ | `muSur2` |
+| $\sigma^2_{\gamma 2}$ | `sigSqSur2` |
+
+This posterior distribution is used as prior for estimating the treatment effect on the clinical endpoint for the held-out trial. The held-out trial is converted to the naming convention used by `MBE()`:
 
 ```{r mbe-update}
-data("historical_posterior", package = "MBE")
-
 new_trial <- list(
   ClnEst = trial_sim_dat$CE_est[1],
   ClnSE = trial_sim_dat$CE_se[1],
@@ -115,64 +140,226 @@ mbe_fit$importance_diagnostics
 ```
 
 `post_mean` and `post_var` are the mean and covariance of the updated posterior
-mixture. `post_psi0` contains resampled posterior draws in the fixed order
-clinical endpoint, surrogate 1, and surrogate 2. `weight_data$norm_w` contains
-the normalized importance weights. `importance_diagnostics` helps identify
+mixture. These quantities are calculated using weighted sampling method shown in 
+Appendix B of the manuscript. `post_psi0` contains resampled posterior draws in the fixed order
+clinical endpoint, surrogate 1, and surrogate 2. `weight_data$norm_w` is the set of normalized weights, $\{ \tilde{w}^{(b)} \}$. `importance_diagnostics` helps identify
 whether those weights are concentrated in only a small number of historical
 draws.
 
 ## Historical-model fit assessment
 
-The historical model is assessed by holding out each of the 66 trials in turn.
-`fit_loo_historical_models()` fits the random-intercept, inverse-gamma model to
-the other 65 trials and saves the posterior columns required for assessment.
-The batch is restartable: existing trial files are reused unless
-`overwrite = TRUE`.
+Fitting and assessment are separate steps. Choose the historical-model
+intercept and uncertainty prior, then fit the model to all but one trial using
+`historical_model_fit_2surrogates()`. Repeat for each held-out trial. The two
+assessment functions, `loo_cv_rmse()` and `tolerance_interval_coverage()`, only
+summarize inputs supplied by the user; they never fit models or select priors.
+
+This is internal leave-one-trial-out assessment: each held-out trial serves as
+a pseudo-new trial. The package uses simulated trials, so its results are not
+expected to match the manuscript's CKD trial results.
+
+### Prepare the fits and point estimates yourself
+
+The following example shows the fitting loop explicitly. The settings below
+are illustrative and can be changed independently of the assessment functions.
+`niter` is the number of saved post-warmup draws per chain. Run this expensive
+step only when new fits are needed; it is not run when building the vignette.
 
 ```{r fit-loo-models, eval=FALSE}
-loo_paths <- fit_loo_historical_models(
-  data = trial_sim_dat,
-  output_dir = "data-raw/loo-random-inverse-gamma",
-  seed = 2026,
-  nchains = 4,
-  ncores = 4,
-  niter = 2000,
-  nwarmup = 1000,
-  adapt_delta = 0.95,
-  max_treedepth = 15
+historical_fields <- c(
+  "CE_est", "CE_se", "Sur1_est", "Sur1_se", "Sur2_est", "Sur2_se",
+  "Cor_CE_Sur1", "Cor_CE_Sur2", "Cor_Sur1_Sur2"
+)
+trials <- as.data.frame(trial_sim_dat)
+historical_data <- trials[, historical_fields]
+
+# Your choices for this analysis; the metric functions do not set these.
+use_random_intercept <- TRUE
+uncertainty_prior <- "inverse_gamma"
+use_diffuse_surrogate_prior <- FALSE
+center_clinical_intercept <- FALSE
+
+paired_effects <- data.frame(
+  observed = trials$CE_est,
+  estimated = rep(NA_real_, nrow(trials)),
+  row.names = as.character(trials$trial_id)
+)
+loo_draws <- vector("list", nrow(trials))
+names(loo_draws) <- as.character(trials$trial_id)
+loo_diagnostics <- vector("list", nrow(trials))
+
+for (i in seq_len(nrow(trials))) {
+  historical_fit <- historical_model_fit_2surrogates(
+    data = historical_data[-i, , drop = FALSE],
+    random_intercept = use_random_intercept,
+    prior_for_uncertainty = uncertainty_prior,
+    nchains = 4, ncores = 4, niter = 2000, nwarmup = 1000,
+    seed = 2026 + i - 1,
+    adapt_delta = 0.95, max_treedepth = 15
+  )
+  loo_draws[[i]] <- historical_fit$posterior_samples
+  loo_diagnostics[[i]] <- list(
+    sampler = historical_fit$diagnostics,
+    convergence = historical_fit$fit$summary()
+  )
+
+  held_out <- list(
+    ClnEst = trials$CE_est[i], ClnSE = trials$CE_se[i],
+    Sur1Est = trials$Sur1_est[i], Sur1SE = trials$Sur1_se[i],
+    Sur2Est = trials$Sur2_est[i], Sur2SE = trials$Sur2_se[i],
+    R1Clin = trials$Cor_CE_Sur1[i],
+    R2Clin = trials$Cor_CE_Sur2[i], R12 = trials$Cor_Sur1_Sur2[i]
+  )
+  set.seed(2026 + i - 1)
+  updated <- MBE(
+    mcmc_dat = loo_draws[[i]], sample_dat = held_out,
+    diffuse = use_diffuse_surrogate_prior,
+    intercept0 = center_clinical_intercept
+  )
+  paired_effects$estimated[i] <- updated$post_mean[1, 1]
+}
+
+# Inspect diagnostics and resolve fitting issues before interpreting the metric.
+loo_diagnostics[[1]]
+loo_cv_rmse(paired_effects)
+```
+
+If you already have fits, reuse their posterior draws in the `MBE()` calls;
+there is no need to repeat the historical fitting step. Saved records from the
+earlier development workflow can still be read with
+`readRDS(path)$posterior_draws`.
+
+For example, if the original 66 saved records are on your computer, load them
+directly instead of running the fitting loop:
+
+```{r reuse-saved-fits, eval=FALSE}
+trials <- as.data.frame(trial_sim_dat)
+loo_draws <- lapply(as.character(trials$trial_id), function(id) {
+  record <- readRDS(file.path(
+    "data-raw/loo-random-inverse-gamma", paste0("heldout_trial_", id, ".rds")
+  ))
+  stopifnot(identical(as.character(record$held_out_trial), id))
+  record$posterior_draws
+})
+names(loo_draws) <- as.character(trials$trial_id)
+use_diffuse_surrogate_prior <- FALSE
+center_clinical_intercept <- FALSE
+```
+
+### Calculate RMSE from a two-column table
+
+Supply one row per trial and two columns named `observed` and `estimated`.
+A data frame or numeric matrix is accepted, with columns in either order.
+Match trial IDs before assembling the pairs. The estimate is chosen by the
+user; the example uses the posterior mean from `MBE()`, an estimate of the true
+effect rather than a known true effect.
+
+```{r rmse-from-saved-results}
+data("loo_assessment_by_trial", package = "MBE")
+paired_effects <- data.frame(
+  observed = loo_assessment_by_trial$observed_clinical,
+  estimated = loo_assessment_by_trial$posterior_mean_clinical
+)
+loo_cv_rmse(paired_effects)
+loo_cv_rmse(as.matrix(paired_effects))
+```
+
+The calculation is `sqrt(mean((observed - estimated)^2))`. With a full MBE
+update, the held-out clinical estimate contributes to its own posterior mean.
+This measures agreement after updating, rather than prediction from surrogates
+alone. Calling the metric LOO-CV assumes the corresponding trial was excluded
+from historical fitting; the metric function cannot verify that step.
+
+### Generate the clinical predictive distribution and check capture
+
+`clinical_predictive_distribution()` takes historical posterior draws and the
+held-out trial's surrogate estimates, standard errors, and sampling correlations.
+It generates draws for the observed clinical estimate conditional on the two
+surrogate estimates. The clinical estimate itself is ignored even if `ClnEst`
+is present in the input list. This example reuses `historical_posterior` and
+`new_trial` from above; trial 1 was excluded from that historical fit:
+
+```{r clinical-prediction}
+predictive_draws <- clinical_predictive_distribution(
+  mcmc_dat = historical_posterior, sample_dat = new_trial,
+  diffuse = FALSE, intercept0 = FALSE,
+  n_draws = 4000, seed = 2026
+)
+stats::quantile(predictive_draws, c(0.025, 0.975))
+```
+
+`tolerance_interval_coverage()` calls this prediction function internally. Supply
+the desired lower and upper quantile probabilities: `c(0.025, 0.975)` for a 95%
+interval, or one row per interval in a two-column matrix. Asymmetric intervals
+are also supported.
+
+```{r interval-capture}
+interval_probs <- rbind(
+  c(0.025, 0.975),  # 95%
+  c(0.05, 0.95),    # 90%
+  c(0.075, 0.925)   # 85%
+)
+tolerance_interval_coverage(
+  observed = new_trial$ClnEst,
+  mcmc_dat = historical_posterior, sample_dat = new_trial,
+  probs = interval_probs,
+  diffuse = FALSE, intercept0 = FALSE,
+  n_draws = 4000, seed = 2026
 )
 ```
 
-`loo_cv_model_assessment()` calculates two quantities:
+The result has one row per probability pair: `lower_prob`, `upper_prob`,
+`level` (as a percentage), `observed`, `lower`, `upper`, and logical `covered`.
+Bounds use `stats::quantile(type = 7)`, and both endpoints count as covered.
+The function generates predictive draws once per trial, then uses the same
+draws for all requested intervals. A fixed seed makes simulation reproducible.
 
-- LOO-CV RMSE compares each held-out clinical estimate with its posterior mean
-  from the full-carryover MBE update.
-- Tolerance coverage predicts the held-out observed clinical estimate after
-  conditioning on only its two observed surrogate estimates.
+For multiple trials, reuse the `loo_draws` list from the fitting example,
+match it to the trial IDs, and combine single-trial results:
 
-For posterior draw \(b\), the predictive clinical estimate has distribution
-
-$$
-N\left(
-  \beta_0^{(b)} + \beta_1^{(b)}\gamma_{01}^{(b)} +
-  \beta_2^{(b)}\gamma_{02}^{(b)},
-  \lambda_{\theta}^{2(b)} + \sigma^2_{\hat{\theta}_0}
-\right).
-$$
-
-The variance therefore includes both the historical model's residual clinical
-heterogeneity and the held-out trial's clinical sampling variance.
-
-```{r calculate-loo-assessment, eval=FALSE}
-loo_assessment <- loo_cv_model_assessment(
-  loo_posteriors = "data-raw/loo-random-inverse-gamma",
-  data = trial_sim_dat,
-  seed = 2026
+```{r aggregate-coverage, eval=FALSE}
+stopifnot(
+  !is.null(names(loo_draws)), !anyDuplicated(names(loo_draws)),
+  !anyDuplicated(trials$trial_id),
+  setequal(as.character(trials$trial_id), names(loo_draws))
 )
+loo_draws <- loo_draws[as.character(trials$trial_id)]
+capture <- do.call(rbind, lapply(seq_len(nrow(trials)), function(i) {
+  held_out <- list(
+    ClnSE = trials$CE_se[i],
+    Sur1Est = trials$Sur1_est[i], Sur1SE = trials$Sur1_se[i],
+    Sur2Est = trials$Sur2_est[i], Sur2SE = trials$Sur2_se[i],
+    R1Clin = trials$Cor_CE_Sur1[i],
+    R2Clin = trials$Cor_CE_Sur2[i], R12 = trials$Cor_Sur1_Sur2[i]
+  )
+  result <- tolerance_interval_coverage(
+    observed = trials$CE_est[i],
+    mcmc_dat = loo_draws[[i]], sample_dat = held_out,
+    probs = interval_probs, n_draws = 8000, seed = 2026 + i - 1,
+    diffuse = use_diffuse_surrogate_prior,
+    intercept0 = center_clinical_intercept
+  )
+  data.frame(trial_id = trials$trial_id[i], result)
+}))
+stats::aggregate(covered ~ lower_prob + upper_prob, data = capture, FUN = mean)
 ```
 
-The completed, converged 66-trial assessment is included as two compact package
-datasets so users do not need to rerun all 66 Stan models:
+Prediction conditions the joint observed-effect distribution on the two
+surrogate estimates. It incorporates residual clinical heterogeneity, clinical
+sampling variance, surrogate uncertainty, and the supplied sampling correlations.
+Historical draws are weighted by the likelihood of the observed surrogates.
+This is different from passing latent-effect draws from `MBE()$post_psi0`,
+which already condition on the observed clinical estimate.
+
+### Archived example results
+
+The completed 66-trial assessment remains available as two compact datasets.
+Their provenance is the random-intercept, inverse-gamma specification; neither
+new metric requires that specification. The archived coverage used an empirical
+percentile rule and an unweighted surrogate-update simulation. The new function
+uses joint conditioning, surrogate-based weights, and inclusive quantile bounds.
+Those differences can change coverage. Archived results are preserved, not
+recalculated or relabeled as results of the new prediction function.
 
 ```{r packaged-loo-results}
 data("loo_assessment_summary", package = "MBE")

@@ -90,11 +90,14 @@ The density of \eqn{\psi}{psi} can be expressed as a sequence of conditional den
 This function fits the model using MCMC sampling on historical RCTs and returns
 the posterior distribution of the model parameters.
 
-The \code{loo} and \code{waic} components use the Stan \code{log_lik} values conditional on
-each trial's latent treatment-effect vector. They therefore describe
-conditional model fit. For prediction to a completely held-out trial, use
-\code{\link[=fit_loo_historical_models]{fit_loo_historical_models()}} and \code{\link[=loo_cv_model_assessment]{loo_cv_model_assessment()}}, which refit the
-model after removing each trial.
+The \code{loo} and \code{waic} components are conditional model-fit measures based on
+the manuscript's Stan log-likelihood. They are distinct from the explicit
+internal leave-one-trial-out assessment. For that assessment, call this
+fitting function separately for each set of training trials, omitting the
+held-out trial. Then use \code{\link[=loo_cv_rmse]{loo_cv_rmse()}} on paired effects and
+\code{\link[=tolerance_interval_coverage]{tolerance_interval_coverage()}} with the already fitted posterior draws and
+held-out sampling inputs. The latter calls \code{\link[=clinical_predictive_distribution]{clinical_predictive_distribution()}}.
+The assessment functions do not fit models or choose priors.
 }
 \examples{
 \dontrun{
@@ -108,6 +111,7 @@ historical_data <- trial_sim_dat[, c(
 fit <- historical_model_fit_2surrogates(
   data = historical_data,
   random_intercept = TRUE,
+  prior_for_uncertainty = "half_normal",
   nchains = 4,
   ncores = 4,
   niter = 2000,

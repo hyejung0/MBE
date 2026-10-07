@@ -17,6 +17,9 @@ data("trial_sim_dat", package = "MBE")
 data("historical_posterior", package = "MBE")
 ```
 
+
+
+
 ## Simulated trial data
 
 `trial_sim_dat` contains 66 simulated trials with one clinical endpoint and
@@ -37,8 +40,12 @@ random-intercept, inverse-gamma specification. It is not run while building the
 vignette because it requires CmdStan and several minutes of computation.
 
 ```{r historical-model, eval=FALSE}
+historical_fields <- c(
+  "CE_est", "CE_se", "Sur1_est", "Sur1_se", "Sur2_est", "Sur2_se",
+  "Cor_CE_Sur1", "Cor_CE_Sur2", "Cor_Sur1_Sur2"
+)
 historical_fit <- historical_model_fit_2surrogates(
-  data = trial_sim_dat[-1, ],
+  data = as.data.frame(trial_sim_dat)[-1, historical_fields],
   random_intercept = TRUE,
   prior_for_uncertainty = "inverse_gamma",
   nchains = 4,

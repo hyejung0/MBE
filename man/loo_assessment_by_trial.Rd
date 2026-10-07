@@ -29,8 +29,9 @@ observed clinical estimate.}
 }
 }
 \source{
-Derived from \code{trial_sim_dat} using \code{\link[=fit_loo_historical_models]{fit_loo_historical_models()}} and
-\code{\link[=loo_cv_model_assessment]{loo_cv_model_assessment()}} with seed 2026.
+Archived 66-fit analysis of \code{trial_sim_dat} with seed 2026, saved in
+\code{data-raw/loo-random-inverse-gamma/loo_assessment.rds}. See the preparation
+script \code{data-raw/loo_assessment.R} in the source repository.
 }
 \usage{
 loo_assessment_by_trial
@@ -39,5 +40,11 @@ loo_assessment_by_trial
 Trial-level results underlying \code{loo_assessment_summary}. The
 assessment uses the random-intercept historical model with inverse-gamma
 variance priors and seed 2026.
+}
+\details{
+These archived results use the earlier empirical-percentile
+coverage calculation; see \link{loo_assessment_summary} for provenance and its
+differences from the current prediction and coverage functions. The paired
+effects can still be supplied to \code{\link[=loo_cv_rmse]{loo_cv_rmse()}} without refitting any model.
 }
 \keyword{datasets}

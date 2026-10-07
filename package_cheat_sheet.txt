@@ -77,6 +77,29 @@ usethis::use_build_ignore("path_name")
 # Document package datasets with roxygen2 comments in R/data.R, then run:
 devtools::document()
 
+# Historical-model assessment (fitting is a separate, user-controlled step)
+# Fit each training set with historical_model_fit_2surrogates(), excluding the
+# corresponding held-out trial, and choose your own model and MBE settings.
+# Read the "Mapping the MBE Manuscript to the Package" article for the loop.
+
+# RMSE: one row per trial, two named columns; estimates may be MBE posterior means
+loo_cv_rmse(data.frame(observed = observed_effects, estimated = estimated_effects))
+
+# Generate a clinical predictive distribution from an already fitted posterior
+predictive <- clinical_predictive_distribution(mcmc_dat, sample_dat, seed = 2026)
+
+# Coverage calls the predictive function internally; bounds are probabilities
+tolerance_interval_coverage(
+  observed = observed_clinical,
+  mcmc_dat = mcmc_dat, sample_dat = sample_dat,
+  probs = rbind(c(0.025, 0.975), c(0.05, 0.95), c(0.075, 0.925)),
+  seed = 2026
+)
+
+# Repeat for each trial and average `covered` for each probability pair.
+# The original saved fits and assessment remain available; do not rerun all
+# historical fits just to use the new metric functions.
+
 
 -------------------------------------------------------------------------------
 4. TESTING, CHECKING, README, AND VIGNETTES
