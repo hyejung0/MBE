@@ -13,3 +13,4 @@
 ^\.vscode$
 ^inst/code$
 ^package_cheat_sheet.txt
+^archive$

@@ -9,13 +9,13 @@ reference:
   - MBE
 - title: Historical-model assessment
   contents:
-  - fit_loo_historical_models
-  - loo_cv_model_assessment
+  - loo_cv_rmse
+  - clinical_predictive_distribution
+  - tolerance_interval_coverage
 - title: Example data
   contents:
   - historical_posterior
   - trial_sim_dat
-  - interim_sim_dat
   - loo_assessment_summary
   - loo_assessment_by_trial
 
@@ -25,4 +25,4 @@ articles:
   contents:
   - MBE-manuscript-to-code
   - simulation-example
-  - interim-analysis-example
+

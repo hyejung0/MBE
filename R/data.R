@@ -1,39 +1,3 @@
-#' Simulated Data for Interim Analysis
-#'
-#' @description This is a simulated data set for chronic kidney disease clinical trials.
-#' The definitive clinical endpoint is the first of ESRD or a 57% decline from baseline eGFR.
-#' In addition to the treatment effect estimated on the definitive clinical endpoint,
-#' the treatment effect is estimated on exactly two surrogate endpoints: chronic
-#' eGFR slope (`Sur1`) and acute eGFR slope (`Sur2`).
-#'
-#' The data contain eight scenarios. Cases 1 and 2 use a baseline eGFR range of
-#' 30--60, cases 3 and 4 use 30--75, and cases 5--8 use 25--50
-#' ml/min/1.73m2. Odd-numbered cases have no slope treatment effect; even-numbered
-#' cases have an active slope treatment effect of 0.8. Cases 7 and 8 repeat the
-#' settings of cases 5 and 6, respectively.
-#'
-#' @format A data frame with 528 rows and 11 variables:
-#' \describe{
-#'   \item{case}{Integer. The scenario case number (1 through 8).}
-#'   \item{analysis.month}{Integer. Number of months since the study began for the specific case.}
-#'   \item{R1Clin}{Numeric. Estimated correlation between chronic slope and clinical endpoint. If NA, that is because the treatment effect on clinical endpoint (ClnEst and ClnSE) were not estimated due to small event size.}
-#'   \item{R2Clin}{Numeric. Estimated correlation between acute slope and clinical endpoint. If NA, that is because the treatment effect on clinical endpoint (ClnEst and ClnSE) were not estimated due to small event size.}
-#'   \item{R12}{Numeric. Estimated correlation between chronic slope and acute slope.}
-#'   \item{ClnEst}{Numeric. Estimated treatment effect on the clinical endpoint (log hazard ratio). If NA, that is because the treatment effect on clinical endpoint (ClnEst and ClnSE) were not estimated due to small event size.}
-#'   \item{ClnSE}{Numeric. Standard error of the estimated treatment effect on the clinical endpoint. If NA, that is because the clinical treatment effect was not estimated due to small event size.}
-#'   \item{Sur2Est}{Numeric. Estimated treatment effect on acute slope.}
-#'   \item{Sur2SE}{Numeric. Standard error of the estimated treatment effect on acute slope.}
-#'   \item{Sur1Est}{Numeric. Estimated treatment effect on chronic slope.}
-#'   \item{Sur1SE}{Numeric. Standard error of the estimated treatment effect on chronic slope.}
-#' }
-#' @author Jian Ying \email{jian.ying@@hsc.utah.edu}
-#' @source Simulated by Jian Ying
-"interim_sim_dat"
-
-
-
-
-
 #' Historical Posterior for Two Surrogate Endpoints
 #'
 #' Posterior draws of all model parameters from the MCMC model with chronic
@@ -94,6 +58,17 @@
 #' includes both residual clinical heterogeneity and the held-out trial's
 #' clinical sampling variance.
 #'
+#' @details Archived results from the earlier development assessment. RMSE
+#' uses full-carryover MBE posterior means, incorporating the held-out clinical
+#' estimate. Coverage used empirical-percentile indicators and an unweighted
+#' surrogate-update simulation. The current [clinical_predictive_distribution()]
+#' uses joint conditioning and surrogate-likelihood weights, and
+#' [tolerance_interval_coverage()] checks inclusive quantile bounds. This table
+#' is retained unchanged and is not a result of the current coverage function.
+#' These are internal cross-validation results on simulated data, not external
+#' validation. Model specification here describes only this archived dataset;
+#' the current assessment functions do not prescribe an intercept or prior.
+#'
 #' @format A data frame with 1 row and 4 variables:
 #' \describe{
 #'   \item{n_trials}{Integer. Number of held-out trials.}
@@ -104,8 +79,9 @@
 #'   \item{coverage_90}{Numeric. Proportion of held-out clinical estimates
 #'   covered by the 90 percent predictive interval.}
 #' }
-#' @source Derived from `trial_sim_dat` using [fit_loo_historical_models()] and
-#' [loo_cv_model_assessment()] with seed 2026.
+#' @source Archived 66-fit analysis of `trial_sim_dat` with seed 2026, saved in
+#' `data-raw/loo-random-inverse-gamma/loo_assessment.rds`. See the preparation
+#' script `data-raw/loo_assessment.R` in the source repository.
 "loo_assessment_summary"
 
 
@@ -115,6 +91,11 @@
 #' @description Trial-level results underlying `loo_assessment_summary`. The
 #' assessment uses the random-intercept historical model with inverse-gamma
 #' variance priors and seed 2026.
+#'
+#' @details These archived results use the earlier empirical-percentile
+#' coverage calculation; see [loo_assessment_summary] for provenance and its
+#' differences from the current prediction and coverage functions. The paired
+#' effects can still be supplied to [loo_cv_rmse()] without refitting any model.
 #'
 #' @format A data frame with 66 rows and 11 variables:
 #' \describe{
@@ -138,6 +119,7 @@
 #'   \item{covered_90}{Logical. Whether the 90 percent interval covered the
 #'   observed clinical estimate.}
 #' }
-#' @source Derived from `trial_sim_dat` using [fit_loo_historical_models()] and
-#' [loo_cv_model_assessment()] with seed 2026.
+#' @source Archived 66-fit analysis of `trial_sim_dat` with seed 2026, saved in
+#' `data-raw/loo-random-inverse-gamma/loo_assessment.rds`. See the preparation
+#' script `data-raw/loo_assessment.R` in the source repository.
 "loo_assessment_by_trial"
