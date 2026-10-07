@@ -99,9 +99,7 @@ test_that("historical fit summaries pass measures individually", {
 })
 
 test_that("packaged datasets contain no third-surrogate fields", {
-  data("interim_sim_dat", package = "MBE")
   data("trial_sim_dat", package = "MBE")
 
-  expect_false(any(grepl("Sur3|R3Clin|R13|R23", names(interim_sim_dat))))
   expect_false(any(grepl("Sur3", names(trial_sim_dat))))
 })

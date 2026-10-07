@@ -91,7 +91,7 @@ A detailed example is provided in the package vignette [Simulation Example](http
 
 
 <!-- ## Historical-model assessment -->
-
+ 
 
 <!-- Users fit each historical training set themselves with -->
 <!-- `historical_model_fit_2surrogates()`, choosing their intercept and uncertainty -->
