@@ -157,9 +157,10 @@
   invisible(mcmc_dat)
 }
 
-.validate_historical_data <- function(data) {
-  if (!is.data.frame(data) && !is.matrix(data)) {
-    stop("`data` must be a data frame or matrix.", call. = FALSE)
+#Check the historical data. Make sure the format is right and all columns are present.
+.validate_historical_data <- function(data, required_col_names) {
+  if (!is.data.frame(data) && !is.matrix(data) && !is.data.table(data)) {
+    stop("`data` must be a data frame, matrix, or data.table.", call. = FALSE)
   }
   if (!nrow(data)) {
     stop("`data` must contain at least one trial.", call. = FALSE)
@@ -168,33 +169,26 @@
     stop("`data` must have named columns for one clinical and exactly two surrogate endpoints.", call. = FALSE)
   }
 
-  missing_fields <- setdiff(.mbe_historical_fields, colnames(data))
-  extra_fields <- setdiff(colnames(data), .mbe_historical_fields)
-  if (length(missing_fields) || length(extra_fields)) {
-    details <- character()
-    if (length(missing_fields)) {
-      details <- c(details, paste0("missing: ", .format_field_list(missing_fields)))
-    }
-    if (length(extra_fields)) {
-      details <- c(details, paste0("unexpected: ", .format_field_list(extra_fields)))
-    }
+  missing_fields <- setdiff(required_col_names, colnames(data))
+  if (length(missing_fields) ) {
+    details <- c(details, paste0("missing: ", .format_field_list(missing_fields)))
     stop(
       paste0(
-        "`data` must contain exactly the nine named columns for one clinical and two surrogate endpoints (",
+        "`data` must is missing the following columns (",
         paste(details, collapse = "; "), ")."
       ),
       call. = FALSE
     )
   }
 
-  values <- as.matrix(as.data.frame(data)[, .mbe_historical_fields, drop = FALSE])
+  values <- as.matrix(as.data.frame(data)[, required_col_names, drop = FALSE])
   if (!is.numeric(values) || any(!is.finite(values))) {
     stop("All columns in `data` must contain only finite numeric values.", call. = FALSE)
   }
-  if (any(values[, c("CE_se", "Sur1_se", "Sur2_se"), drop = FALSE] <= 0)) {
-    stop("`CE_se`, `Sur1_se`, and `Sur2_se` must be greater than zero.", call. = FALSE)
+  if (any(values[, required_col_names[c("CE_se_col", "Sur1_se_col", "Sur2_se_col")], drop = FALSE] <= 0)) {
+    stop("`CE_se_col`, `Sur1_se_col`, and `Sur2_se_col` must be greater than zero.", call. = FALSE)
   }
-  for (field in c("Cor_CE_Sur1", "Cor_CE_Sur2", "Cor_Sur1_Sur2")) {
+  for (field in required_col_names[c("Cor_CE_Sur1", "Cor_CE_Sur2", "Cor_Sur1_Sur2")]) {
     .validate_correlation(values[, field], field)
   }
 

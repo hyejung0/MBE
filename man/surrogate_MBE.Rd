@@ -94,7 +94,9 @@ R12=trial_sim_dat$Cor_Sur1_Sur2[1]
 MBE_from_surrogate_only<-surrogate_MBE(
 mcmc_dat = historical_posterior,
 sample_dat=one_sim_dat,
-diffuse = TRUE, #We will not use the historical posterior distribution of the two surrogate endpoints to estimate the posterior distribution of MBE. Instead, we will use a diffuse prior.
+diffuse = TRUE, #We will not use the historical posterior
+#distribution of the two surrogate endpoints to estimate the
+#posterior distribution of MBE. Instead, we will use a diffuse prior.
 diffuse_se = 100,
 intercept0 = FALSE)
 

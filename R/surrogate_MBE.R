@@ -50,6 +50,7 @@
 #'   - `post_psi2`: Posterior draws of the treatment effect on the first surrogate.
 #'   - `post_psi3`: Posterior draws of the treatment effect on the second surrogate.
 #'
+#' @importFrom stats rnorm
 #' @export
 #'
 #' @examples
@@ -79,7 +80,9 @@
 #'MBE_from_surrogate_only<-surrogate_MBE(
 #' mcmc_dat = historical_posterior,
 #' sample_dat=one_sim_dat,
-#' diffuse = TRUE, #We will not use the historical posterior distribution of the two surrogate endpoints to estimate the posterior distribution of MBE. Instead, we will use a diffuse prior.
+#' diffuse = TRUE, #We will not use the historical posterior
+#' #distribution of the two surrogate endpoints to estimate the
+#' #posterior distribution of MBE. Instead, we will use a diffuse prior.
 #' diffuse_se = 100,
 #' intercept0 = FALSE)
 #'
