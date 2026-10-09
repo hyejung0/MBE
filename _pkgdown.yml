@@ -1,6 +1,7 @@
 url: https://hyejung0.github.io/MBE/
 template:
   bootstrap: 5
+  math-rendering: katex
 
 reference:
 - title: Model fitting and updating
