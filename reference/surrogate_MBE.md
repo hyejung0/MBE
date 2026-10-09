@@ -27,8 +27,8 @@ surrogate_MBE(
 
 - sample_dat:
 
-  A named list containing exactly nine scalar values: `Sur1Est`,
-  `Sur1SE`, `Sur2Est`, `Sur2SE`, and `R12`.
+  A named list containing the five scalar values: `Sur1Est`, `Sur1SE`,
+  `Sur2Est`, `Sur2SE`, and `R12`.
 
 - diffuse:
 
