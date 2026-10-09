@@ -41,8 +41,8 @@ not distributed with the package.
 The historical model can use a fixed or estimated clinical intercept and
 either half-normal or inverse-gamma priors for its uncertainty
 parameters. The manuscript’s initial specification uses an random
-intercept $`\beta_0`$ and inverse-gamma priors on the variance
-parameters. The first simulated trial can be held out as follows:
+intercept \beta_0 and inverse-gamma priors on the variance parameters.
+The first simulated trial can be held out as follows:
 
 ``` r
 
@@ -103,17 +103,17 @@ head(historical_posterior)
 The column names of this posterior datasets are different from what’s
 used in the manuscript. Here’s the mapping:
 
-| Manuscript name         | Programming name    |
-|:------------------------|:--------------------|
-| $`\beta_0`$             | `alphaCEonSur1Sur2` |
-| $`\beta_1`$             | `b1CEonSur1Sur2`    |
-| $`\beta_2`$             | `b2CEonSur1Sur2`    |
-| $`\lambda^2_\theta`$    | `SigSqCEonSur1Sur2` |
-| $`\alpha_0`$            | `alphaSur1onSur2`   |
-| $`\alpha_1`$            | `bSur1onSur2`       |
-| $`\lambda^2_\gamma`$    | `SigSqSur1onSur2`   |
-| $`\mu_{\gamma 2}`$      | `muSur2`            |
-| $`\sigma^2_{\gamma 2}`$ | `sigSqSur2`         |
+| Manuscript name      | Programming name    |
+|:---------------------|:--------------------|
+| \beta_0              | `alphaCEonSur1Sur2` |
+| \beta_1              | `b1CEonSur1Sur2`    |
+| \beta_2              | `b2CEonSur1Sur2`    |
+| \lambda^2\_\theta    | `SigSqCEonSur1Sur2` |
+| \alpha_0             | `alphaSur1onSur2`   |
+| \alpha_1             | `bSur1onSur2`       |
+| \lambda^2\_\gamma    | `SigSqSur1onSur2`   |
+| \mu\_{\gamma 2}      | `muSur2`            |
+| \sigma^2\_{\gamma 2} | `sigSqSur2`         |
 
 This posterior distribution is used as prior for estimating the
 treatment effect on the clinical endpoint for the held-out trial. The
@@ -170,7 +170,7 @@ posterior mixture. These quantities are calculated using weighted
 sampling method shown in Appendix B of the manuscript. `post_psi0`
 contains resampled posterior draws in the fixed order clinical endpoint,
 surrogate 1, and surrogate 2. `weight_data$norm_w` is the set of
-normalized weights, $`\{ \tilde{w}^{(b)} \}`$. `importance_diagnostics`
+normalized weights, \\ \tilde{w}^{(b)} \\. `importance_diagnostics`
 helps identify whether those weights are concentrated in only a small
 number of historical draws.
 

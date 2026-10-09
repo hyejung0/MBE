@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Mapping the MBE Manuscript to the Package • MBE</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -158,10 +159,9 @@ motivating analysis are not distributed with the package.</p>
 <p>The historical model can use a fixed or estimated clinical intercept
 and either half-normal or inverse-gamma priors for its uncertainty
 parameters. The manuscript’s initial specification uses an random
-intercept
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math>
-and inverse-gamma priors on the variance parameters. The first simulated
-trial can be held out as follows:</p>
+intercept <span class="math inline">\beta_0</span> and inverse-gamma
+priors on the variance parameters. The first simulated trial can be held
+out as follows:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">historical_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"CE_est"</span>, <span class="st">"CE_se"</span>, <span class="st">"Sur1_est"</span>, <span class="st">"Sur1_se"</span>, <span class="st">"Sur2_est"</span>, <span class="st">"Sur2_se"</span>,</span>
@@ -221,39 +221,40 @@ used in the manuscript. Here’s the mapping:</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\beta_0</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\beta_0</span></td>
 <td align="left"><code>alphaCEonSur1Sur2</code></td>
 </tr>
 <tr class="even">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\beta_1</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\beta_1</span></td>
 <td align="left"><code>b1CEonSur1Sur2</code></td>
 </tr>
 <tr class="odd">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mn>2</mn></msub><annotation encoding="application/x-tex">\beta_2</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\beta_2</span></td>
 <td align="left"><code>b2CEonSur1Sur2</code></td>
 </tr>
 <tr class="even">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>λ</mi><mi>θ</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\lambda^2_\theta</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\lambda^2_\theta</span></td>
 <td align="left"><code>SigSqCEonSur1Sur2</code></td>
 </tr>
 <tr class="odd">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\alpha_0</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\alpha_0</span></td>
 <td align="left"><code>alphaSur1onSur2</code></td>
 </tr>
 <tr class="even">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\alpha_1</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\alpha_1</span></td>
 <td align="left"><code>bSur1onSur2</code></td>
 </tr>
 <tr class="odd">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>λ</mi><mi>γ</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">\lambda^2_\gamma</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\lambda^2_\gamma</span></td>
 <td align="left"><code>SigSqSur1onSur2</code></td>
 </tr>
 <tr class="even">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>μ</mi><mrow><mi>γ</mi><mn>2</mn></mrow></msub><annotation encoding="application/x-tex">\mu_{\gamma 2}</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\mu_{\gamma 2}</span></td>
 <td align="left"><code>muSur2</code></td>
 </tr>
 <tr class="odd">
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>σ</mi><mrow><mi>γ</mi><mn>2</mn></mrow><mn>2</mn></msubsup><annotation encoding="application/x-tex">\sigma^2_{\gamma 2}</annotation></semantics></math></td>
+<td align="left"><span class="math inline">\sigma^2_{\gamma
+2}</span></td>
 <td align="left"><code>sigSqSur2</code></td>
 </tr>
 </tbody>
@@ -309,8 +310,7 @@ covariance of the updated posterior mixture. These quantities are
 calculated using weighted sampling method shown in Appendix B of the
 manuscript. <code>post_psi0</code> contains resampled posterior draws in
 the fixed order clinical endpoint, surrogate 1, and surrogate 2.
-<code>weight_data$norm_w</code> is the set of normalized weights,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><msup><mover><mi>w</mi><mo accent="true">̃</mo></mover><mrow><mo stretchy="false" form="prefix">(</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{ \tilde{w}^{(b)} \}</annotation></semantics></math>.
+<code>weight_data$norm_w</code> is the set of normalized weights, <span class="math inline">\{ \tilde{w}^{(b)} \}</span>.
 <code>importance_diagnostics</code> helps identify whether those weights
 are concentrated in only a small number of historical draws.</p>
 </div>
