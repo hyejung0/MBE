@@ -1,9 +1,9 @@
 # Predict an Observed Clinical Effect from Two Observed Surrogate Effects
 
-Generates equally weighted predictive draws for a held-out trial's
-observed clinical treatment-effect estimate using an already fitted
-historical posterior. This function does not fit a historical model and
-does not use the held-out clinical estimate to construct predictions.
+Generates equally weighted predictive draws for a new trial's observed
+clinical treatment-effect estimate using an already fitted historical
+posterior. This function does not fit a historical model and does not
+use the held-out clinical estimate to construct predictions.
 
 ## Usage
 
@@ -77,16 +77,17 @@ For each historical draw, the joint distribution of the observed
 clinical and surrogate estimates is multivariate normal, with the model
 covariance plus the within-trial sampling covariance. The function
 conditions this joint distribution on the two observed surrogate
-estimates using normal conditional-distribution formulas. Historical
-parameter draws are reweighted by the marginal likelihood of those
-surrogate estimates, then sampled to form the predictive mixture.
+estimates using normal conditional-distribution formulas to generate
+predictive draws for the new trial. Historical parameter draws are
+reweighted by the marginal likelihood of those surrogate estimates, then
+sampled to form the predictive mixture.
 
 This includes residual clinical heterogeneity, clinical sampling
 variance, surrogate measurement uncertainty, posterior parameter
 uncertainty, and the supplied within-trial sampling correlations. The
-clinical estimate itself is never used for weighting or conditioning.
-The returned draws target an observed clinical estimate, not a latent
-true clinical effect.
+clinical estimate itself from the new trial is never used for weighting
+or conditioning. The returned draws target an observed clinical
+estimate, not a latent true clinical effect.
 
 This joint conditioning also accounts for clinical-surrogate sampling
 correlations and updates historical-draw weights. It differs from the

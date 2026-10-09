@@ -9,6 +9,15 @@ clinical endpoint, as described in Lee et al. (2026).
 ``` r
 historical_model_fit_2surrogates(
   data,
+  CE_est_col = "CE_est",
+  CE_se_col = "CE_se",
+  Sur1_est_col = "Sur1_est",
+  Sur1_se_col = "Sur1_se",
+  Sur2_est_col = "Sur2_est",
+  Sur2_se_col = "Sur2_se",
+  Cor_CE_Sur1 = "Cor_CE_Sur1",
+  Cor_CE_Sur2 = "Cor_CE_Sur2",
+  Cor_Sur1_Sur2 = "Cor_Sur1_Sur2",
   random_intercept = TRUE,
   prior_for_uncertainty = "half_normal",
   output_dir = tempdir(),
@@ -25,11 +34,64 @@ historical_model_fit_2surrogates(
 
 - data:
 
-  A data frame or matrix with one row per trial and exactly these nine
-  numeric columns (order does not matter): `CE_est`, `CE_se`,
-  `Sur1_est`, `Sur1_se`, `Sur2_est`, `Sur2_se`, `Cor_CE_Sur1`,
-  `Cor_CE_Sur2`, and `Cor_Sur1_Sur2`. Data for a third surrogate
-  endpoint are not accepted.
+  A data frame, matrix, or data.table with one row per trial and exactly
+  these nine numeric columns representing the estimated treatment
+  effects, standard errors, and sampling correlations for the clinical
+  endpoint and two surrogate endpoints.
+
+- CE_est_col:
+
+  A character string. The name of the column in `data` that contains the
+  estimated treatment effect for the clinical endpoint. Default is
+  "CE_est".
+
+- CE_se_col:
+
+  A character string. The name of the column in `data` that contains the
+  standard error of the estimated treatment effect for the clinical
+  endpoint. Default is "CE_se".
+
+- Sur1_est_col:
+
+  A character string. The name of the column in `data` that contains the
+  estimated treatment effect for the first surrogate endpoint. Default
+  is "Sur1_est".
+
+- Sur1_se_col:
+
+  A character string. The name of the column in `data` that contains the
+  standard error of the estimated treatment effect for the first
+  surrogate endpoint. Default is "Sur1_se".
+
+- Sur2_est_col:
+
+  A character string. The name of the column in `data` that contains the
+  estimated treatment effect for the second surrogate endpoint. Default
+  is "Sur2_est".
+
+- Sur2_se_col:
+
+  A character string. The name of the column in `data` that contains the
+  standard error of the estimated treatment effect for the second
+  surrogate endpoint. Default is "Sur2_se".
+
+- Cor_CE_Sur1:
+
+  A character string. The name of the column in `data` that contains the
+  sampling correlation between the clinical endpoint and the first
+  surrogate endpoint. Default is "Cor_CE_Sur1".
+
+- Cor_CE_Sur2:
+
+  A character string. The name of the column in `data` that contains the
+  sampling correlation between the clinical endpoint and the second
+  surrogate endpoint. Default is "Cor_CE_Sur2".
+
+- Cor_Sur1_Sur2:
+
+  A character string. The name of the column in `data` that contains the
+  sampling correlation between the first and second surrogate endpoints.
+  Default is "Cor_Sur1_Sur2".
 
 - random_intercept:
 

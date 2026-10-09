@@ -91,6 +91,9 @@ Example](https://hyejung0.github.io/MBE/articles/simulation-example.html).
   : Fit the Historical Model for Exactly Two Surrogate Endpoints
 - [`MBE()`](https://hyejung0.github.io/MBE/reference/MBE.md) : Estimate
   an MBE Posterior with Two Surrogate Endpoints
+- [`surrogate_MBE()`](https://hyejung0.github.io/MBE/reference/surrogate_MBE.md)
+  : Estimate the MBE posterior distribution CE with only the two
+  surrogate endpoints
 
 ## Historical-model assessment
 
