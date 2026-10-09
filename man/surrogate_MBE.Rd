@@ -17,7 +17,7 @@ surrogate_MBE(
 two-surrogate historical model. Must contains columns of the variables named:
 \code{alphaCEonSur1Sur2}, \code{b1CEonSur1Sur2}, \code{b2CEonSur1Sur2}, and \code{SigSqCEonSur1Sur2}.}
 
-\item{sample_dat}{A named list containing exactly nine scalar values:
+\item{sample_dat}{A named list containing the five scalar values:
 \code{Sur1Est}, \code{Sur1SE}, \code{Sur2Est}, \code{Sur2SE}, and \code{R12}.}
 
 \item{diffuse}{A logical value indicating whether to use a diffuse prior. Defaults to TRUE.}

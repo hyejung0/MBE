@@ -9,7 +9,7 @@
 #'   two-surrogate historical model. Must contains columns of the variables named:
 #'   `alphaCEonSur1Sur2`, `b1CEonSur1Sur2`, `b2CEonSur1Sur2`, and `SigSqCEonSur1Sur2`.
 #'
-#' @param sample_dat A named list containing exactly nine scalar values:
+#' @param sample_dat A named list containing the five scalar values:
 #'   `Sur1Est`, `Sur1SE`, `Sur2Est`, `Sur2SE`, and `R12`.
 #' @param diffuse A logical value indicating whether to use a diffuse prior. Defaults to TRUE.
 #' @param diffuse_se A positive numeric value specifying the standard deviation
