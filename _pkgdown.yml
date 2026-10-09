@@ -7,6 +7,7 @@ reference:
   contents:
   - historical_model_fit_2surrogates
   - MBE
+  - surrogate_MBE
 - title: Historical-model assessment
   contents:
   - loo_cv_rmse
