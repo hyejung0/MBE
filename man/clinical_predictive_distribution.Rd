@@ -7,7 +7,6 @@
 clinical_predictive_distribution(
   mcmc_dat,
   sample_dat,
-  n_draws = NULL,
   seed = NULL,
   diffuse = FALSE,
   diffuse_se = 100,
@@ -15,60 +14,46 @@ clinical_predictive_distribution(
 )
 }
 \arguments{
-\item{mcmc_dat}{Historical posterior draws in the format accepted by \code{\link[=MBE]{MBE()}}.
-For leave-one-trial-out assessment, fit these draws without the trial to be
-predicted, using \code{\link[=historical_model_fit_2surrogates]{historical_model_fit_2surrogates()}}. Fixed- and
-random-intercept fits and both uncertainty priors are supported.}
+\item{mcmc_dat}{Historical posterior draws as \code{posterior_samples} returned by
+\code{\link[=historical_model_fit_2surrogates]{historical_model_fit_2surrogates()}} function.}
 
 \item{sample_dat}{A named list containing \code{ClnSE}, \code{Sur1Est}, \code{Sur1SE},
-\code{Sur2Est}, \code{Sur2SE}, \code{R1Clin}, \code{R2Clin}, and \code{R12} for one held-out trial.
-An optional \code{ClnEst} entry is ignored. These are the same sampling inputs
-used by \code{\link[=MBE]{MBE()}}, except the clinical estimate is not needed.}
-
-\item{n_draws}{Number of predictive draws to generate. Defaults to the number
-of rows in \code{mcmc_dat}.}
+\code{Sur2Est}, \code{Sur2SE}, \code{R1Clin}, \code{R2Clin}, and \code{R12} for the one trial for which
+we wish to estimate the posterior predictive distribution.}
 
 \item{seed}{Optional positive integer for reproducible simulation. When
 supplied, the caller's random-number state is restored on exit.}
 
 \item{diffuse}{Logical; replace the historical surrogate-effect distribution
-with a diffuse prior, as in \code{\link[=MBE]{MBE()}}. Defaults to \code{FALSE} (full carryover).}
+with a diffuse prior, as in \code{\link[=surrogate_MBE]{surrogate_MBE()}}. Defaults to \code{FALSE} (full carryover).}
 
 \item{diffuse_se}{Positive standard deviation of the diffuse surrogate prior.}
 
 \item{intercept0}{Logical; center the clinical-intercept draws at zero, as in
-\code{\link[=MBE]{MBE()}}. Defaults to \code{FALSE}. An absent clinical-intercept column in a
+\code{\link[=surrogate_MBE]{surrogate_MBE()}}. Defaults to \code{FALSE}. An absent clinical-intercept column in a
 fixed-intercept fit is treated as zero.}
 }
 \value{
-A numeric vector of \code{n_draws} equally weighted predictive draws.
+A numeric vector of posterior predictive distribution of the treatment
+effect on the clinical endpoint. The length is same as the number of rows of
+the historical posteriors.
 }
 \description{
 Generates equally weighted predictive draws for a new
-trial's observed clinical treatment-effect estimate using an already fitted
-historical posterior. This function does not fit a historical model and does
-not use the held-out clinical estimate to construct predictions.
+trial's observed clinical treatment-effect estimate using historical
+posterior and observed treatment effects on the surrogate endpoints.
 }
 \details{
-For each historical draw, the joint distribution of the observed
-clinical and surrogate estimates is multivariate normal, with the model
-covariance plus the within-trial sampling covariance. The function conditions
-this joint distribution on the two observed surrogate estimates using
-normal conditional-distribution formulas to generate predictive draws for the new trial.
-Historical parameter draws are reweighted by the marginal likelihood of
-those surrogate estimates, then sampled to form the predictive mixture.
-
-This includes residual clinical heterogeneity, clinical sampling variance,
-surrogate measurement uncertainty, posterior parameter uncertainty, and the
-supplied within-trial sampling correlations. The clinical estimate itself
-from the new trial is never used for weighting or conditioning.
-The returned draws target an observed clinical estimate, not a latent true
-clinical effect.
-
-This joint conditioning also accounts for clinical-surrogate sampling
-correlations and updates historical-draw weights. It differs from the earlier
-development assessment's unweighted surrogate-update simulation, so new
-predictive intervals need not reproduce archived coverage results.
+Review the details provided in \code{\link[=surrogate_MBE]{surrogate_MBE()}}. We can use the
+historical posterior draws and the observed treatment effect on the surrogate
+effects to sample posterior distribution on the true treatment effect on the
+clinical endpoint. Note also
+\deqn{\hat{\theta}_0 \sim N(\theta_0, \sigma^2_0)} where \eqn{\sigma^2_0} is
+the known sampling variance of the clinical treatment effect
+(i.e., \code{ClnSE} of the new trial). We can then collect the predictive
+distribution on the observed clinical treatment effect by sampling the error
+term from \eqn{N(0, \sigma^2_0)} and adding it to the surrogate MBE's posterior
+distribution of the true clinical effect.
 }
 \examples{
 data("historical_posterior")
@@ -84,7 +69,9 @@ held_out <- list(
   R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
 )
 predictive <- clinical_predictive_distribution(
-  historical_posterior[1:100, ], held_out, seed = 2026
+  mcmc_dat=historical_posterior,
+  sample_dat=held_out,
+  seed = 2026
 )
 stats::quantile(predictive, c(0.025, 0.975))
 }

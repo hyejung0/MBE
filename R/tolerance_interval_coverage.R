@@ -13,7 +13,7 @@
 #'   and column 2 the upper probability. Each pair must satisfy
 #'   `0 <= lower < upper <= 1`. Asymmetric intervals are allowed.
 #' @param ... Additional arguments to [clinical_predictive_distribution()],
-#'   including `n_draws`, `seed`, `diffuse`, `diffuse_se`, and `intercept0`.
+#'   including `seed`, `diffuse`, `diffuse_se`, and `intercept0`.
 #'
 #' @details Predictive draws are generated once and shared across all intervals
 #' in a call. Bounds use [stats::quantile()] with `type = 7`. Capture is inclusive:

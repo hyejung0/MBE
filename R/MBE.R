@@ -4,7 +4,7 @@
 #' estimate the posterior distribution of an MBE by importance sampling. The
 #' model is fixed to one clinical endpoint and exactly two surrogate endpoints.
 #'
-#' @param mcmc_dat A data frame or matrix containing posterior draws from the
+#' @param mcmc_dat A data frame, matrix, or data.table containing posterior draws from the
 #'   two-surrogate historical model.
 #' @param sample_dat A named list containing exactly nine scalar values:
 #'   `ClnEst`, `ClnSE`, `Sur1Est`, `Sur1SE`, `Sur2Est`, `Sur2SE`, `R1Clin`,

@@ -68,18 +68,11 @@
   }
 
   missing_fields <- setdiff(.mbe_sample_fields, names(sample_dat))
-  extra_fields <- setdiff(names(sample_dat), .mbe_sample_fields)
-  if (length(missing_fields) || length(extra_fields)) {
-    details <- character()
-    if (length(missing_fields)) {
-      details <- c(details, paste0("missing: ", .format_field_list(missing_fields)))
-    }
-    if (length(extra_fields)) {
-      details <- c(details, paste0("unexpected: ", .format_field_list(extra_fields)))
-    }
+  if (length(missing_fields) ) {
+    details <- details <- c(details, paste0("missing: ", .format_field_list(missing_fields)))
     stop(
       paste0(
-        "`sample_dat` must contain exactly the nine fields for one clinical and two surrogate endpoints (",
+        "`sample_dat` is missing the following input fields: (",
         paste(details, collapse = "; "), ")."
       ),
       call. = FALSE

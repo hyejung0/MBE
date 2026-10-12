@@ -7,7 +7,7 @@
 MBE(mcmc_dat, sample_dat, diffuse = TRUE, diffuse_se = 100, intercept0 = TRUE)
 }
 \arguments{
-\item{mcmc_dat}{A data frame or matrix containing posterior draws from the
+\item{mcmc_dat}{A data frame, matrix, or data.table containing posterior draws from the
 two-surrogate historical model.}
 
 \item{sample_dat}{A named list containing exactly nine scalar values:

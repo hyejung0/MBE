@@ -15,15 +15,12 @@ tolerance_interval_coverage(
 \arguments{
 \item{observed}{One finite numeric observed clinical treatment-effect estimate.}
 
-\item{mcmc_dat}{Historical posterior draws in the format accepted by \code{\link[=MBE]{MBE()}}.
-For leave-one-trial-out assessment, fit these draws without the trial to be
-predicted, using \code{\link[=historical_model_fit_2surrogates]{historical_model_fit_2surrogates()}}. Fixed- and
-random-intercept fits and both uncertainty priors are supported.}
+\item{mcmc_dat}{Historical posterior draws as \code{posterior_samples} returned by
+\code{\link[=historical_model_fit_2surrogates]{historical_model_fit_2surrogates()}} function.}
 
 \item{sample_dat}{A named list containing \code{ClnSE}, \code{Sur1Est}, \code{Sur1SE},
-\code{Sur2Est}, \code{Sur2SE}, \code{R1Clin}, \code{R2Clin}, and \code{R12} for one held-out trial.
-An optional \code{ClnEst} entry is ignored. These are the same sampling inputs
-used by \code{\link[=MBE]{MBE()}}, except the clinical estimate is not needed.}
+\code{Sur2Est}, \code{Sur2SE}, \code{R1Clin}, \code{R2Clin}, and \code{R12} for the one trial for which
+we wish to estimate the posterior predictive distribution.}
 
 \item{probs}{Lower and upper quantile probabilities: either a numeric vector
 of length two, such as \code{c(0.025, 0.975)}, or a numeric two-column matrix
@@ -32,7 +29,7 @@ and column 2 the upper probability. Each pair must satisfy
 \verb{0 <= lower < upper <= 1}. Asymmetric intervals are allowed.}
 
 \item{...}{Additional arguments to \code{\link[=clinical_predictive_distribution]{clinical_predictive_distribution()}},
-including \code{n_draws}, \code{seed}, \code{diffuse}, \code{diffuse_se}, and \code{intercept0}.}
+including \code{seed}, \code{diffuse}, \code{diffuse_se}, and \code{intercept0}.}
 }
 \value{
 A data frame with one row per interval: \code{lower_prob}, \code{upper_prob},

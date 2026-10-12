@@ -37,7 +37,18 @@ Fitting a historical model requires a working CmdStan installation. If
 CmdStan has not already been installed, run:
 
 ``` r
+# 1. Install the cmdstanr R package in a fresh R session.
+# Skip this step if it is already installed.
+install.packages(
+  "cmdstanr",
+  repos = c("https://stan-dev.r-universe.dev", getOption("repos"))
+)
+
+# 2. Check the required compiler and build tools.
 cmdstanr::check_cmdstan_toolchain()
+
+# 3. Install CmdStan if it is not already installed.
+# Run this after the toolchain check succeeds.
 cmdstanr::install_cmdstan()
 ```
 
@@ -87,53 +98,3 @@ fit$post_var
 
 A detailed example is provided in the package vignette [Simulation
 Example](https://hyejung0.github.io/MBE/articles/simulation-example.html).
-
-<!-- ## Historical-model assessment -->
-
-<!-- Users fit each historical training set themselves with -->
-
-<!-- `historical_model_fit_2surrogates()`, choosing their intercept and uncertainty -->
-
-<!-- prior. Assessment is separate: `loo_cv_rmse()` accepts a two-column table named -->
-
-<!-- `observed` and `estimated`, and `tolerance_interval_coverage()` calls -->
-
-<!-- `clinical_predictive_distribution()` on existing posterior draws to check -->
-
-<!-- user-selected quantile intervals, such as `probs = c(0.025, 0.975)`. -->
-
-<!-- Each held-out trial serves as a pseudo-new trial in internal cross-validation. -->
-
-<!-- Results for the simulated package dataset are not expected to match the -->
-
-<!-- manuscript's CKD trial results. The manuscript-to-package article demonstrates -->
-
-<!-- the fitting loop, prediction, and aggregation of interval-capture indicators. -->
-
-<!-- The earlier completed 66-trial assessment is retained as two archived datasets. -->
-
-<!-- The RMSE can be recalculated directly from its paired effects. Archived -->
-
-<!-- coverage predates the current prediction and interval-checking method; see the -->
-
-<!-- dataset documentation before comparing it with new coverage calculations. -->
-
-<!-- ```{r loo-results} -->
-
-<!-- data("loo_assessment_summary", package = "MBE") -->
-
-<!-- data("loo_assessment_by_trial", package = "MBE") -->
-
-<!-- loo_assessment_summary -->
-
-<!-- head(loo_assessment_by_trial) -->
-
-<!-- loo_cv_rmse(data.frame( -->
-
-<!--   observed = loo_assessment_by_trial$observed_clinical, -->
-
-<!--   estimated = loo_assessment_by_trial$posterior_mean_clinical -->
-
-<!-- )) -->
-
-<!-- ``` -->
