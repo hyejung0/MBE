@@ -1,12 +1,12 @@
-#Here, we import all dependencies and set up global variables for the package.
+# Here, we import all dependencies and set up global variables for the package.
 
 #' @import data.table
 NULL
 
 
-#The Issue: R CMD check inspects code for variables that look like
-#unquoted global variables (., ..these_cols, empirical_cdf, Sigma11, etc.)
-#used inside data.table syntax in functions like vector_to_matrix().
+# The Issue: R CMD check inspects code for variables that look like
+# unquoted global variables (., ..these_cols, empirical_cdf, Sigma11, etc.)
+# used inside data.table syntax in functions like vector_to_matrix().
 utils::globalVariables(c(
   ".",
   "..these_cols",

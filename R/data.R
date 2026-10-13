@@ -1,19 +1,3 @@
-#' Historical Model Fit on 65 of 66 Simulated Trials
-#'
-#' Historical model was fit on 65 of the 66 simulated trials in `trial_sim_dat`.
-#' The first trial was held out to be used as a new trial for the MBE update example.
-#' The model used a random intercept and inverse-gamma priors for the variance parameters.
-#' [historical_model_fit_2surrogates()] was used to fit the model,
-#' and the resulting posterior draws were saved in this dataset
-#' to avoid requiring users to refit the historical Stan model.
-#'
-#' @format A list of outputs from [historical_model_fit_2surrogates()] with 4
-#' chains and 2000 iterations each, including warmup. The posterior draws are
-#' in a data frame with 4,000 rows and 9 variables:
-"historical_fit"
-
-
-
 #' Historical Posterior for Two Surrogate Endpoints
 #'
 #' Posterior draws of all model parameters from the MCMC model with chronic
@@ -33,8 +17,6 @@
 #'   \item{sigSqSur2}{Population variance for surrogate 2.}
 #' }
 "historical_posterior"
-
-
 
 
 #' Simulated Trial-Level Data for Two Surrogate Endpoints
@@ -62,7 +44,6 @@
 #' @author Yizhen Xu \email{yizhen.xu@utah.edu}
 #' @source Simulated by Yizhen Xu
 "trial_sim_dat"
-
 
 
 #' Aggregate Leave-One-Out Historical-Model Assessment
@@ -98,7 +79,6 @@
 #' `data-raw/loo-random-inverse-gamma/loo_assessment.rds`. See the preparation
 #' script `data-raw/loo_assessment.R` in the source repository.
 "loo_assessment_summary"
-
 
 
 #' Trial-Level Leave-One-Out Historical-Model Assessment

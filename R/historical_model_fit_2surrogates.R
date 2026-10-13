@@ -42,7 +42,7 @@ get_cmdstan_model <- function(model_name) {
     "median",
     "sd",
     "mad",
-    ~posterior::quantile2(.x, probs = c(0.025, 0.975))
+    ~ posterior::quantile2(.x, probs = c(0.025, 0.975))
   )
 }
 
@@ -143,9 +143,9 @@ get_cmdstan_model <- function(model_name) {
 #'   ncores = 4,
 #'   niter = 2000,
 #'   nwarmup = 1000,
-#'   adapt_delta = 0.95,  # Target acceptance rate (resolves divergences)
-#'   max_treedepth = 15,  # Tree depth limit (resolves treedepth saturation)
-#'   refresh = 250        # Print updates every 250 iterations
+#'   adapt_delta = 0.95, # Target acceptance rate (resolves divergences)
+#'   max_treedepth = 15, # Tree depth limit (resolves treedepth saturation)
+#'   refresh = 250 # Print updates every 250 iterations
 #' )
 #' }
 historical_model_fit_2surrogates <- function(data,
@@ -167,17 +167,14 @@ historical_model_fit_2surrogates <- function(data,
                                              niter = 2000,
                                              nwarmup = 1000,
                                              ...) {
-
-  #Check input data
+  # Check input data
   these_columns <- c(
-    "CE_est_col"=CE_est_col, "CE_se_col"=CE_se_col,
-    "Sur1_est_col"=Sur1_est_col, "Sur1_se_col"=Sur1_se_col,
-    "Sur2_est_col"=Sur2_est_col, "Sur2_se_col"=Sur2_se_col,
-    "Cor_CE_Sur1"=Cor_CE_Sur1, "Cor_CE_Sur2"=Cor_CE_Sur2, "Cor_Sur1_Sur2"=Cor_Sur1_Sur2
+    "CE_est_col" = CE_est_col, "CE_se_col" = CE_se_col,
+    "Sur1_est_col" = Sur1_est_col, "Sur1_se_col" = Sur1_se_col,
+    "Sur2_est_col" = Sur2_est_col, "Sur2_se_col" = Sur2_se_col,
+    "Cor_CE_Sur1" = Cor_CE_Sur1, "Cor_CE_Sur2" = Cor_CE_Sur2, "Cor_Sur1_Sur2" = Cor_Sur1_Sur2
   )
-  .validate_historical_data(data,these_columns)
-
-
+  .validate_historical_data(data, these_columns)
 
 
   .validate_scalar_logical(random_intercept, "random_intercept")
@@ -202,7 +199,7 @@ historical_model_fit_2surrogates <- function(data,
     model_name <- "fix_beta0_invGamma"
   }
 
-  #Make sure it is data.table
+  # Make sure it is data.table
   dt <- data.table::as.data.table(data.table::copy(data))
   setnames(dt, old = c(
     CE_est_col, CE_se_col,
@@ -214,15 +211,15 @@ historical_model_fit_2surrogates <- function(data,
 
   N <- nrow(dt)
   obs_mean <- vector("list", N)
-  obs_var  <- vector("list", N)
+  obs_var <- vector("list", N)
 
   # Construct Stan data structures (pure numeric vectors and base matrices)
   for (j in seq_len(N)) {
     obs_mean[[j]] <- c(dt$CE_est[j], dt$Sur1_est[j], dt$Sur2_est[j])
 
-    v1  <- dt$CE_se[j]^2
-    v2  <- dt$Sur1_se[j]^2
-    v3  <- dt$Sur2_se[j]^2
+    v1 <- dt$CE_se[j]^2
+    v2 <- dt$Sur1_se[j]^2
+    v3 <- dt$Sur2_se[j]^2
     c12 <- dt$Cor_CE_Sur1[j] * dt$CE_se[j] * dt$Sur1_se[j]
     c13 <- dt$Cor_CE_Sur2[j] * dt$CE_se[j] * dt$Sur2_se[j]
     c23 <- dt$Cor_Sur1_Sur2[j] * dt$Sur1_se[j] * dt$Sur2_se[j]
@@ -242,7 +239,7 @@ historical_model_fit_2surrogates <- function(data,
   }
 
 
-  #collect them together as a more comprehensive list
+  # collect them together as a more comprehensive list
   data_sub <- list(
     N = N,
     obs_mean = obs_mean,
@@ -254,7 +251,7 @@ historical_model_fit_2surrogates <- function(data,
   mod <- get_cmdstan_model(model_name)
 
 
-  #Set MCMC parameters
+  # Set MCMC parameters
   default_args <- list(
     data = data_sub,
     output_dir = output_dir,
@@ -277,40 +274,37 @@ historical_model_fit_2surrogates <- function(data,
 
 
   # Model parameter summary
-  all_pars<-c(
-    "alphaCEonSur1Sur2" ,
+  all_pars <- c(
+    "alphaCEonSur1Sur2",
     "b1CEonSur1Sur2",
     "b2CEonSur1Sur2",
     "SigSqCEonSur1Sur2",
-
     "alphaSur1onSur2",
     "bSur1onSur2",
     "SigSqSur1onSur2",
-
     "muSur2",
     "sigSqSur2",
-
-    "R2CEonSur1Sur2", #R^2 for regression on CE~sur1 + sur2
-    "RMSECEonSur1Sur2" #RMSE for regression on CE~sur1 + sur2
+    "R2CEonSur1Sur2", # R^2 for regression on CE~sur1 + sur2
+    "RMSECEonSur1Sur2" # RMSE for regression on CE~sur1 + sur2
   )
 
   # Intersect with parameters present in this specific model
-  #Exclude "alphaCEonSur1Sur2" if running fixed intercept model.
+  # Exclude "alphaCEonSur1Sur2" if running fixed intercept model.
   present_pars <- intersect(all_pars, fit$metadata()$stan_variables)
 
 
-
-  my_summary<-fit$summary(variables =  present_pars,
-                          posterior::default_summary_measures()[1:4],
-                          quantiles = ~ quantile(., probs = c(0.025,0.05,0.1,0.9,0.95, 0.975)),
-                          posterior::default_convergence_measures()
+  my_summary <- fit$summary(
+    variables = present_pars,
+    posterior::default_summary_measures()[1:4],
+    quantiles = ~ quantile(., probs = c(0.025, 0.05, 0.1, 0.9, 0.95, 0.975)),
+    posterior::default_convergence_measures()
   )
 
   # 8. LOO and WAIC calculations
 
   # "log_lik" variable will be in the output.
   # You can now extract it directly.
-  log_lik_matrix<- fit$draws("log_lik", format = "array")
+  log_lik_matrix <- fit$draws("log_lik", format = "array")
   r_eff <- loo::relative_eff(
     x = exp(log_lik_matrix)
   )
@@ -318,18 +312,16 @@ historical_model_fit_2surrogates <- function(data,
   # efficient approximate leave-one-out (LOO) cross-validation for Bayesian models using Pareto smoothed importance sampling (PSIS)
   loo_result <- loo::loo(log_lik_matrix, r_eff = r_eff)
 
-  #Widely applicable information criterion (WAIC)
-  #compute WAIC from the pointwise log-likelihood
-  waic_result<-loo::waic(log_lik_matrix)
+  # Widely applicable information criterion (WAIC)
+  # compute WAIC from the pointwise log-likelihood
+  waic_result <- loo::waic(log_lik_matrix)
 
   return(list(
-    diagnostics=fit$diagnostic_summary(),
-    posterior_samples=fit$draws(format = "df"),
-    summary=my_summary,
-    loo=loo_result,
-    waic=waic_result,
-    fit=fit
+    diagnostics = fit$diagnostic_summary(),
+    posterior_samples = fit$draws(format = "df"),
+    summary = my_summary,
+    loo = loo_result,
+    waic = waic_result,
+    fit = fit
   ))
-
-
 }

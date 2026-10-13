@@ -38,8 +38,8 @@
 #' ))
 loo_cv_rmse <- function(data) {
   if ((!is.data.frame(data) && !is.matrix(data)) ||
-      nrow(data) < 1L || ncol(data) != 2L ||
-      !setequal(colnames(data), c("observed", "estimated"))) {
+    nrow(data) < 1L || ncol(data) != 2L ||
+    !setequal(colnames(data), c("observed", "estimated"))) {
     stop(
       "`data` must be a non-empty two-column matrix or data frame named `observed` and `estimated`.",
       call. = FALSE

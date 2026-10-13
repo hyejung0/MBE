@@ -78,26 +78,27 @@ is used to estimate the posterior distribution of MBE on the clinical endpoint w
 # row that was left out.
 data("historical_posterior")
 data("trial_sim_dat")
-one_sim_dat<-list(
-# treatment effect on chronic slope
-Sur1Est=trial_sim_dat$Sur1_est[1],
-Sur1SE=trial_sim_dat$Sur1_se[1],
+one_sim_dat <- list(
+  # treatment effect on chronic slope
+  Sur1Est = trial_sim_dat$Sur1_est[1],
+  Sur1SE = trial_sim_dat$Sur1_se[1],
 
-# treatment effect on acute slope
-Sur2Est=trial_sim_dat$Sur2_est[1],
-Sur2SE=trial_sim_dat$Sur2_se[1],
+  # treatment effect on acute slope
+  Sur2Est = trial_sim_dat$Sur2_est[1],
+  Sur2SE = trial_sim_dat$Sur2_se[1],
 
-# correlation between chronic slope and acute slope
-R12=trial_sim_dat$Cor_Sur1_Sur2[1]
+  # correlation between chronic slope and acute slope
+  R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
 )
 
-MBE_from_surrogate_only<-surrogate_MBE(
-mcmc_dat = historical_posterior,
-sample_dat=one_sim_dat,
-diffuse = TRUE, #We will not use the historical posterior
-#distribution of the two surrogate endpoints to estimate the
-#posterior distribution of MBE. Instead, we will use a diffuse prior.
-diffuse_se = 100,
-intercept0 = FALSE)
+MBE_from_surrogate_only <- surrogate_MBE(
+  mcmc_dat = historical_posterior,
+  sample_dat = one_sim_dat,
+  diffuse = TRUE, # We will not use the historical posterior
+  # distribution of the two surrogate endpoints to estimate the
+  # posterior distribution of MBE. Instead, we will use a diffuse prior.
+  diffuse_se = 100,
+  intercept0 = FALSE
+)
 
 }

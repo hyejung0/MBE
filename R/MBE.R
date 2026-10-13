@@ -34,36 +34,35 @@
 #' # row that was left out.
 #' data("historical_posterior")
 #' data("trial_sim_dat")
-#' one_sim_dat<-list(
+#' one_sim_dat <- list(
+#'   # treatment effect on CE
+#'   ClnEst = trial_sim_dat$CE_est[1],
+#'   ClnSE = trial_sim_dat$CE_se[1],
 #'
-#' # treatment effect on CE
-#' ClnEst=trial_sim_dat$CE_est[1],
-#' ClnSE=trial_sim_dat$CE_se[1],
+#'   # treatment effect on chronic slope
+#'   Sur1Est = trial_sim_dat$Sur1_est[1],
+#'   Sur1SE = trial_sim_dat$Sur1_se[1],
 #'
-#' # treatment effect on chronic slope
-#' Sur1Est=trial_sim_dat$Sur1_est[1],
-#' Sur1SE=trial_sim_dat$Sur1_se[1],
+#'   # treatment effect on acute slope
+#'   Sur2Est = trial_sim_dat$Sur2_est[1],
+#'   Sur2SE = trial_sim_dat$Sur2_se[1],
 #'
-#' # treatment effect on acute slope
-#' Sur2Est=trial_sim_dat$Sur2_est[1],
-#' Sur2SE=trial_sim_dat$Sur2_se[1],
+#'   # correlation between CE and chronic slope
+#'   R1Clin = trial_sim_dat$Cor_CE_Sur1[1],
 #'
-#' # correlation between CE and chronic slope
-#' R1Clin=trial_sim_dat$Cor_CE_Sur1[1],
+#'   # correlation between CE and acute slope
+#'   R2Clin = trial_sim_dat$Cor_CE_Sur2[1],
 #'
-#' # correlation between CE and acute slope
-#' R2Clin=trial_sim_dat$Cor_CE_Sur2[1],
-#'
-#' # correlation between chronic slope and acute slope
-#' R12=trial_sim_dat$Cor_Sur1_Sur2[1]
+#'   # correlation between chronic slope and acute slope
+#'   R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
 #' )
 #'
-#' MBE_distribution<-MBE(
-#' mcmc_dat = historical_posterior,
-#' sample_dat=one_sim_dat,
-#' diffuse_se = 100,
-#' diffuse = TRUE,
-#' intercept0 = TRUE
+#' MBE_distribution <- MBE(
+#'   mcmc_dat = historical_posterior,
+#'   sample_dat = one_sim_dat,
+#'   diffuse_se = 100,
+#'   diffuse = TRUE,
+#'   intercept0 = TRUE
 #' )
 #'
 #' head(MBE_distribution$post_psi0)
@@ -76,23 +75,25 @@ MBE <- function(mcmc_dat, sample_dat, diffuse = TRUE, diffuse_se = 100, intercep
 
   this.MCMC_dat <- data.table::as.data.table(data.table::copy(mcmc_dat))
 
-  #save the total number of MCMC samples
+  # save the total number of MCMC samples
   B <- nrow(this.MCMC_dat)
 
 
-  #Construct observed mean and variance vector and matrix:
+  # Construct observed mean and variance vector and matrix:
   hat_psi0 <- c(sample_dat$ClnEst, sample_dat$Sur1Est, sample_dat$Sur2Est)
   hat_Sigma_y0 <- matrix(
-    c(sample_dat$ClnSE^2, sample_dat$R1Clin*sample_dat$ClnSE*sample_dat$Sur1SE,  sample_dat$R2Clin*sample_dat$ClnSE*sample_dat$Sur2SE,
-      sample_dat$R1Clin*sample_dat$ClnSE*sample_dat$Sur1SE, sample_dat$Sur1SE^2, sample_dat$Sur1SE*sample_dat$Sur2SE*sample_dat$R12,
-      sample_dat$R2Clin*sample_dat$ClnSE*sample_dat$Sur2SE, sample_dat$Sur1SE*sample_dat$Sur2SE*sample_dat$R12,sample_dat$Sur2SE^2),
+    c(
+      sample_dat$ClnSE^2, sample_dat$R1Clin * sample_dat$ClnSE * sample_dat$Sur1SE, sample_dat$R2Clin * sample_dat$ClnSE * sample_dat$Sur2SE,
+      sample_dat$R1Clin * sample_dat$ClnSE * sample_dat$Sur1SE, sample_dat$Sur1SE^2, sample_dat$Sur1SE * sample_dat$Sur2SE * sample_dat$R12,
+      sample_dat$R2Clin * sample_dat$ClnSE * sample_dat$Sur2SE, sample_dat$Sur1SE * sample_dat$Sur2SE * sample_dat$R12, sample_dat$Sur2SE^2
+    ),
     nrow = 3, ncol = 3, byrow = TRUE
   )
   .validate_positive_definite(hat_Sigma_y0, "The sampling covariance matrix derived from `sample_dat`")
   inv_hat_Sigma_y0 <- chol2inv(chol(hat_Sigma_y0))
 
-  #Let's first re-parameterize the MCMC parameters into marginal mean and variance.
-  prior_mean_cov<-vector_to_matrix(
+  # Let's first re-parameterize the MCMC parameters into marginal mean and variance.
+  prior_mean_cov <- vector_to_matrix(
     MCMC_dat = this.MCMC_dat,
     diffuse_se = diffuse_se,
     diffuse = diffuse,
@@ -100,7 +101,7 @@ MBE <- function(mcmc_dat, sample_dat, diffuse = TRUE, diffuse_se = 100, intercep
   )
 
 
-  #Calculate importance weight
+  # Calculate importance weight
   log_w <- vapply(seq_len(B), function(i) {
     mvtnorm::dmvnorm(
       x = hat_psi0,
@@ -125,15 +126,13 @@ MBE <- function(mcmc_dat, sample_dat, diffuse = TRUE, diffuse_se = 100, intercep
   )
 
 
+  # draw a sample of \psi_0 from conditional posterior distribution, \pi(\psi_0 \mid \hat{\psi}_0, \; \xi(1)^{(b)}) <- incorporating new observation
+  # This can be simply calculated using normal-normal conjugacy.
 
 
-  #draw a sample of \psi_0 from conditional posterior distribution, \pi(\psi_0 \mid \hat{\psi}_0, \; \xi(1)^{(b)}) <- incorporating new observation
-  #This can be simply calculated using normal-normal conjugacy.
+  # construct variance:
 
-
-  #construct variance:
-
-  #First, take inverse of the prior mean
+  # First, take inverse of the prior mean
   inv_prior_cov <- lapply(prior_mean_cov$covar, function(xx) {
     chol2inv(chol(xx))
   })
@@ -142,95 +141,92 @@ MBE <- function(mcmc_dat, sample_dat, diffuse = TRUE, diffuse_se = 100, intercep
   })
 
 
-  #construct mean
-  post_mean_noW<-lapply(1:B,function(i){
+  # construct mean
+  post_mean_noW <- lapply(1:B, function(i) {
     post_var_noW[[i]] %*%
       (inv_hat_Sigma_y0 %*% hat_psi0 + inv_prior_cov[[i]] %*% prior_mean_cov$mean[[i]])
   })
 
 
-  #draw a sample using the mean and variance.
-  almost_post_psi0<-lapply(1:B,function(i){
+  # draw a sample using the mean and variance.
+  almost_post_psi0 <- lapply(1:B, function(i) {
     mvtnorm::rmvnorm(1, mean = post_mean_noW[[i]], sigma = post_var_noW[[i]])
   })
 
 
-
-  #generate posterior samples by re-drawing sample with normalzed weight as the probability.
-  #select sample index
-  sample_idx<-sample(1:B, size = B, replace = TRUE, prob = norm_w)
-  post_psi0<-almost_post_psi0[sample_idx]
+  # generate posterior samples by re-drawing sample with normalzed weight as the probability.
+  # select sample index
+  sample_idx <- sample(1:B, size = B, replace = TRUE, prob = norm_w)
+  post_psi0 <- almost_post_psi0[sample_idx]
   post_psi0 <- do.call(rbind, post_psi0)
   colnames(post_psi0) <- c("clinical", "surrogate1", "surrogate2")
 
 
-  #calculate posterior statistics using weighted samples technique
+  # calculate posterior statistics using weighted samples technique
 
 
-  #Posterior mean
-  post_mean<-lapply(1:B,function(i){
-    post_mean_noW[[i]] * norm_w[i] #multiply with weight
+  # Posterior mean
+  post_mean <- lapply(1:B, function(i) {
+    post_mean_noW[[i]] * norm_w[i] # multiply with weight
   })
-  post_mean <- Reduce("+", post_mean) #weighted sum
+  post_mean <- Reduce("+", post_mean) # weighted sum
 
 
-  #Posterior variance is to be calculated in two parts:
-  #1. expected conditional variance
-  #2. variance of conditional means
+  # Posterior variance is to be calculated in two parts:
+  # 1. expected conditional variance
+  # 2. variance of conditional means
 
-  #1. expected conditional variance
-  exp_cond_var<-lapply(1:B,function(i){
-    post_var_noW[[i]] * norm_w[i] #multiply with weight
+  # 1. expected conditional variance
+  exp_cond_var <- lapply(1:B, function(i) {
+    post_var_noW[[i]] * norm_w[i] # multiply with weight
   })
-  exp_cond_var <- Reduce("+", exp_cond_var) #weighted sum
+  exp_cond_var <- Reduce("+", exp_cond_var) # weighted sum
 
-  #2. variance of conditional means
-  var_cond_mean<-lapply(1:B,function(i){
-    norm_w[i] * ( (post_mean_noW[[i]] - post_mean) %*% t(post_mean_noW[[i]] - post_mean) )
+  # 2. variance of conditional means
+  var_cond_mean <- lapply(1:B, function(i) {
+    norm_w[i] * ((post_mean_noW[[i]] - post_mean) %*% t(post_mean_noW[[i]] - post_mean))
   })
-  var_cond_mean <- Reduce("+", var_cond_mean) #weighted sum
+  var_cond_mean <- Reduce("+", var_cond_mean) # weighted sum
 
-  #3. Total variance
+  # 3. Total variance
   post_var <- exp_cond_var + var_cond_mean
   endpoint_names <- c("clinical", "surrogate1", "surrogate2")
   rownames(post_mean) <- endpoint_names
   dimnames(post_var) <- list(endpoint_names, endpoint_names)
 
 
-  #Calculate quantiles
-  #1. Sort the samples in the order smallest to largest
-  psi0<-do.call(rbind,almost_post_psi0)
+  # Calculate quantiles
+  # 1. Sort the samples in the order smallest to largest
+  psi0 <- do.call(rbind, almost_post_psi0)
   colnames(psi0) <- c("clinical", "surrogate1", "surrogate2")
   psi0 <- data.table::as.data.table(psi0)
-  psi0[,norm_w:=norm_w]
-  psi0[,w:=w]
+  psi0[, norm_w := norm_w]
+  psi0[, w := w]
   psi01 <- psi0[, .(clinical, norm_w)][order(clinical)]
   psi02 <- psi0[, .(surrogate1, norm_w)][order(surrogate1)]
   psi03 <- psi0[, .(surrogate2, norm_w)][order(surrogate2)]
 
-  #2. empirical CDF is cumulative sum of the weights
-  psi01[,empirical_cdf:=cumsum(norm_w)]
-  psi02[,empirical_cdf:=cumsum(norm_w)]
-  psi03[,empirical_cdf:=cumsum(norm_w)]
+  # 2. empirical CDF is cumulative sum of the weights
+  psi01[, empirical_cdf := cumsum(norm_w)]
+  psi02[, empirical_cdf := cumsum(norm_w)]
+  psi03[, empirical_cdf := cumsum(norm_w)]
 
-  #3.Find the first sample that is greater than or equivalent to quantile of interest.
-  these_quant<-
-    c(0.025,0.05,0.1,0.25,0.5,0.75,0.9,0.95,0.975)
-  quant01<-sapply(these_quant,function(this.quantile){
+  # 3.Find the first sample that is greater than or equivalent to quantile of interest.
+  these_quant <-
+    c(0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975)
+  quant01 <- sapply(these_quant, function(this.quantile) {
     psi01[empirical_cdf >= this.quantile, clinical][1]
   })
-  quant02<-sapply(these_quant,function(this.quantile){
+  quant02 <- sapply(these_quant, function(this.quantile) {
     psi02[empirical_cdf >= this.quantile, surrogate1][1]
   })
-  quant03<-sapply(these_quant,function(this.quantile){
+  quant03 <- sapply(these_quant, function(this.quantile) {
     psi03[empirical_cdf >= this.quantile, surrogate2][1]
   })
-  names(quant01)<-
-    names(quant02)<-
-    names(quant03)<-
-    paste0("quantile_",these_quant)
-
-
+  names(quant01) <-
+    names(quant02) <-
+    names(quant03) <-
+    paste0("quantile_", these_quant)
 
 
   list(

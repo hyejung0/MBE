@@ -15,7 +15,6 @@ knitr::opts_chunk$set(
 library(MBE)
 data("trial_sim_dat", package = "MBE")
 data("historical_posterior", package = "MBE")
-
 ```
 
 ## Overview
@@ -67,14 +66,14 @@ historical_fields <- c(
 )
 historical_fit <- historical_model_fit_2surrogates(
   data = trial_sim_dat[-1, ..historical_fields],
-  random_intercept = TRUE, #allow for a random intercept. 
-  prior_for_uncertainty = "inverse_gamma", #prior for the variance parameters.
-  nchains = 4, #Number of chains
-  ncores = 4, #Number of cores for parallel computation. 
-  #One core per chain is recommended. 
-  #If set to 1, then all chains will be run sequentially on a single core.
-  niter = 2000, #Number of post-warmup samples to save for each chain
-  nwarmup = 1000, #Number of warmup samples to discard for each chain
+  random_intercept = TRUE, # allow for a random intercept.
+  prior_for_uncertainty = "inverse_gamma", # prior for the variance parameters.
+  nchains = 4, # Number of chains
+  ncores = 4, # Number of cores for parallel computation.
+  # One core per chain is recommended.
+  # If set to 1, then all chains will be run sequentially on a single core.
+  niter = 2000, # Number of post-warmup samples to save for each chain
+  nwarmup = 1000, # Number of warmup samples to discard for each chain
   seed = 2026,
   adapt_delta = 0.95,
   max_treedepth = 15
@@ -89,8 +88,7 @@ The historical posterior distribution samples can be extracted as follows:
 
 
 ```{r historical-posterior-extraction, eval=FALSE}
-
-#Extract historical posterior draws. 
+# Extract historical posterior draws.
 historical_posterior <- data.table(historical_fit$posterior_samples)[, c(
   "alphaCEonSur1Sur2",
   "b1CEonSur1Sur2",
@@ -130,8 +128,7 @@ This historical posterior distribution is used as prior for estimating the treat
 The held-out trial (first row of `trial_sim_dat`) is converted to the naming convention used by `MBE()`, and the posterior distribution is updated using the `MBE()` function. The `diffuse` and `diffuse_se` arguments allow the user to specify a diffuse prior for the new trial's surrogate endpoints. The `intercept0` argument allows the user to shift the mean of the intercept to 0.
 
 ```{r mbe-update}
-
-#Convert to the naming convention by MBE() and save as a list.
+# Convert to the naming convention by MBE() and save as a list.
 new_trial <- list(
   ClnEst = trial_sim_dat$CE_est[1],
   ClnSE = trial_sim_dat$CE_se[1],
@@ -148,9 +145,9 @@ set.seed(1)
 mbe_fit <- MBE(
   mcmc_dat = historical_posterior,
   sample_dat = new_trial,
-  diffuse = TRUE, #Diffuse prior on surrogate endpoints
+  diffuse = TRUE, # Diffuse prior on surrogate endpoints
   diffuse_se = 100,
-  intercept0 = TRUE #Center the intercept to 0. 
+  intercept0 = TRUE # Center the intercept to 0.
 )
 
 mbe_fit$post_mean

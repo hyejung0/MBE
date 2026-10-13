@@ -22,7 +22,7 @@
 #' historical posterior draws and the observed treatment effect on the surrogate
 #' effects to sample posterior distribution on the true treatment effect on the
 #' clinical endpoint. Note also
-#'\deqn{\hat{\theta}_0 \sim N(\theta_0, \sigma^2_0)} where \eqn{\sigma^2_0} is
+#' \deqn{\hat{\theta}_0 \sim N(\theta_0, \sigma^2_0)} where \eqn{\sigma^2_0} is
 #' the known sampling variance of the clinical treatment effect
 #' (i.e., `ClnSE` of the new trial). We can then collect the predictive
 #' distribution on the observed clinical treatment effect by sampling the error
@@ -48,29 +48,28 @@
 #'   R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
 #' )
 #' predictive <- clinical_predictive_distribution(
-#'   mcmc_dat=historical_posterior,
-#'   sample_dat=held_out,
+#'   mcmc_dat = historical_posterior,
+#'   sample_dat = held_out,
 #'   seed = 2026
 #' )
 #' stats::quantile(predictive, c(0.025, 0.975))
-
 clinical_predictive_distribution <- function(mcmc_dat, sample_dat,
-                                            seed = NULL,
+                                             seed = NULL,
                                              diffuse = FALSE, diffuse_se = 100,
                                              intercept0 = FALSE) {
+  # First, get the posterior distribution of the true treatment effect on the
+  # clinical endpoint using surrogate_MBE
 
-  #First, get the posterior distribution of the true treatment effect on the
-  #clinical endpoint using surrogate_MBE
+  MBE_from_surrogate_only <- surrogate_MBE(
+    mcmc_dat = mcmc_dat,
+    sample_dat = sample_dat,
+    diffuse = diffuse,
+    diffuse_se = diffuse_se,
+    intercept0 = intercept0
+  )
 
-  MBE_from_surrogate_only<-surrogate_MBE(
-   mcmc_dat = mcmc_dat,
-   sample_dat=sample_dat,
-   diffuse = diffuse,
-   diffuse_se = diffuse_se,
-   intercept0 = intercept0)
-
-  #generate random error using the standard error of the observed
-  #treatment effect on the clinical endpoint
+  # generate random error using the standard error of the observed
+  # treatment effect on the clinical endpoint
   error <- stats::rnorm(nrow(mcmc_dat), 0, sample_dat$ClnSE)
 
   # Add the random error and return it

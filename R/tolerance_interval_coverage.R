@@ -58,7 +58,7 @@
 tolerance_interval_coverage <- function(observed, mcmc_dat, sample_dat,
                                         probs = c(0.025, 0.975), ...) {
   if (!is.numeric(observed) || length(observed) != 1L ||
-      !is.null(dim(observed)) || !is.finite(observed)) {
+    !is.null(dim(observed)) || !is.finite(observed)) {
     stop("`observed` must be one finite numeric value.", call. = FALSE)
   }
   bounds <- .validate_interval_probs(probs)
@@ -72,10 +72,11 @@ tolerance_interval_coverage <- function(observed, mcmc_dat, sample_dat,
   }
   if (is.data.frame(probs)) probs <- as.matrix(probs)
   if (!is.matrix(probs) || !is.numeric(probs) || ncol(probs) != 2L ||
-      nrow(probs) < 1L || any(!is.finite(probs)) ||
-      any(probs < 0 | probs > 1) || any(probs[, 1] >= probs[, 2])) {
+    nrow(probs) < 1L || any(!is.finite(probs)) ||
+    any(probs < 0 | probs > 1) || any(probs[, 1] >= probs[, 2])) {
     stop("`probs` must supply lower/upper probability pairs with 0 <= lower < upper <= 1.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
   probs
 }

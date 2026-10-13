@@ -63,32 +63,30 @@
 #' # row that was left out.
 #' data("historical_posterior")
 #' data("trial_sim_dat")
-#' one_sim_dat<-list(
-
-#' # treatment effect on chronic slope
-#' Sur1Est=trial_sim_dat$Sur1_est[1],
-#' Sur1SE=trial_sim_dat$Sur1_se[1],
+#' one_sim_dat <- list(
+#'   # treatment effect on chronic slope
+#'   Sur1Est = trial_sim_dat$Sur1_est[1],
+#'   Sur1SE = trial_sim_dat$Sur1_se[1],
 #'
-#' # treatment effect on acute slope
-#' Sur2Est=trial_sim_dat$Sur2_est[1],
-#' Sur2SE=trial_sim_dat$Sur2_se[1],
+#'   # treatment effect on acute slope
+#'   Sur2Est = trial_sim_dat$Sur2_est[1],
+#'   Sur2SE = trial_sim_dat$Sur2_se[1],
 #'
-#' # correlation between chronic slope and acute slope
-#' R12=trial_sim_dat$Cor_Sur1_Sur2[1]
+#'   # correlation between chronic slope and acute slope
+#'   R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
 #' )
 #'
-#'MBE_from_surrogate_only<-surrogate_MBE(
-#' mcmc_dat = historical_posterior,
-#' sample_dat=one_sim_dat,
-#' diffuse = TRUE, #We will not use the historical posterior
-#' #distribution of the two surrogate endpoints to estimate the
-#' #posterior distribution of MBE. Instead, we will use a diffuse prior.
-#' diffuse_se = 100,
-#' intercept0 = FALSE)
+#' MBE_from_surrogate_only <- surrogate_MBE(
+#'   mcmc_dat = historical_posterior,
+#'   sample_dat = one_sim_dat,
+#'   diffuse = TRUE, # We will not use the historical posterior
+#'   # distribution of the two surrogate endpoints to estimate the
+#'   # posterior distribution of MBE. Instead, we will use a diffuse prior.
+#'   diffuse_se = 100,
+#'   intercept0 = FALSE
+#' )
 #'
-surrogate_MBE<-function(mcmc_dat, sample_dat, diffuse=TRUE, diffuse_se=100, intercept0=TRUE){
-
-
+surrogate_MBE <- function(mcmc_dat, sample_dat, diffuse = TRUE, diffuse_se = 100, intercept0 = TRUE) {
   # Check if sample_dat has the required elements
   required_elements <- c("Sur1Est", "Sur1SE", "Sur2Est", "Sur2SE", "R12")
   if (!all(required_elements %in% names(sample_dat))) {
@@ -96,104 +94,102 @@ surrogate_MBE<-function(mcmc_dat, sample_dat, diffuse=TRUE, diffuse_se=100, inte
   }
 
 
-  #convert mcmc_dat to data.table. Leave the original mcmc_dat. Just create a new one.
+  # convert mcmc_dat to data.table. Leave the original mcmc_dat. Just create a new one.
   this.MCMC_dat <- copy(data.table::data.table(mcmc_dat))
 
-  #Check if this.MCMC_dat contains all required columns.
-  if(diffuse){
+  # Check if this.MCMC_dat contains all required columns.
+  if (diffuse) {
     required_columns <- c("alphaCEonSur1Sur2", "b1CEonSur1Sur2", "b2CEonSur1Sur2", "SigSqCEonSur1Sur2")
   } else {
-    required_columns <- c("alphaCEonSur1Sur2", "b1CEonSur1Sur2", "b2CEonSur1Sur2", "SigSqCEonSur1Sur2",
-                          "alphaSur1onSur2", "bSur1onSur2", "SigSqSur1onSur2",
-                          "muSur2","sigSqSur2")
+    required_columns <- c(
+      "alphaCEonSur1Sur2", "b1CEonSur1Sur2", "b2CEonSur1Sur2", "SigSqCEonSur1Sur2",
+      "alphaSur1onSur2", "bSur1onSur2", "SigSqSur1onSur2",
+      "muSur2", "sigSqSur2"
+    )
   }
   if (!all(required_columns %in% colnames(this.MCMC_dat))) {
     stop("this.MCMC_dat must contain the following columns: ", paste(required_columns, collapse = ", "))
   }
 
-  #If intercept0 is TRUE, center the intercept term of the meta-regression to zero
-  if(intercept0){
-    this.MCMC_dat[,alphaCEonSur1Sur2:=scale(alphaCEonSur1Sur2,center=T,scale=F)]
+  # If intercept0 is TRUE, center the intercept term of the meta-regression to zero
+  if (intercept0) {
+    this.MCMC_dat[, alphaCEonSur1Sur2 := scale(alphaCEonSur1Sur2, center = T, scale = F)]
   }
 
-  #If we are specifying diffuse prior, set the corresponding MCMC parameters to what we want to set.
-  if(diffuse){
-    this.MCMC_dat[,bSur1onSur2:=0]
-    this.MCMC_dat[,SigSqSur1onSur2:=diffuse_se^2]
-    this.MCMC_dat[,sigSqSur2:=diffuse_se^2]
-    this.MCMC_dat[,muSur2:=0]
-    this.MCMC_dat[,alphaSur1onSur2:=0]
+  # If we are specifying diffuse prior, set the corresponding MCMC parameters to what we want to set.
+  if (diffuse) {
+    this.MCMC_dat[, bSur1onSur2 := 0]
+    this.MCMC_dat[, SigSqSur1onSur2 := diffuse_se^2]
+    this.MCMC_dat[, sigSqSur2 := diffuse_se^2]
+    this.MCMC_dat[, muSur2 := 0]
+    this.MCMC_dat[, alphaSur1onSur2 := 0]
   }
 
-  #Number of MCMC samples
-  B<-nrow(this.MCMC_dat)
+  # Number of MCMC samples
+  B <- nrow(this.MCMC_dat)
 
 
   ###  Prior  ###
-  #define variance structure
-  this.MCMC_dat[,Sigma33:=sigSqSur2]
-  this.MCMC_dat[,Sigma22:=bSur1onSur2^2 * sigSqSur2 + SigSqSur1onSur2]
-  this.MCMC_dat[,Sigma23:=bSur1onSur2*sigSqSur2]
+  # define variance structure
+  this.MCMC_dat[, Sigma33 := sigSqSur2]
+  this.MCMC_dat[, Sigma22 := bSur1onSur2^2 * sigSqSur2 + SigSqSur1onSur2]
+  this.MCMC_dat[, Sigma23 := bSur1onSur2 * sigSqSur2]
 
-  #generate inverse of the 2 by 2 matrix of the two surrogate endpoints
-  this.MCMC_dat[,det_Sigma22_33:=Sigma22*Sigma33 - Sigma23^2]
-  this.MCMC_dat[,inv_Sigma22:=Sigma33/det_Sigma22_33]
-  this.MCMC_dat[,inv_Sigma23:=-Sigma23/det_Sigma22_33]
-  this.MCMC_dat[,inv_Sigma33:=Sigma22/det_Sigma22_33]
+  # generate inverse of the 2 by 2 matrix of the two surrogate endpoints
+  this.MCMC_dat[, det_Sigma22_33 := Sigma22 * Sigma33 - Sigma23^2]
+  this.MCMC_dat[, inv_Sigma22 := Sigma33 / det_Sigma22_33]
+  this.MCMC_dat[, inv_Sigma23 := -Sigma23 / det_Sigma22_33]
+  this.MCMC_dat[, inv_Sigma33 := Sigma22 / det_Sigma22_33]
 
-  #Do likewise for means
-  this.MCMC_dat[,mu2:=alphaSur1onSur2 + bSur1onSur2*muSur2]
-  this.MCMC_dat[,mu3:=muSur2]
-
-
+  # Do likewise for means
+  this.MCMC_dat[, mu2 := alphaSur1onSur2 + bSur1onSur2 * muSur2]
+  this.MCMC_dat[, mu3 := muSur2]
 
 
   ###   Data   ###
-  #Generate colmns of the observed data required to calculate posterior distribution
-  #to this.MCMC_dat.
-  this.MCMC_dat[,hat_psi02:=sample_dat$Sur1Est]
-  this.MCMC_dat[,hat_psi03:=sample_dat$Sur2Est]
-  det_Sigma_y0<-sample_dat$Sur1SE^2*sample_dat$Sur2SE^2 - (sample_dat$Sur1SE*sample_dat$Sur2SE*sample_dat$R12)^2
-  this.MCMC_dat[,hat_Sigma_y0_22:=sample_dat$Sur2SE^2/det_Sigma_y0]
-  this.MCMC_dat[,hat_Sigma_y0_23:=-(sample_dat$Sur1SE*sample_dat$Sur2SE*sample_dat$R12)/det_Sigma_y0]
-  this.MCMC_dat[,hat_Sigma_y0_33:=sample_dat$Sur1SE^2/det_Sigma_y0]
-
-
+  # Generate colmns of the observed data required to calculate posterior distribution
+  # to this.MCMC_dat.
+  this.MCMC_dat[, hat_psi02 := sample_dat$Sur1Est]
+  this.MCMC_dat[, hat_psi03 := sample_dat$Sur2Est]
+  det_Sigma_y0 <- sample_dat$Sur1SE^2 * sample_dat$Sur2SE^2 - (sample_dat$Sur1SE * sample_dat$Sur2SE * sample_dat$R12)^2
+  this.MCMC_dat[, hat_Sigma_y0_22 := sample_dat$Sur2SE^2 / det_Sigma_y0]
+  this.MCMC_dat[, hat_Sigma_y0_23 := -(sample_dat$Sur1SE * sample_dat$Sur2SE * sample_dat$R12) / det_Sigma_y0]
+  this.MCMC_dat[, hat_Sigma_y0_33 := sample_dat$Sur1SE^2 / det_Sigma_y0]
 
 
   ### Posterior ###
-  post_var<-data.table(
-    entry22=this.MCMC_dat[,inv_Sigma22 + hat_Sigma_y0_22],
-    entry23=this.MCMC_dat[,inv_Sigma23 + hat_Sigma_y0_23],
-    entry33=this.MCMC_dat[,inv_Sigma33 + hat_Sigma_y0_33]
-  ) #I need to take inverse of them
-  post_var[,det:=entry22*entry33 - entry23^2]
-  post_var[,inv_entry22:=entry33/det]
-  post_var[,inv_entry23:=-entry23/det]
-  post_var[,inv_entry33:=entry22/det]
-  #Append the posteiror vairance to this.MCMC_dat
-  this.MCMC_dat[,post_Sigma22:=post_var$inv_entry22]
-  this.MCMC_dat[,post_Sigma23:=post_var$inv_entry23]
-  this.MCMC_dat[,post_Sigma33:=post_var$inv_entry33]
+  post_var <- data.table(
+    entry22 = this.MCMC_dat[, inv_Sigma22 + hat_Sigma_y0_22],
+    entry23 = this.MCMC_dat[, inv_Sigma23 + hat_Sigma_y0_23],
+    entry33 = this.MCMC_dat[, inv_Sigma33 + hat_Sigma_y0_33]
+  ) # I need to take inverse of them
+  post_var[, det := entry22 * entry33 - entry23^2]
+  post_var[, inv_entry22 := entry33 / det]
+  post_var[, inv_entry23 := -entry23 / det]
+  post_var[, inv_entry33 := entry22 / det]
+  # Append the posteiror vairance to this.MCMC_dat
+  this.MCMC_dat[, post_Sigma22 := post_var$inv_entry22]
+  this.MCMC_dat[, post_Sigma23 := post_var$inv_entry23]
+  this.MCMC_dat[, post_Sigma33 := post_var$inv_entry33]
 
-  #Posterior mean
-  a<-this.MCMC_dat[,hat_Sigma_y0_22*hat_psi02 + hat_Sigma_y0_23*hat_psi03]
-  b<-this.MCMC_dat[,inv_Sigma22*mu2 + inv_Sigma23*mu3]
+  # Posterior mean
+  a <- this.MCMC_dat[, hat_Sigma_y0_22 * hat_psi02 + hat_Sigma_y0_23 * hat_psi03]
+  b <- this.MCMC_dat[, inv_Sigma22 * mu2 + inv_Sigma23 * mu3]
 
-  c<-this.MCMC_dat[,hat_Sigma_y0_23*hat_psi02 + hat_Sigma_y0_33*hat_psi03]
-  d<-this.MCMC_dat[,inv_Sigma23*mu2 + inv_Sigma33*mu3]
+  c <- this.MCMC_dat[, hat_Sigma_y0_23 * hat_psi02 + hat_Sigma_y0_33 * hat_psi03]
+  d <- this.MCMC_dat[, inv_Sigma23 * mu2 + inv_Sigma33 * mu3]
 
-  almost_post_mu2<-a+b
-  almost_post_mu3<-c+d
+  almost_post_mu2 <- a + b
+  almost_post_mu3 <- c + d
 
-  this.MCMC_dat$post_mu2<-
-  this.MCMC_dat$post_Sigma22*almost_post_mu2 + this.MCMC_dat$post_Sigma23*almost_post_mu3
+  this.MCMC_dat$post_mu2 <-
+    this.MCMC_dat$post_Sigma22 * almost_post_mu2 + this.MCMC_dat$post_Sigma23 * almost_post_mu3
 
-  this.MCMC_dat$post_mu3<-
-    this.MCMC_dat$post_Sigma23*almost_post_mu2 + this.MCMC_dat$post_Sigma33*almost_post_mu3
+  this.MCMC_dat$post_mu3 <-
+    this.MCMC_dat$post_Sigma23 * almost_post_mu2 + this.MCMC_dat$post_Sigma33 * almost_post_mu3
 
 
-  #Using the posterior mean and variance of the surrogate endpoints, draw a new sample for each row
+  # Using the posterior mean and variance of the surrogate endpoints, draw a new sample for each row
   this.MCMC_dat[
     ,
     c("post_psi2", "post_psi3") := as.list(
@@ -201,8 +197,10 @@ surrogate_MBE<-function(mcmc_dat, sample_dat, diffuse=TRUE, diffuse_se=100, inte
         1,
         mean = c(post_mu2, post_mu3),
         sigma = matrix(
-          c(post_Sigma22, post_Sigma23,
-            post_Sigma23, post_Sigma33),
+          c(
+            post_Sigma22, post_Sigma23,
+            post_Sigma23, post_Sigma33
+          ),
           nrow = 2
         )
       )[1, ]
@@ -211,7 +209,7 @@ surrogate_MBE<-function(mcmc_dat, sample_dat, diffuse=TRUE, diffuse_se=100, inte
   ]
 
 
-  #Generate posterior distribution of CE conditional on the posterior samples of the two surrogate endpoints
+  # Generate posterior distribution of CE conditional on the posterior samples of the two surrogate endpoints
   this.MCMC_dat[
     ,
     post_CE :=
@@ -221,7 +219,7 @@ surrogate_MBE<-function(mcmc_dat, sample_dat, diffuse=TRUE, diffuse_se=100, inte
       rnorm(.N, mean = 0, sd = sqrt(SigSqCEonSur1Sur2))
   ]
 
-  #Return the posterior data only
+  # Return the posterior data only
   return(
     this.MCMC_dat[
       ,

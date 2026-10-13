@@ -73,7 +73,7 @@ library(MBE)
 data("historical_posterior")
 data("trial_sim_dat")
 
-#Construct a list for the new trial's observed data, using the first row of the simulated dataset.
+# Construct a list for the new trial's observed data, using the first row of the simulated dataset.
 new_trial <- list(
   ClnEst = trial_sim_dat$CE_est[1],
   ClnSE = trial_sim_dat$CE_se[1],
@@ -86,14 +86,14 @@ new_trial <- list(
   R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
 )
 
-#Estimate the posterior distribution of the MBE for the new trial using the historical posterior draws.
+# Estimate the posterior distribution of the MBE for the new trial using the historical posterior draws.
 set.seed(1)
 fit <- MBE(historical_posterior, new_trial)
 
-#Mean of the posterior distribution for the clinical endpoint, surrogate 1, and surrogate 2.
+# Mean of the posterior distribution for the clinical endpoint, surrogate 1, and surrogate 2.
 fit$post_mean
 
-#Corresponding variance matrix
+# Corresponding variance matrix
 fit$post_var
 ```
 

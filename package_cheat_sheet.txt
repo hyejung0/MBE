@@ -7,7 +7,6 @@ Run all commands from the package root (the folder containing DESCRIPTION)
 unless noted otherwise.
 
 CONTENTS
-  0. Quick reference
   1. Daily development loop
   2. Creating and documenting functions
   3. Tests
@@ -19,21 +18,6 @@ CONTENTS
   9. Publishing the pkgdown website with GitHub Pages
  10. Troubleshooting
  11. Standard workflow for updating the package (checklist)
-
-
--------------------------------------------------------------------------------
-0. QUICK REFERENCE
--------------------------------------------------------------------------------
-
-  I changed...                    Then run...
-  ------------------------------  -------------------------------------------
-  function code                   devtools::load_all()  ->  devtools::test()
-  roxygen comments / @export      devtools::document()
-  DESCRIPTION dependencies        usethis::use_package("pkg")
-  README.Rmd                      devtools::build_readme()
-  a vignette                      pkgdown::build_article("name")
-  a Stan vignette                 see Section 6 (re-knit the .Rmd.orig)
-  anything, before pushing        devtools::check()   (0 errors/warnings/notes)
 
 
 -------------------------------------------------------------------------------

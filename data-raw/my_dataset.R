@@ -1,20 +1,9 @@
 
-
-
-
-
-# Historical Model Fit without First Trial --------------------------------
-
-#Used historical_model_fit_2surrogates() to fit the data
-historical_fit<-readRDS("data-raw/historical_fit.rds")
-
-# Save it as an .rda file into the official data/ folder
-usethis::use_data(historical_fit, overwrite = TRUE)
-
 # MCMC data set -----------------------------------------------------------
 
-
-
+# Used historical_model_fit_2surrogates() to fit the data
+#In the precalculated_data/historical/CopyOfhistorical_model_one.R file
+historical_fit <- readRDS("precalculated_data/historical/random_beta0_invGamma_output/historical_fit.rds")
 historical_posterior <- data.table(historical_fit$posterior_samples)[, c(
   "alphaCEonSur1Sur2",
   "b1CEonSur1Sur2",
@@ -38,9 +27,9 @@ usethis::use_data(historical_posterior, overwrite = TRUE)
 
 # simulated dataset -------------------------------------------------------
 
-#Generated 66 example trials from Yizhen's code.
-trial_sim_dat<-read.csv("data-raw/MBE_simulated_66_trials.csv")
-trial_sim_dat<-data.table::data.table(trial_sim_dat)
+# Generated 66 example trials from Yizhen's code.
+trial_sim_dat <- read.csv("data-raw/MBE_simulated_66_trials.csv")
+trial_sim_dat <- data.table::data.table(trial_sim_dat)
 # Save it as an .rda file into the official data/ folder
 usethis::use_data(trial_sim_dat, overwrite = TRUE)
 
@@ -62,4 +51,3 @@ usethis::use_data(trial_sim_dat, overwrite = TRUE)
 #
 # # 2. Save it as an .rda file into the official data/ folder
 # usethis::use_data(interim_sim_dat, overwrite = TRUE)
-

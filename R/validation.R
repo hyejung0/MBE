@@ -52,10 +52,13 @@
 }
 
 .validate_positive_definite <- function(x, label) {
-  is_positive_definite <- tryCatch({
-    chol(x)
-    TRUE
-  }, error = function(e) FALSE)
+  is_positive_definite <- tryCatch(
+    {
+      chol(x)
+      TRUE
+    },
+    error = function(e) FALSE
+  )
 
   if (!is_positive_definite) {
     stop(sprintf("%s must be positive definite.", label), call. = FALSE)
@@ -68,7 +71,7 @@
   }
 
   missing_fields <- setdiff(.mbe_sample_fields, names(sample_dat))
-  if (length(missing_fields) ) {
+  if (length(missing_fields)) {
     details <- details <- c(details, paste0("missing: ", .format_field_list(missing_fields)))
     stop(
       paste0(
@@ -150,7 +153,7 @@
   invisible(mcmc_dat)
 }
 
-#Check the historical data. Make sure the format is right and all columns are present.
+# Check the historical data. Make sure the format is right and all columns are present.
 .validate_historical_data <- function(data, required_col_names) {
   if (!is.data.frame(data) && !is.matrix(data) && !is.data.table(data)) {
     stop("`data` must be a data frame, matrix, or data.table.", call. = FALSE)
@@ -163,7 +166,7 @@
   }
 
   missing_fields <- setdiff(required_col_names, colnames(data))
-  if (length(missing_fields) ) {
+  if (length(missing_fields)) {
     details <- c(details, paste0("missing: ", .format_field_list(missing_fields)))
     stop(
       paste0(

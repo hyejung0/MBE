@@ -16,11 +16,11 @@
 #'
 #' @examples
 #' # Use the example MCMC data provided in the package `historical_posterior`
-#' result_matrix<-vector_to_matrix(
-#' MCMC_dat = historical_posterior,
-#' diffuse_se = 100,
-#' diffuse = TRUE,
-#' intercept0 = TRUE
+#' result_matrix <- vector_to_matrix(
+#'   MCMC_dat = historical_posterior,
+#'   diffuse_se = 100,
+#'   diffuse = TRUE,
+#'   intercept0 = TRUE
 #' )
 #'
 #' head(result_matrix)
@@ -40,60 +40,58 @@ vector_to_matrix <- function(MCMC_dat, diffuse_se = 100, diffuse = TRUE, interce
     this.MCMC_dat[, alphaCEonSur1Sur2 := 0]
   }
 
-  #Save number of MCMC samples
-  B<-nrow(this.MCMC_dat)
+  # Save number of MCMC samples
+  B <- nrow(this.MCMC_dat)
 
 
-  #If we are specifying diffuse prior, set the corresponding MCMC parameters to what we want to set.
-  if(diffuse){
-    this.MCMC_dat[,bSur1onSur2:=0]
-    this.MCMC_dat[,SigSqSur1onSur2:=diffuse_se^2]
-    this.MCMC_dat[,sigSqSur2:=diffuse_se^2]
-    this.MCMC_dat[,muSur2:=0]
-    this.MCMC_dat[,alphaSur1onSur2:=0]
+  # If we are specifying diffuse prior, set the corresponding MCMC parameters to what we want to set.
+  if (diffuse) {
+    this.MCMC_dat[, bSur1onSur2 := 0]
+    this.MCMC_dat[, SigSqSur1onSur2 := diffuse_se^2]
+    this.MCMC_dat[, sigSqSur2 := diffuse_se^2]
+    this.MCMC_dat[, muSur2 := 0]
+    this.MCMC_dat[, alphaSur1onSur2 := 0]
   }
 
-  #If we want to shift the mean of the intercept to 0
-  if(intercept0){
+  # If we want to shift the mean of the intercept to 0
+  if (intercept0) {
     this.MCMC_dat[, alphaCEonSur1Sur2 := alphaCEonSur1Sur2 - mean(alphaCEonSur1Sur2)]
   }
 
-  #Variance
-  #define variance structure
-  this.MCMC_dat[,Sigma33:=sigSqSur2]
-  this.MCMC_dat[,Sigma22:=bSur1onSur2^2 * sigSqSur2 + SigSqSur1onSur2]
-  this.MCMC_dat[,Sigma23:=bSur1onSur2*sigSqSur2]
-  this.MCMC_dat[,Sigma13:=b1CEonSur1Sur2*(bSur1onSur2*sigSqSur2) + b2CEonSur1Sur2*sigSqSur2]
-  this.MCMC_dat[,Sigma12:=b1CEonSur1Sur2*(bSur1onSur2^2*sigSqSur2 + SigSqSur1onSur2)+ b2CEonSur1Sur2*bSur1onSur2*sigSqSur2]
-  this.MCMC_dat[,Sigma11:=b1CEonSur1Sur2^2 *(bSur1onSur2^2*sigSqSur2 + SigSqSur1onSur2)+b2CEonSur1Sur2^2 * sigSqSur2 + SigSqCEonSur1Sur2 + 2*b1CEonSur1Sur2*b2CEonSur1Sur2*(bSur1onSur2*sigSqSur2)]
+  # Variance
+  # define variance structure
+  this.MCMC_dat[, Sigma33 := sigSqSur2]
+  this.MCMC_dat[, Sigma22 := bSur1onSur2^2 * sigSqSur2 + SigSqSur1onSur2]
+  this.MCMC_dat[, Sigma23 := bSur1onSur2 * sigSqSur2]
+  this.MCMC_dat[, Sigma13 := b1CEonSur1Sur2 * (bSur1onSur2 * sigSqSur2) + b2CEonSur1Sur2 * sigSqSur2]
+  this.MCMC_dat[, Sigma12 := b1CEonSur1Sur2 * (bSur1onSur2^2 * sigSqSur2 + SigSqSur1onSur2) + b2CEonSur1Sur2 * bSur1onSur2 * sigSqSur2]
+  this.MCMC_dat[, Sigma11 := b1CEonSur1Sur2^2 * (bSur1onSur2^2 * sigSqSur2 + SigSqSur1onSur2) + b2CEonSur1Sur2^2 * sigSqSur2 + SigSqCEonSur1Sur2 + 2 * b1CEonSur1Sur2 * b2CEonSur1Sur2 * (bSur1onSur2 * sigSqSur2)]
 
 
-
-  #Array => list is fastest without using parallel
-
+  # Array => list is fastest without using parallel
 
 
-  #An array of covariances
-  these_cols <- c("Sigma11","Sigma12","Sigma22","Sigma13","Sigma23","Sigma33")
-  tmp <- as.matrix(this.MCMC_dat[, ..these_cols])   # B x 6
+  # An array of covariances
+  these_cols <- c("Sigma11", "Sigma12", "Sigma22", "Sigma13", "Sigma23", "Sigma33")
+  tmp <- as.matrix(this.MCMC_dat[, ..these_cols]) # B x 6
   covars_array <- array(0, dim = c(3, 3, B))
   # Fill upper triangle incl diag
   ut <- upper.tri(matrix(0, 3, 3), diag = TRUE)
   for (i in seq_len(B)) {
-    covars_array[,,i][ut] <- tmp[i, ]
-    covars_array[,,i][!ut] <- t(covars_array[,,i])[!ut]
+    covars_array[, , i][ut] <- tmp[i, ]
+    covars_array[, , i][!ut] <- t(covars_array[, , i])[!ut]
   }
-  #Convert to a list
-  covars <- lapply(seq_len(dim(covars_array)[3]), function(i) covars_array[,,i])
+  # Convert to a list
+  covars <- lapply(seq_len(dim(covars_array)[3]), function(i) covars_array[, , i])
 
-  #Do likewise for means
-  this.MCMC_dat[,mu1:=alphaCEonSur1Sur2 + b1CEonSur1Sur2*(alphaSur1onSur2 + bSur1onSur2*muSur2) + b2CEonSur1Sur2*muSur2]
-  this.MCMC_dat[,mu2:=alphaSur1onSur2 + bSur1onSur2*muSur2]
-  this.MCMC_dat[,mu3:=muSur2]
-  tmp<-as.matrix(this.MCMC_dat[,.(mu1, mu2, mu3)])
+  # Do likewise for means
+  this.MCMC_dat[, mu1 := alphaCEonSur1Sur2 + b1CEonSur1Sur2 * (alphaSur1onSur2 + bSur1onSur2 * muSur2) + b2CEonSur1Sur2 * muSur2]
+  this.MCMC_dat[, mu2 := alphaSur1onSur2 + bSur1onSur2 * muSur2]
+  this.MCMC_dat[, mu3 := muSur2]
+  tmp <- as.matrix(this.MCMC_dat[, .(mu1, mu2, mu3)])
   means_array <- array(0, dim = c(3, 1, B))
   for (i in seq_len(B)) {
-    means_array[,,i] <- tmp[i, ]
+    means_array[, , i] <- tmp[i, ]
   }
   # Dropping only the third array dimension still leaves a 3 x 1 x 1 array.
   # Construct matrices explicitly so callers always receive the documented
@@ -103,7 +101,5 @@ vector_to_matrix <- function(MCMC_dat, diffuse_se = 100, diffuse = TRUE, interce
   })
 
 
-  return(list(mean=means, covar=covars, dt=this.MCMC_dat[,.SD,.SDcols=c("mu1","mu2","mu3",these_cols)]))
-
-
+  return(list(mean = means, covar = covars, dt = this.MCMC_dat[, .SD, .SDcols = c("mu1", "mu2", "mu3", these_cols)]))
 }
