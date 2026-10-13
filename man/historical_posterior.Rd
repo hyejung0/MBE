@@ -24,7 +24,7 @@ historical_posterior
 \description{
 Posterior draws of all model parameters from the MCMC model with chronic
 and acute eGFR slopes as the two surrogates for the clinical endpoint.
-This data set is used in package examples to demonstrate an MBE update
-without requiring users to refit the historical Stan model.
+This data set is extracted from the \code{historical_fit} object and is provided
+to avoid requiring users to refit the historical Stan model.
 }
 \keyword{datasets}

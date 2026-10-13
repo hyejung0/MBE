@@ -1,29 +1,36 @@
 
 
+
+
+
+# Historical Model Fit without First Trial --------------------------------
+
+#Used historical_model_fit_2surrogates() to fit the data
+historical_fit<-readRDS("data-raw/historical_fit.rds")
+
+# Save it as an .rda file into the official data/ folder
+usethis::use_data(historical_fit, overwrite = TRUE)
+
 # MCMC data set -----------------------------------------------------------
 
-# 1. Read the .rds file into a named R object
-historical_posterior <- readRDS("data-raw/ALL_STUDIES.rds")
 
-#Too many datasets. I will only save the last 1,000 samples from each chain.
-historical_posterior<-data.table(historical_posterior)
-max_iter<-historical_posterior[,max(.iteration)]
-all_pars<-c(
-  "alphaCEonSur1Sur2" ,
+
+historical_posterior <- data.table(historical_fit$posterior_samples)[, c(
+  "alphaCEonSur1Sur2",
   "b1CEonSur1Sur2",
   "b2CEonSur1Sur2",
   "SigSqCEonSur1Sur2",
-
   "alphaSur1onSur2",
   "bSur1onSur2",
   "SigSqSur1onSur2",
-
   "muSur2",
   "sigSqSur2"
-)
-historical_posterior<-historical_posterior[.iteration>(max_iter - 1000), ..all_pars]
+)]
 
-# 2. Save it as an .rda file into the official data/ folder
+# max_iter<-historical_posterior[,max(.iteration)]
+#
+# historical_posterior<-historical_posterior[.iteration>(max_iter - 1000), ..all_pars]
+
 usethis::use_data(historical_posterior, overwrite = TRUE)
 
 # # #Generates bzip2 file because the raw .rda file is too big

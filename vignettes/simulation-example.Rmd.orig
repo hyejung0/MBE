@@ -1,0 +1,222 @@
+---
+title: "Simulation Example"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Simulation Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(MBE)
+data("trial_sim_dat", package = "MBE")
+data("historical_posterior", package = "MBE")
+data("loo_assessment_by_trial", package = "MBE")
+
+```
+
+
+
+
+## Simulated trial data
+
+`trial_sim_dat` contains 66 simulated trials with one clinical endpoint and
+exactly two surrogate endpoints. Each row contains treatment-effect estimates,
+standard errors, sampling correlations, and the corresponding simulation truths.
+
+```{r trial-data}
+head(trial_sim_dat)
+```
+
+The column definitions are available with `?trial_sim_dat`.
+
+## Fit the historical model
+
+For this example, trial 1 is treated as a new trial and the historical model is
+fit to the remaining 65 trials. The call below uses the manuscript's initial
+random-intercept, inverse-gamma specification. It is not run while building the
+vignette because it requires CmdStan and several minutes of computation.
+
+```{r historical-model}
+
+#Define columns to use.
+historical_fields <- c(
+  "CE_est", "CE_se", "Sur1_est", "Sur1_se", "Sur2_est", "Sur2_se",
+  "Cor_CE_Sur1", "Cor_CE_Sur2", "Cor_Sur1_Sur2"
+)
+
+
+#Fit the model on the 'historical' data.
+#It's all data except for the first trial.
+historical_fit <- historical_model_fit_2surrogates(
+  data = trial_sim_dat[-1, ..historical_fields],
+  random_intercept = TRUE,
+  prior_for_uncertainty = "inverse_gamma",
+  nchains = 4,
+  ncores = 4,
+  niter = 2000,
+  nwarmup = 1000,
+  seed = 2026,
+  adapt_delta = 0.95,
+  max_treedepth = 15
+)
+
+historical_fit$diagnostics
+historical_fit$summary
+
+historical_posterior <- as.data.frame(historical_fit$posterior_samples)[, c(
+  "alphaCEonSur1Sur2",
+  "b1CEonSur1Sur2",
+  "b2CEonSur1Sur2",
+  "SigSqCEonSur1Sur2",
+  "alphaSur1onSur2",
+  "bSur1onSur2",
+  "SigSqSur1onSur2",
+  "muSur2",
+  "sigSqSur2"
+)]
+```
+
+The package's `historical_posterior` dataset contains compatible precomputed
+draws from this specification with trial 1 held out.
+
+## Update the MBE
+
+Construct the new-trial input from the held-out row:
+
+```{r new-trial}
+new_trial <- list(
+  ClnEst = trial_sim_dat$CE_est[1],
+  ClnSE = trial_sim_dat$CE_se[1],
+  Sur1Est = trial_sim_dat$Sur1_est[1],
+  Sur1SE = trial_sim_dat$Sur1_se[1],
+  Sur2Est = trial_sim_dat$Sur2_est[1],
+  Sur2SE = trial_sim_dat$Sur2_se[1],
+  R1Clin = trial_sim_dat$Cor_CE_Sur1[1],
+  R2Clin = trial_sim_dat$Cor_CE_Sur2[1],
+  R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
+)
+```
+
+Then update the historical distribution with the new-trial estimates:
+
+```{r mbe-estimation}
+set.seed(1)
+mbe_fit <- MBE(
+  mcmc_dat = historical_posterior,
+  sample_dat = new_trial,
+  diffuse = TRUE,
+  diffuse_se = 100,
+  intercept0 = TRUE
+)
+
+mbe_fit$post_mean
+mbe_fit$post_var
+mbe_fit$post_quantiles_clinical
+mbe_fit$importance_diagnostics
+```
+
+The rows of `post_mean` and `post_var` are ordered as the clinical endpoint,
+surrogate 1, and surrogate 2. The posterior is a mixture over historical-model
+draws; `post_mean` and `post_var` summarize its first two moments rather than
+asserting that the mixture itself is a single multivariate normal distribution.
+
+Posterior samples and normalized importance weights are also available:
+
+```{r posterior-draws}
+head(mbe_fit$post_psi0)
+head(mbe_fit$weight_data[, c("clinical", "surrogate1", "surrogate2", "norm_w")])
+```
+
+
+
+
+## Historical Model Fit Assessments
+
+We provide a table of diagnostics for the historical model fit in Appendix C of our manuscript. The core of the calculation is in leave-one-out cross validation (LOO-CV). Here, we show how to calculate these diagnostics.
+
+First, we must fit the historical model to 65 trials, leaving one out at a time. Please note that you should do this leave-one-out things using historical trials only. The purpose of this section is evaluating how well each left out trials are predicted by the historical model. This assumes exchangeability between the 65 and the held-out trial, which is not the case if you are predicting MBE for a "new" trial. We point out in the manuscript that we cannot assume exchangeability between the historical trials and the new trial, which is why we use a diffuse prior for the new trial. The LOO-CV is used under the assumption that the exchangeability holds.
+
+We then calculate few things and combine them to produce the table in the appendiex.
+
+As in the case with the manuscript, we will use subscript $0$ to indicate that the variable belongs to the held-out trial.
+
+
+
+
+### Root mean squared error (RMSE)
+
+For each left out trial, we should calculate root mean squared error. We first estimate the posterior distribution of the held out true clinical effect. The mean of the distribution is approximated by the sample mean. The squared difference between the approximated sample mean and the observed treatment effect on the clinical endpoint is computed. The LOO-CV RMSE is then average this quantity over all 66 trials.
+
+Below, we show one
+
+```{r LOO-CV-RMSE-for-one}
+#| eval: true
+
+
+#Demonstration for a single trial.
+
+#Previously, we've mbe_fit.
+#The mbe_fit was fit with a diffuse prior on the surrogate endpoints.
+#Here, we want to fit with a non-diffuse prior, because we are assuming exchangeability between the held-out trial and the historical trials.
+
+set.seed(1)
+mbe_fit2 <- MBE(
+  mcmc_dat = historical_posterior,
+  sample_dat = new_trial,
+  diffuse = FALSE,
+  intercept0 = FALSE
+)
+
+
+#squared difference between the approximated sample mean and the observed treatment effect on the clinical endpoint for trial 1.
+(mbe_fit2$post_mean[1,1] - new_trial$ClnEst)^2
+```
+
+
+We repeat the process for all 66 trials. And then take mean of these values.
+
+
+### Leave-one-out expected log pointwise predictive density (LOO-PD) and widely applicable information criterion (WAIC)
+
+The LOO-PD and WAIC are approximated via Pareto-smoothed importance sampling in the R package loo. It is part of the output of the function `historical_model_fit_2surrogates()`. The output is stored in the `loo` element of the list returned by the function. The `loo` element is a list with two elements: `pointwise` and `estimates`. The `pointwise` element is a matrix with 66 rows and 4 columns. The first column is the log-likelihood of the held-out trial, the second column is the Pareto-smoothed importance sampling estimate of the log-likelihood, the third column is the standard error of the estimate, and the fourth column is the Pareto k diagnostic. The `estimates` element is a list with three elements: `elpd_loo`, `p_loo`, and `looic`. The `elpd_loo` element is the expected log pointwise predictive density, the `p_loo` element is the effective number of parameters, and the `looic` element is the widely applicable information criterion.
+
+```{r}
+
+#LOO-PD is the 1st row of the below output
+#WAIC is the last rwo of the below output
+historical_fit$loo$estimates
+
+```
+
+### LOO-CV tolerance coverage
+
+```{r}
+
+tolerance_coverage<-
+tolerance_interval_coverage(
+   observed = trial_sim_dat$CE_est[1],
+   mcmc_dat = historical_posterior,
+   sample_dat = new_trial,
+   probs = rbind(c(0.025, 0.975),  # 95% interval
+                 c(0.05, 0.95) # 90% interval
+                 ),
+   seed = 2026
+ )
+tolerance_coverage
+```
+
+The 95% tolerance interval is  `r sprintf("%0.3f",tolerance_coverage$lower[1])` to `r sprintf("%0.3f",tolerance_coverage$upper[1])`. The observed clinical treatment effect is `r sprintf("%0.3f",trial_sim_dat$CE_est[1])` as indicated in the `covered` column of the output.  Similarly, the observed treatment effect is captured in the 90% tolerance interval.
+
+To calculate the coverage, we repeat this process for all 66 trials. The coverage is the proportion of trials for which the observed clinical treatment effect is captured in the tolerance interval.
+
+
+
+
+
+

@@ -1,10 +1,25 @@
+#' Historical Model Fit on 65 of 66 Simulated Trials
+#'
+#' Historical model was fit on 65 of the 66 simulated trials in `trial_sim_dat`.
+#' The first trial was held out to be used as a new trial for the MBE update example.
+#' The model used a random intercept and inverse-gamma priors for the variance parameters.
+#' [historical_model_fit_2surrogates()] was used to fit the model,
+#' and the resulting posterior draws were saved in this dataset
+#' to avoid requiring users to refit the historical Stan model.
+#'
+#' @format A list of outputs from [historical_model_fit_2surrogates()] with 4
+#' chains and 2000 iterations each, including warmup. The posterior draws are
+#' in a data frame with 4,000 rows and 9 variables:
+"historical_fit"
+
+
+
 #' Historical Posterior for Two Surrogate Endpoints
 #'
 #' Posterior draws of all model parameters from the MCMC model with chronic
 #' and acute eGFR slopes as the two surrogates for the clinical endpoint.
-#' This data set is used in package examples to demonstrate an MBE update
-#' without requiring users to refit the historical Stan model.
-#'
+#' This data set is extracted from the `historical_fit` object and is provided
+#' to avoid requiring users to refit the historical Stan model.
 #' @format A data.table with 4,000 rows and 9 variables:
 #' \describe{
 #'   \item{alphaCEonSur1Sur2}{Intercept for clinical effect conditional on both surrogate effects.}
