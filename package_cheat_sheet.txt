@@ -1,8 +1,39 @@
 ===============================================================================
                        R PACKAGE DEVELOPMENT CHEAT SHEET
+                       Package: MBE   |   https://hyejung0.github.io/MBE/
 ===============================================================================
 
-Run these commands from the package project unless noted otherwise.
+Run all commands from the package root (the folder containing DESCRIPTION)
+unless noted otherwise.
+
+CONTENTS
+  0. Quick reference
+  1. Daily development loop
+  2. Creating and documenting functions
+  3. Tests
+  4. Dependencies, data, and vignettes
+  5. MBE-specific workflow: historical-model assessment
+  6. Vignettes that run Stan (precomputed vignette workflow)
+  7. README, versioning, and NEWS
+  8. Previewing the pkgdown website locally
+  9. Publishing the pkgdown website with GitHub Pages
+ 10. Troubleshooting
+ 11. Standard workflow for updating the package (checklist)
+
+
+-------------------------------------------------------------------------------
+0. QUICK REFERENCE
+-------------------------------------------------------------------------------
+
+  I changed...                    Then run...
+  ------------------------------  -------------------------------------------
+  function code                   devtools::load_all()  ->  devtools::test()
+  roxygen comments / @export      devtools::document()
+  DESCRIPTION dependencies        usethis::use_package("pkg")
+  README.Rmd                      devtools::build_readme()
+  a vignette                      pkgdown::build_article("name")
+  a Stan vignette                 see Section 6 (re-knit the .Rmd.orig)
+  anything, before pushing        devtools::check()   (0 errors/warnings/notes)
 
 
 -------------------------------------------------------------------------------
@@ -16,7 +47,7 @@ devtools::load_all()          # Mac: Cmd + Shift + L | Windows: Ctrl + Shift + L
 devtools::document()          # Mac: Cmd + Shift + D | Windows: Ctrl + Shift + D
 
 # Run the testthat test suite
-devtools::test()
+devtools::test()              # Mac: Cmd + Shift + T | Windows: Ctrl + Shift + T
 
 # Install the package locally
 devtools::install()           # Mac: Cmd + Shift + B | Windows: Ctrl + Shift + B
@@ -25,6 +56,11 @@ devtools::install()           # Mac: Cmd + Shift + B | Windows: Ctrl + Shift + B
 devtools::check()             # Mac: Cmd + Shift + E | Windows: Ctrl + Shift + E
 
 # Target before pushing: 0 errors, 0 warnings, and 0 notes
+
+# Optional extras
+devtools::spell_check()       # catch typos in docs and vignettes
+styler::style_pkg()           # auto-format code (review the diff afterward)
+lintr::lint_package()         # style/lint warnings
 
 
 -------------------------------------------------------------------------------
@@ -52,15 +88,48 @@ usethis::use_r("function_name")
 # 4. Regenerate documentation after changing roxygen2 comments
 devtools::document()
 
-# Use @export only for functions that should be part of the public API.
+# Notes
+# - Use @export only for functions that should be part of the public API.
+# - Wrap slow examples in \donttest{} (or \dontrun{} if they cannot run on
+#   CRAN), so devtools::check() stays fast.
+# - Use @importFrom pkg fun (or pkg::fun()) rather than library() in package
+#   code.
+# - Never edit NAMESPACE or man/*.Rd by hand; they are generated.
 
 
 -------------------------------------------------------------------------------
-3. ADDING DATA, DEPENDENCIES, AND VIGNETTES
+3. TESTS
 -------------------------------------------------------------------------------
 
-# Add a package dependency to DESCRIPTION
+# One-time: set up testthat (skip if tests/ already exists)
+usethis::use_testthat(edition = 3)
+
+# Create (or open) the test file matching R/function_name.R
+usethis::use_test("function_name")
+
+# Run all tests during development
+devtools::test()
+
+# Run one test file
+devtools::test_file("tests/testthat/test-file-name.R")
+
+# Toggle between a function and its test file in RStudio
+usethis::use_test()           # run with the function file open
+
+# Check which lines your tests cover
+covr::package_coverage()
+
+# Tip: for functions that use random draws, pass a seed (e.g. seed = 2026) and
+# use a tolerance in expect_equal() so tests are stable.
+
+
+-------------------------------------------------------------------------------
+4. ADDING DATA, DEPENDENCIES, AND VIGNETTES
+-------------------------------------------------------------------------------
+
+# Add a package dependency to DESCRIPTION (Imports by default)
 usethis::use_package("package_name")
+usethis::use_package("package_name", type = "Suggests")   # optional dependency
 
 # Create a script in data-raw/ for preparing a dataset
 usethis::use_data_raw("dataset_name")
@@ -68,21 +137,27 @@ usethis::use_data_raw("dataset_name")
 # Save a prepared R object as an official package dataset in data/
 usethis::use_data(dataset_name, overwrite = TRUE)
 
+# Document package datasets with roxygen2 comments in R/data.R, then run:
+devtools::document()
+
 # Create a vignette in vignettes/
 usethis::use_vignette("vignette_name")
 
 # Exclude a developer-only file or directory from the package bundle
 usethis::use_build_ignore("path_name")
 
-# Document package datasets with roxygen2 comments in R/data.R, then run:
-devtools::document()
 
-# Historical-model assessment (fitting is a separate, user-controlled step)
-# Fit each training set with historical_model_fit_2surrogates(), excluding the
-# corresponding held-out trial, and choose your own model and MBE settings.
+-------------------------------------------------------------------------------
+5. MBE-SPECIFIC WORKFLOW: HISTORICAL-MODEL ASSESSMENT
+-------------------------------------------------------------------------------
+
+# Fitting is a separate, user-controlled step. Fit each training set with
+# historical_model_fit_2surrogates(), excluding the corresponding held-out
+# trial, and choose your own model and MBE settings.
 # Read the "Mapping the MBE Manuscript to the Package" article for the loop.
 
-# RMSE: one row per trial, two named columns; estimates may be MBE posterior means
+# RMSE: one row per trial, two named columns; estimates may be MBE posterior
+# means
 loo_cv_rmse(data.frame(observed = observed_effects, estimated = estimated_effects))
 
 # Generate a clinical predictive distribution from an already fitted posterior
@@ -102,14 +177,51 @@ tolerance_interval_coverage(
 
 
 -------------------------------------------------------------------------------
-4. TESTING, CHECKING, README, AND VIGNETTES
+6. VIGNETTES THAT RUN STAN (PRECOMPUTED VIGNETTE WORKFLOW)
 -------------------------------------------------------------------------------
 
-# Run all tests during development
-devtools::test()
+Use this when a vignette executes Stan code (rstan or cmdstanr). Stan is slow
+and needs a compiler, so we knit locally and commit only the static output.
+That way CI and CRAN need neither rstan, CmdStan, nor cmdstanr to build it.
 
-# Run one test file
-devtools::test_file("tests/testthat/test-file-name.R")
+Suppose the vignette is called name.Rmd.
+
+1. Create and develop the vignette as usual:
+     usethis::use_vignette("name")
+   Make sure it knits with no errors locally.
+
+2. Rename the source so it is never built directly:
+     name.Rmd  ->  name.Rmd.orig
+   (Keep editing name.Rmd.orig from now on, never the generated name.Rmd.)
+
+3. Knit from inside vignettes/ so figure paths come out relative to the
+   vignette:
+     old <- setwd("vignettes")
+     knitr::knit("name.Rmd.orig", output = "name.Rmd")
+     setwd(old)
+   (Knitting from the package root with
+   knitr::knit("vignettes/name.Rmd.orig", output = "vignettes/name.Rmd")
+   also works, but check that the figure links in name.Rmd point to files that
+   actually exist in vignettes/.)
+
+4. Commit the knitted name.Rmd AND its generated figure files.
+   Do NOT commit name.Rmd.orig as a vignette source to be built; see step 5.
+
+5. Keep .orig files out of the built package. Add this line to .Rbuildignore:
+     ^vignettes/.*\.orig$
+
+6. Check the result:
+     devtools::check()
+     pkgdown::build_article("name")
+
+Re-run steps 3-4 every time the Stan model, data, or vignette text changes.
+Tip: set a seed at the top of the .orig file so the committed output is
+reproducible.
+
+
+-------------------------------------------------------------------------------
+7. README, VERSIONING, AND NEWS
+-------------------------------------------------------------------------------
 
 # Rebuild README.md whenever README.Rmd changes
 # Do not edit generated README.md directly.
@@ -118,12 +230,16 @@ devtools::build_readme()
 # Remove temporary vignette artifacts if a package check identifies them
 devtools::clean_vignettes()
 
-# Run the full package check before pushing
-devtools::check()
+# Bump the version (choose "patch", "minor", or "major"); updates DESCRIPTION
+# and NEWS.md
+usethis::use_version("patch")
+
+# Create NEWS.md once, then add a bullet for each user-visible change
+usethis::use_news_md()
 
 
 -------------------------------------------------------------------------------
-5. PREVIEWING THE PKGDOWN WEBSITE LOCALLY
+8. PREVIEWING THE PKGDOWN WEBSITE LOCALLY
 -------------------------------------------------------------------------------
 
 # Build the complete website in docs/
@@ -135,13 +251,16 @@ pkgdown::preview_site()
 # Rebuild one vignette/article while editing it
 pkgdown::build_article("vignette_name")
 
+# Check that every function and article is listed in _pkgdown.yml
+pkgdown::check_pkgdown()
+
 # The generated docs/ directory is a local build artifact in this repository.
 # It is ignored by Git and should not be committed when GitHub Actions handles
 # website deployment.
 
 
 -------------------------------------------------------------------------------
-6. PUBLISHING THE PKGDOWN WEBSITE WITH GITHUB PAGES
+9. PUBLISHING THE PKGDOWN WEBSITE WITH GITHUB PAGES
 -------------------------------------------------------------------------------
 
 Expected public URL:
@@ -169,18 +288,48 @@ https://github.com/hyejung0/MBE/actions
 https://hyejung0.github.io/MBE/
 
 
+-------------------------------------------------------------------------------
+10. TROUBLESHOOTING
+-------------------------------------------------------------------------------
+
+Function not found after editing:
+  Run devtools::document() (exports) and devtools::load_all().
+
+"Undocumented arguments" or NAMESPACE warnings in check():
+  Add the missing @param / @export, then devtools::document().
+
+New function missing from the website:
+  Add it to the reference section of _pkgdown.yml, then
+  pkgdown::check_pkgdown().
+
+pkgdown Action fails on a Stan vignette:
+  The vignette was probably not precomputed. Redo Section 6 and confirm
+  name.Rmd contains static output with no live Stan chunks.
+
+Check complains about non-standard files in the top-level directory:
+  usethis::use_build_ignore("file_or_folder").
+
+Website looks stale:
+  Confirm the Action succeeded, then hard-refresh the browser (Cmd/Ctrl +
+  Shift + R).
+
+
 ===============================================================================
-                    STANDARD WORKFLOW FOR UPDATING THE PACKAGE
+                    11. STANDARD WORKFLOW FOR UPDATING THE PACKAGE
 ===============================================================================
 
-1. Pull the latest changes and confirm the working tree is understood.
-2. Edit functions, tests, documentation, data, or vignettes as needed.
-3. Use devtools::load_all() for quick interactive checks.
-4. Run devtools::document() after changing roxygen2 comments or exports.
-5. Run devtools::test() and fix any failures.
-6. Run devtools::build_readme() if README.Rmd changed.
-7. Run devtools::check(); aim for 0 errors, 0 warnings, and 0 notes.
-8. Optionally run pkgdown::build_site() and pkgdown::preview_site() locally.
-9. Review git status and the diff, then commit and push the source changes.
-10. Confirm that the R CMD check and pkgdown GitHub Actions both succeed.
-11. Confirm the deployed website at https://hyejung0.github.io/MBE/.
+ 1. Pull the latest changes (git pull) and confirm the working tree is
+    understood (git status).
+ 2. Edit functions, tests, documentation, data, or vignettes as needed.
+ 3. Use devtools::load_all() for quick interactive checks.
+ 4. Run devtools::document() after changing roxygen2 comments or exports.
+ 5. Run devtools::test() and fix any failures.
+ 6. Run devtools::build_readme() if README.Rmd changed.
+ 7. If a Stan vignette changed, re-knit it (Section 6).
+ 8. Add a NEWS.md entry for any user-visible change (bump the version if
+    releasing).
+ 9. Run devtools::check(); aim for 0 errors, 0 warnings, and 0 notes.
+10. Optionally run pkgdown::build_site() and pkgdown::preview_site() locally.
+11. Review git status and the diff, then commit and push the source changes.
+12. Confirm that the R CMD check and pkgdown GitHub Actions both succeed.
+13. Confirm the deployed website at https://hyejung0.github.io/MBE/.
