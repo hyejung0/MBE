@@ -23,11 +23,11 @@ precalculated_data/
 ^vignettes/.*\.orig$
 
 # folders to ignore
-data-raw/ALL_STUDIES.rds
 data-raw/loo-random-inverse-gamma/
 inst/code
 /doc/
 /Meta/
+/archive/
 
 # Optional: uncomment if NOT using GitHub Pages for pkgdown
 docs
