@@ -94,7 +94,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"historical_posterior"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"trial_sim_dat"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Construct a list for the new trial's observed data, using the first row of the simulated dataset.</span></span>
+<span><span class="co"># Construct a list for the new trial's observed data, using the first row of the simulated dataset.</span></span>
 <span><span class="va">new_trial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  ClnEst <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>  ClnSE <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
@@ -107,23 +107,23 @@
 <span>  R12 <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_Sur1_Sur2</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Estimate the posterior distribution of the MBE for the new trial using the historical posterior draws.</span></span>
+<span><span class="co"># Estimate the posterior distribution of the MBE for the new trial using the historical posterior draws.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/MBE.html">MBE</a></span><span class="op">(</span><span class="va">historical_posterior</span>, <span class="va">new_trial</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Mean of the posterior distribution for the clinical endpoint, surrogate 1, and surrogate 2.</span></span>
+<span><span class="co"># Mean of the posterior distribution for the clinical endpoint, surrogate 1, and surrogate 2.</span></span>
 <span><span class="va">fit</span><span class="op">$</span><span class="va">post_mean</span></span>
-<span><span class="co">#&gt;                  [,1]</span></span>
-<span><span class="co">#&gt; clinical   -0.1013294</span></span>
-<span><span class="co">#&gt; surrogate1  0.6837417</span></span>
-<span><span class="co">#&gt; surrogate2 -5.4760921</span></span>
+<span><span class="co">#&gt;                   [,1]</span></span>
+<span><span class="co">#&gt; clinical   -0.05425464</span></span>
+<span><span class="co">#&gt; surrogate1  0.67469003</span></span>
+<span><span class="co">#&gt; surrogate2 -5.04103222</span></span>
 <span></span>
-<span><span class="co">#Corresponding variance matrix</span></span>
+<span><span class="co"># Corresponding variance matrix</span></span>
 <span><span class="va">fit</span><span class="op">$</span><span class="va">post_var</span></span>
 <span><span class="co">#&gt;               clinical   surrogate1   surrogate2</span></span>
-<span><span class="co">#&gt; clinical    0.01196417 -0.019592518 -0.091338433</span></span>
-<span><span class="co">#&gt; surrogate1 -0.01959252  0.060139164 -0.009146439</span></span>
-<span><span class="co">#&gt; surrogate2 -0.09133843 -0.009146439  3.981621682</span></span></code></pre></div>
+<span><span class="co">#&gt; clinical    0.01212002 -0.018442933 -0.109817889</span></span>
+<span><span class="co">#&gt; surrogate1 -0.01844293  0.060857682 -0.005088661</span></span>
+<span><span class="co">#&gt; surrogate2 -0.10981789 -0.005088661  3.798687086</span></span></code></pre></div>
 <p>A detailed example is provided in the package vignette <a href="https://hyejung0.github.io/MBE/articles/simulation-example.html">Simulation Example</a>.</p>
 </div>
 </div>

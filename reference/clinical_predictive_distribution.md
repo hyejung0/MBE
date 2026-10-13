@@ -90,8 +90,8 @@ held_out <- list(
   R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
 )
 predictive <- clinical_predictive_distribution(
-  mcmc_dat=historical_posterior,
-  sample_dat=held_out,
+  mcmc_dat = historical_posterior,
+  sample_dat = held_out,
   seed = 2026
 )
 stats::quantile(predictive, c(0.025, 0.975))

@@ -236,9 +236,9 @@ fit <- historical_model_fit_2surrogates(
   ncores = 4,
   niter = 2000,
   nwarmup = 1000,
-  adapt_delta = 0.95,  # Target acceptance rate (resolves divergences)
-  max_treedepth = 15,  # Tree depth limit (resolves treedepth saturation)
-  refresh = 250        # Print updates every 250 iterations
+  adapt_delta = 0.95, # Target acceptance rate (resolves divergences)
+  max_treedepth = 15, # Tree depth limit (resolves treedepth saturation)
+  refresh = 250 # Print updates every 250 iterations
 )
 } # }
 ```

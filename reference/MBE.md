@@ -60,36 +60,35 @@ clinical endpoint, surrogate 1, and surrogate 2.
 # row that was left out.
 data("historical_posterior")
 data("trial_sim_dat")
-one_sim_dat<-list(
+one_sim_dat <- list(
+  # treatment effect on CE
+  ClnEst = trial_sim_dat$CE_est[1],
+  ClnSE = trial_sim_dat$CE_se[1],
 
-# treatment effect on CE
-ClnEst=trial_sim_dat$CE_est[1],
-ClnSE=trial_sim_dat$CE_se[1],
+  # treatment effect on chronic slope
+  Sur1Est = trial_sim_dat$Sur1_est[1],
+  Sur1SE = trial_sim_dat$Sur1_se[1],
 
-# treatment effect on chronic slope
-Sur1Est=trial_sim_dat$Sur1_est[1],
-Sur1SE=trial_sim_dat$Sur1_se[1],
+  # treatment effect on acute slope
+  Sur2Est = trial_sim_dat$Sur2_est[1],
+  Sur2SE = trial_sim_dat$Sur2_se[1],
 
-# treatment effect on acute slope
-Sur2Est=trial_sim_dat$Sur2_est[1],
-Sur2SE=trial_sim_dat$Sur2_se[1],
+  # correlation between CE and chronic slope
+  R1Clin = trial_sim_dat$Cor_CE_Sur1[1],
 
-# correlation between CE and chronic slope
-R1Clin=trial_sim_dat$Cor_CE_Sur1[1],
+  # correlation between CE and acute slope
+  R2Clin = trial_sim_dat$Cor_CE_Sur2[1],
 
-# correlation between CE and acute slope
-R2Clin=trial_sim_dat$Cor_CE_Sur2[1],
-
-# correlation between chronic slope and acute slope
-R12=trial_sim_dat$Cor_Sur1_Sur2[1]
+  # correlation between chronic slope and acute slope
+  R12 = trial_sim_dat$Cor_Sur1_Sur2[1]
 )
 
-MBE_distribution<-MBE(
-mcmc_dat = historical_posterior,
-sample_dat=one_sim_dat,
-diffuse_se = 100,
-diffuse = TRUE,
-intercept0 = TRUE
+MBE_distribution <- MBE(
+  mcmc_dat = historical_posterior,
+  sample_dat = one_sim_dat,
+  diffuse_se = 100,
+  diffuse = TRUE,
+  intercept0 = TRUE
 )
 
 head(MBE_distribution$post_psi0)

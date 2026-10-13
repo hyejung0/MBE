@@ -132,27 +132,28 @@ is used to estimate the posterior distribution of MBE on the clinical endpoint w
 <span class="r-in"><span><span class="co"># row that was left out.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"historical_posterior"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"trial_sim_dat"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">one_sim_dat</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span><span class="co"># treatment effect on chronic slope</span></span></span>
-<span class="r-in"><span>Sur1Est<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur1_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>Sur1SE<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur1_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span><span class="va">one_sim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="co"># treatment effect on chronic slope</span></span></span>
+<span class="r-in"><span>  Sur1Est <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur1_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>  Sur1SE <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur1_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># treatment effect on acute slope</span></span></span>
-<span class="r-in"><span>Sur2Est<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur2_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>Sur2SE<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur2_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>  <span class="co"># treatment effect on acute slope</span></span></span>
+<span class="r-in"><span>  Sur2Est <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur2_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>  Sur2SE <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Sur2_se</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># correlation between chronic slope and acute slope</span></span></span>
-<span class="r-in"><span>R12<span class="op">=</span><span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_Sur1_Sur2</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="co"># correlation between chronic slope and acute slope</span></span></span>
+<span class="r-in"><span>  R12 <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">Cor_Sur1_Sur2</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">MBE_from_surrogate_only</span><span class="op">&lt;-</span><span class="fu">surrogate_MBE</span><span class="op">(</span></span></span>
-<span class="r-in"><span>mcmc_dat <span class="op">=</span> <span class="va">historical_posterior</span>,</span></span>
-<span class="r-in"><span>sample_dat<span class="op">=</span><span class="va">one_sim_dat</span>,</span></span>
-<span class="r-in"><span>diffuse <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co">#We will not use the historical posterior</span></span></span>
-<span class="r-in"><span><span class="co">#distribution of the two surrogate endpoints to estimate the</span></span></span>
-<span class="r-in"><span><span class="co">#posterior distribution of MBE. Instead, we will use a diffuse prior.</span></span></span>
-<span class="r-in"><span>diffuse_se <span class="op">=</span> <span class="fl">100</span>,</span></span>
-<span class="r-in"><span>intercept0 <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">MBE_from_surrogate_only</span> <span class="op">&lt;-</span> <span class="fu">surrogate_MBE</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  mcmc_dat <span class="op">=</span> <span class="va">historical_posterior</span>,</span></span>
+<span class="r-in"><span>  sample_dat <span class="op">=</span> <span class="va">one_sim_dat</span>,</span></span>
+<span class="r-in"><span>  diffuse <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># We will not use the historical posterior</span></span></span>
+<span class="r-in"><span>  <span class="co"># distribution of the two surrogate endpoints to estimate the</span></span></span>
+<span class="r-in"><span>  <span class="co"># posterior distribution of MBE. Instead, we will use a diffuse prior.</span></span></span>
+<span class="r-in"><span>  diffuse_se <span class="op">=</span> <span class="fl">100</span>,</span></span>
+<span class="r-in"><span>  intercept0 <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
