@@ -27,21 +27,15 @@ tolerance_interval_coverage(
 
 - mcmc_dat:
 
-  Historical posterior draws in the format accepted by
-  [`MBE()`](https://hyejung0.github.io/MBE/reference/MBE.md). For
-  leave-one-trial-out assessment, fit these draws without the trial to
-  be predicted, using
-  [`historical_model_fit_2surrogates()`](https://hyejung0.github.io/MBE/reference/historical_model_fit_2surrogates.md).
-  Fixed- and random-intercept fits and both uncertainty priors are
-  supported.
+  Historical posterior draws as `posterior_samples` returned by
+  [`historical_model_fit_2surrogates()`](https://hyejung0.github.io/MBE/reference/historical_model_fit_2surrogates.md)
+  function.
 
 - sample_dat:
 
   A named list containing `ClnSE`, `Sur1Est`, `Sur1SE`, `Sur2Est`,
-  `Sur2SE`, `R1Clin`, `R2Clin`, and `R12` for one held-out trial. An
-  optional `ClnEst` entry is ignored. These are the same sampling inputs
-  used by [`MBE()`](https://hyejung0.github.io/MBE/reference/MBE.md),
-  except the clinical estimate is not needed.
+  `Sur2SE`, `R1Clin`, `R2Clin`, and `R12` for the one trial for which we
+  wish to estimate the posterior predictive distribution.
 
 - probs:
 
@@ -55,8 +49,7 @@ tolerance_interval_coverage(
 
   Additional arguments to
   [`clinical_predictive_distribution()`](https://hyejung0.github.io/MBE/reference/clinical_predictive_distribution.md),
-  including `n_draws`, `seed`, `diffuse`, `diffuse_se`, and
-  `intercept0`.
+  including `seed`, `diffuse`, `diffuse_se`, and `intercept0`.
 
 ## Value
 
@@ -109,8 +102,8 @@ tolerance_interval_coverage(
   probs = rbind(c(0.025, 0.975), c(0.05, 0.95), c(0.075, 0.925)),
   seed = 2026
 )
-#>   lower_prob upper_prob level   observed      lower      upper covered
-#> 1      0.025      0.975    95 -0.1337531 -0.3798877 0.16839047    TRUE
-#> 2      0.050      0.950    90 -0.1337531 -0.3472340 0.13095301    TRUE
-#> 3      0.075      0.925    85 -0.1337531 -0.3010150 0.07382694    TRUE
+#>   lower_prob upper_prob level   observed      lower     upper covered
+#> 1      0.025      0.975    95 -0.1337531 -0.4163312 0.2558903    TRUE
+#> 2      0.050      0.950    90 -0.1337531 -0.3705794 0.2260514    TRUE
+#> 3      0.075      0.925    85 -0.1337531 -0.3278231 0.1811650    TRUE
 ```

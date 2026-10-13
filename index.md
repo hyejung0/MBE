@@ -31,7 +31,18 @@ CmdStan has not already been installed, run:
 
 ``` r
 
+# 1. Install the cmdstanr R package in a fresh R session.
+# Skip this step if it is already installed.
+install.packages(
+  "cmdstanr",
+  repos = c("https://stan-dev.r-universe.dev", getOption("repos"))
+)
+
+# 2. Check the required compiler and build tools.
 cmdstanr::check_cmdstan_toolchain()
+
+# 3. Install CmdStan if it is not already installed.
+# Run this after the toolchain check succeeds.
 cmdstanr::install_cmdstan()
 ```
 

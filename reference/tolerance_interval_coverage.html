@@ -71,17 +71,14 @@ are not refitted. The observed clinical estimate is used only for capture.</p>
 
 
 <dt id="arg-mcmc-dat">mcmc_dat<a class="anchor" aria-label="anchor" href="#arg-mcmc-dat"></a></dt>
-<dd><p>Historical posterior draws in the format accepted by <code><a href="MBE.html">MBE()</a></code>.
-For leave-one-trial-out assessment, fit these draws without the trial to be
-predicted, using <code><a href="historical_model_fit_2surrogates.html">historical_model_fit_2surrogates()</a></code>. Fixed- and
-random-intercept fits and both uncertainty priors are supported.</p></dd>
+<dd><p>Historical posterior draws as <code>posterior_samples</code> returned by
+<code><a href="historical_model_fit_2surrogates.html">historical_model_fit_2surrogates()</a></code> function.</p></dd>
 
 
 <dt id="arg-sample-dat">sample_dat<a class="anchor" aria-label="anchor" href="#arg-sample-dat"></a></dt>
 <dd><p>A named list containing <code>ClnSE</code>, <code>Sur1Est</code>, <code>Sur1SE</code>,
-<code>Sur2Est</code>, <code>Sur2SE</code>, <code>R1Clin</code>, <code>R2Clin</code>, and <code>R12</code> for one held-out trial.
-An optional <code>ClnEst</code> entry is ignored. These are the same sampling inputs
-used by <code><a href="MBE.html">MBE()</a></code>, except the clinical estimate is not needed.</p></dd>
+<code>Sur2Est</code>, <code>Sur2SE</code>, <code>R1Clin</code>, <code>R2Clin</code>, and <code>R12</code> for the one trial for which
+we wish to estimate the posterior predictive distribution.</p></dd>
 
 
 <dt id="arg-probs">probs<a class="anchor" aria-label="anchor" href="#arg-probs"></a></dt>
@@ -94,7 +91,7 @@ and column 2 the upper probability. Each pair must satisfy
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments to <code><a href="clinical_predictive_distribution.html">clinical_predictive_distribution()</a></code>,
-including <code>n_draws</code>, <code>seed</code>, <code>diffuse</code>, <code>diffuse_se</code>, and <code>intercept0</code>.</p></dd>
+including <code>seed</code>, <code>diffuse</code>, <code>diffuse_se</code>, and <code>intercept0</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -141,10 +138,10 @@ current conditioning and weighting method.</p>
 <span class="r-in"><span>  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.075</span>, <span class="fl">0.925</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  seed <span class="op">=</span> <span class="fl">2026</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   lower_prob upper_prob level   observed      lower      upper covered</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0.025      0.975    95 -0.1337531 -0.3798877 0.16839047    TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      0.050      0.950    90 -0.1337531 -0.3472340 0.13095301    TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      0.075      0.925    85 -0.1337531 -0.3010150 0.07382694    TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   lower_prob upper_prob level   observed      lower     upper covered</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0.025      0.975    95 -0.1337531 -0.4163312 0.2558903    TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      0.050      0.950    90 -0.1337531 -0.3705794 0.2260514    TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      0.075      0.925    85 -0.1337531 -0.3278231 0.1811650    TRUE</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

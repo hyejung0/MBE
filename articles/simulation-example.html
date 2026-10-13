@@ -104,12 +104,18 @@ the manuscript’s initial random-intercept, inverse-gamma specification.
 It is not run while building the vignette because it requires CmdStan
 and several minutes of computation.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">historical_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span></span>
+<span><span class="co">#Define columns to use.</span></span>
+<span><span class="va">historical_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"CE_est"</span>, <span class="st">"CE_se"</span>, <span class="st">"Sur1_est"</span>, <span class="st">"Sur1_se"</span>, <span class="st">"Sur2_est"</span>, <span class="st">"Sur2_se"</span>,</span>
 <span>  <span class="st">"Cor_CE_Sur1"</span>, <span class="st">"Cor_CE_Sur2"</span>, <span class="st">"Cor_Sur1_Sur2"</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="co">#Fit the model on the 'historical' data.</span></span>
+<span><span class="co">#It's all data except for the first trial.</span></span>
 <span><span class="va">historical_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/historical_model_fit_2surrogates.html">historical_model_fit_2surrogates</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">trial_sim_dat</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="va">historical_fields</span><span class="op">]</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>, <span class="va">..historical_fields</span><span class="op">]</span>,</span>
 <span>  random_intercept <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  prior_for_uncertainty <span class="op">=</span> <span class="st">"inverse_gamma"</span>,</span>
 <span>  nchains <span class="op">=</span> <span class="fl">4</span>,</span>
@@ -120,9 +126,199 @@ and several minutes of computation.</p>
 <span>  adapt_delta <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  max_treedepth <span class="op">=</span> <span class="fl">15</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Running MCMC with 4 parallel chains...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration:    1 / 3000 [  0%]  (Warmup)</span></span>
+<span><span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span></span>
+<span><span class="co">#&gt; Chain 1 Exception: multi_normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/jq/7fxxv0ms713f8bdmdppmknnw0000gp/T/RtmpME9LOn/working_dir/RtmpwoXdfg/model-134831da161ee.stan', line 73, column 4 to column 51)</span></span>
+<span><span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span></span>
+<span><span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span></span>
+<span><span class="co">#&gt; Chain 1</span></span>
+<span><span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span></span>
+<span><span class="co">#&gt; Chain 1 Exception: multi_normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/jq/7fxxv0ms713f8bdmdppmknnw0000gp/T/RtmpME9LOn/working_dir/RtmpwoXdfg/model-134831da161ee.stan', line 73, column 4 to column 51)</span></span>
+<span><span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span></span>
+<span><span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span></span>
+<span><span class="co">#&gt; Chain 1</span></span>
+<span><span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span></span>
+<span><span class="co">#&gt; Chain 1 Exception: multi_normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/jq/7fxxv0ms713f8bdmdppmknnw0000gp/T/RtmpME9LOn/working_dir/RtmpwoXdfg/model-134831da161ee.stan', line 73, column 4 to column 51)</span></span>
+<span><span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span></span>
+<span><span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span></span>
+<span><span class="co">#&gt; Chain 1</span></span>
+<span><span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span></span>
+<span><span class="co">#&gt; Chain 1 Exception: multi_normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/jq/7fxxv0ms713f8bdmdppmknnw0000gp/T/RtmpME9LOn/working_dir/RtmpwoXdfg/model-134831da161ee.stan', line 73, column 4 to column 51)</span></span>
+<span><span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span></span>
+<span><span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span></span>
+<span><span class="co">#&gt; Chain 1</span></span>
+<span><span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span></span>
+<span><span class="co">#&gt; Chain 1 Exception: multi_normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/jq/7fxxv0ms713f8bdmdppmknnw0000gp/T/RtmpME9LOn/working_dir/RtmpwoXdfg/model-134831da161ee.stan', line 73, column 4 to column 51)</span></span>
+<span><span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span></span>
+<span><span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span></span>
+<span><span class="co">#&gt; Chain 1</span></span>
+<span><span class="co">#&gt; Chain 2 Iteration:    1 / 3000 [  0%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration:    1 / 3000 [  0%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration:    1 / 3000 [  0%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration:  100 / 3000 [  3%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration:  100 / 3000 [  3%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration:  200 / 3000 [  6%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration:  100 / 3000 [  3%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration:  100 / 3000 [  3%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration:  200 / 3000 [  6%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration:  300 / 3000 [ 10%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration:  200 / 3000 [  6%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration:  400 / 3000 [ 13%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration:  300 / 3000 [ 10%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration:  300 / 3000 [ 10%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration:  500 / 3000 [ 16%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration:  200 / 3000 [  6%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration:  400 / 3000 [ 13%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration:  400 / 3000 [ 13%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration:  600 / 3000 [ 20%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration:  300 / 3000 [ 10%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration:  500 / 3000 [ 16%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration:  700 / 3000 [ 23%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration:  400 / 3000 [ 13%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration:  500 / 3000 [ 16%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration:  600 / 3000 [ 20%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration:  800 / 3000 [ 26%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration:  500 / 3000 [ 16%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration:  600 / 3000 [ 20%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration:  700 / 3000 [ 23%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration:  900 / 3000 [ 30%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration:  600 / 3000 [ 20%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration:  700 / 3000 [ 23%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration:  800 / 3000 [ 26%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration:  800 / 3000 [ 26%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 1000 / 3000 [ 33%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 1001 / 3000 [ 33%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration:  700 / 3000 [ 23%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration:  900 / 3000 [ 30%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration:  900 / 3000 [ 30%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 1100 / 3000 [ 36%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration:  800 / 3000 [ 26%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 1000 / 3000 [ 33%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 1001 / 3000 [ 33%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 1000 / 3000 [ 33%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 1001 / 3000 [ 33%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 1200 / 3000 [ 40%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration:  900 / 3000 [ 30%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 1100 / 3000 [ 36%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 1100 / 3000 [ 36%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 1200 / 3000 [ 40%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 1200 / 3000 [ 40%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 1300 / 3000 [ 43%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 1000 / 3000 [ 33%]  (Warmup) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 1001 / 3000 [ 33%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 1300 / 3000 [ 43%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 1300 / 3000 [ 43%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 1400 / 3000 [ 46%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 1100 / 3000 [ 36%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 1400 / 3000 [ 46%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 1400 / 3000 [ 46%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 1500 / 3000 [ 50%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 1200 / 3000 [ 40%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 1500 / 3000 [ 50%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 1500 / 3000 [ 50%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 1300 / 3000 [ 43%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 1600 / 3000 [ 53%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 1600 / 3000 [ 53%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 1600 / 3000 [ 53%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 1400 / 3000 [ 46%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 1700 / 3000 [ 56%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 1700 / 3000 [ 56%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 1700 / 3000 [ 56%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 1500 / 3000 [ 50%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 1800 / 3000 [ 60%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 1800 / 3000 [ 60%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 1800 / 3000 [ 60%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 1600 / 3000 [ 53%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 1700 / 3000 [ 56%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 1900 / 3000 [ 63%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 1900 / 3000 [ 63%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 1800 / 3000 [ 60%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 2000 / 3000 [ 66%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 2100 / 3000 [ 70%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 2000 / 3000 [ 66%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 1900 / 3000 [ 63%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 2200 / 3000 [ 73%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 2100 / 3000 [ 70%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 2000 / 3000 [ 66%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 1900 / 3000 [ 63%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 2000 / 3000 [ 66%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 2300 / 3000 [ 76%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 2200 / 3000 [ 73%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 2100 / 3000 [ 70%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 2400 / 3000 [ 80%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 2300 / 3000 [ 76%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 2100 / 3000 [ 70%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 2200 / 3000 [ 73%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 2500 / 3000 [ 83%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 2400 / 3000 [ 80%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 2200 / 3000 [ 73%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 2600 / 3000 [ 86%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 2500 / 3000 [ 83%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 2300 / 3000 [ 76%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 2300 / 3000 [ 76%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 2400 / 3000 [ 80%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 2700 / 3000 [ 90%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 2600 / 3000 [ 86%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 2500 / 3000 [ 83%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 2800 / 3000 [ 93%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 2700 / 3000 [ 90%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 2400 / 3000 [ 80%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 2600 / 3000 [ 86%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 2900 / 3000 [ 96%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 2800 / 3000 [ 93%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 2500 / 3000 [ 83%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 2700 / 3000 [ 90%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 Iteration: 3000 / 3000 [100%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 2900 / 3000 [ 96%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 3 finished in 7.0 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 2600 / 3000 [ 86%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 2800 / 3000 [ 93%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 Iteration: 3000 / 3000 [100%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 4 finished in 7.2 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 2700 / 3000 [ 90%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 2900 / 3000 [ 96%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 Iteration: 3000 / 3000 [100%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 2 finished in 7.4 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 2800 / 3000 [ 93%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 2900 / 3000 [ 96%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 Iteration: 3000 / 3000 [100%]  (Sampling) </span></span>
+<span><span class="co">#&gt; Chain 1 finished in 7.7 seconds.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; All 4 chains finished successfully.</span></span>
+<span><span class="co">#&gt; Mean chain execution time: 7.3 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 7.8 seconds.</span></span>
+<span><span class="co">#&gt; Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.</span></span>
+<span><span class="co">#&gt; Warning: </span></span>
+<span><span class="co">#&gt; 59 (90.8%) p_waic estimates greater than 0.4. We recommend trying loo instead.</span></span>
 <span></span>
 <span><span class="va">historical_fit</span><span class="op">$</span><span class="va">diagnostics</span></span>
+<span><span class="co">#&gt; $num_divergent</span></span>
+<span><span class="co">#&gt; [1] 0 0 0 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $num_max_treedepth</span></span>
+<span><span class="co">#&gt; [1] 0 0 0 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $ebfmi</span></span>
+<span><span class="co">#&gt; [1] 0.7055957 0.8008495 0.7332177 0.7392627</span></span>
 <span><span class="va">historical_fit</span><span class="op">$</span><span class="va">summary</span></span>
+<span><span class="co">#&gt; # A tibble: 11 × 14</span></span>
+<span><span class="co">#&gt;    variable             mean   median      sd     mad   `2.5%`     `5%`    `10%`</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;               &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 alphaCEonSur1Su… -0.0672  -0.0672  0.0480  0.0476  -1.61e-1 -1.45e-1 -1.29e-1</span></span>
+<span><span class="co">#&gt;  2 b1CEonSur1Sur2   -0.295   -0.296   0.0627  0.0606  -4.16e-1 -3.97e-1 -3.73e-1</span></span>
+<span><span class="co">#&gt;  3 b2CEonSur1Sur2   -0.0353  -0.0353  0.00493 0.00491 -4.49e-2 -4.34e-2 -4.16e-2</span></span>
+<span><span class="co">#&gt;  4 SigSqCEonSur1Su…  0.00398  0.00267 0.00401 0.00278  2.24e-4  3.05e-4  4.63e-4</span></span>
+<span><span class="co">#&gt;  5 alphaSur1onSur2   0.644    0.643   0.0888  0.0878   4.69e-1  5.01e-1  5.32e-1</span></span>
+<span><span class="co">#&gt;  6 bSur1onSur2       0.0237   0.0239  0.0161  0.0159  -7.83e-3 -2.80e-3  2.89e-3</span></span>
+<span><span class="co">#&gt;  7 SigSqSur1onSur2   0.256    0.243   0.0812  0.0740   1.31e-1  1.47e-1  1.64e-1</span></span>
+<span><span class="co">#&gt;  8 muSur2           -2.52    -2.52    0.741   0.732   -3.95e+0 -3.70e+0 -3.43e+0</span></span>
+<span><span class="co">#&gt;  9 sigSqSur2        29.8     29.0     6.37    6.09     1.95e+1  2.08e+1  2.24e+1</span></span>
+<span><span class="co">#&gt; 10 R2CEonSur1Sur2    0.949    0.966   0.0521  0.0359   8.08e-1  8.43e-1  8.79e-1</span></span>
+<span><span class="co">#&gt; 11 RMSECEonSur1Sur2  0.0560   0.0517  0.0290  0.0304   1.50e-2  1.75e-2  2.15e-2</span></span>
+<span><span class="co">#&gt; # ℹ 6 more variables: `90%` &lt;dbl&gt;, `95%` &lt;dbl&gt;, `97.5%` &lt;dbl&gt;, rhat &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   ess_bulk &lt;dbl&gt;, ess_tail &lt;dbl&gt;</span></span>
 <span></span>
 <span><span class="va">historical_posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">historical_fit</span><span class="op">$</span><span class="va">posterior_samples</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"alphaCEonSur1Sur2"</span>,</span>
@@ -168,25 +364,25 @@ estimates:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">post_mean</span></span>
-<span><span class="co">#&gt;                  [,1]</span></span>
-<span><span class="co">#&gt; clinical   -0.1013294</span></span>
-<span><span class="co">#&gt; surrogate1  0.6837417</span></span>
-<span><span class="co">#&gt; surrogate2 -5.4760921</span></span>
+<span><span class="co">#&gt;                   [,1]</span></span>
+<span><span class="co">#&gt; clinical   -0.05425464</span></span>
+<span><span class="co">#&gt; surrogate1  0.67469003</span></span>
+<span><span class="co">#&gt; surrogate2 -5.04103222</span></span>
 <span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">post_var</span></span>
 <span><span class="co">#&gt;               clinical   surrogate1   surrogate2</span></span>
-<span><span class="co">#&gt; clinical    0.01196417 -0.019592518 -0.091338433</span></span>
-<span><span class="co">#&gt; surrogate1 -0.01959252  0.060139164 -0.009146439</span></span>
-<span><span class="co">#&gt; surrogate2 -0.09133843 -0.009146439  3.981621682</span></span>
+<span><span class="co">#&gt; clinical    0.01212002 -0.018442933 -0.109817889</span></span>
+<span><span class="co">#&gt; surrogate1 -0.01844293  0.060857682 -0.005088661</span></span>
+<span><span class="co">#&gt; surrogate2 -0.10981789 -0.005088661  3.798687086</span></span>
 <span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">post_quantiles_clinical</span></span>
 <span><span class="co">#&gt; quantile_0.025  quantile_0.05   quantile_0.1  quantile_0.25   quantile_0.5 </span></span>
-<span><span class="co">#&gt;    -0.31485836    -0.28123031    -0.24074706    -0.17402273    -0.09799387 </span></span>
+<span><span class="co">#&gt;    -0.27319424    -0.23671208    -0.19579364    -0.12941497    -0.05465971 </span></span>
 <span><span class="co">#&gt;  quantile_0.75   quantile_0.9  quantile_0.95 quantile_0.975 </span></span>
-<span><span class="co">#&gt;    -0.02681263     0.03707755     0.07905239     0.12341721</span></span>
+<span><span class="co">#&gt;     0.01970057     0.08628304     0.12682206     0.15939645</span></span>
 <span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">importance_diagnostics</span></span>
 <span><span class="co">#&gt;          effective_sample_size relative_effective_sample_size </span></span>
-<span><span class="co">#&gt;                   3.943574e+03                   9.858936e-01 </span></span>
+<span><span class="co">#&gt;                   7.661266e+03                   9.576583e-01 </span></span>
 <span><span class="co">#&gt;      maximum_normalized_weight </span></span>
-<span><span class="co">#&gt;                   3.262557e-04</span></span></code></pre></div>
+<span><span class="co">#&gt;                   2.141063e-04</span></span></code></pre></div>
 <p>The rows of <code>post_mean</code> and <code>post_var</code> are
 ordered as the clinical endpoint, surrogate 1, and surrogate 2. The
 posterior is a mixture over historical-model draws;
@@ -198,21 +394,135 @@ available:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">post_psi0</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         clinical surrogate1 surrogate2</span></span>
-<span><span class="co">#&gt; [1,]  0.08370764  0.3990721  -7.852443</span></span>
-<span><span class="co">#&gt; [2,] -0.11376674  0.8685964  -5.930684</span></span>
-<span><span class="co">#&gt; [3,] -0.17713234  0.7999603  -7.862937</span></span>
-<span><span class="co">#&gt; [4,] -0.02946255  0.2816377  -5.191110</span></span>
-<span><span class="co">#&gt; [5,]  0.06848906  0.3584364  -5.859788</span></span>
-<span><span class="co">#&gt; [6,] -0.17410827  0.7329111  -2.059854</span></span>
+<span><span class="co">#&gt; [1,]  0.10792259  0.6569066  -6.336729</span></span>
+<span><span class="co">#&gt; [2,]  0.29543096  0.3573118 -10.023518</span></span>
+<span><span class="co">#&gt; [3,] -0.08000168  0.6793235  -4.675862</span></span>
+<span><span class="co">#&gt; [4,] -0.27791087  1.1322496  -4.258685</span></span>
+<span><span class="co">#&gt; [5,] -0.14274296  0.8725093  -2.355490</span></span>
+<span><span class="co">#&gt; [6,] -0.06552635  0.6479029  -4.284622</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mbe_fit</span><span class="op">$</span><span class="va">weight_data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"clinical"</span>, <span class="st">"surrogate1"</span>, <span class="st">"surrogate2"</span>, <span class="st">"norm_w"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;       clinical surrogate1 surrogate2       norm_w</span></span>
-<span><span class="co">#&gt;          &lt;num&gt;      &lt;num&gt;      &lt;num&gt;        &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: -0.10720750  0.7560167  -7.127875 0.0002672069</span></span>
-<span><span class="co">#&gt; 2:  0.01877278  0.6573292  -7.300413 0.0002656093</span></span>
-<span><span class="co">#&gt; 3: -0.11400997  0.8274257  -4.235286 0.0002099456</span></span>
-<span><span class="co">#&gt; 4: -0.21420967  1.0618332  -4.698719 0.0002687302</span></span>
-<span><span class="co">#&gt; 5: -0.04365231  0.1859734  -3.115996 0.0002484868</span></span>
-<span><span class="co">#&gt; 6: -0.14840752  0.6815660  -3.572072 0.0002695261</span></span></code></pre></div>
+<span><span class="co">#&gt;        clinical surrogate1 surrogate2       norm_w</span></span>
+<span><span class="co">#&gt;           &lt;num&gt;      &lt;num&gt;      &lt;num&gt;        &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: -0.082376373  0.7857092  -6.840365 0.0001959049</span></span>
+<span><span class="co">#&gt; 2:  0.056911766  0.6510819  -6.480940 0.0001352181</span></span>
+<span><span class="co">#&gt; 3: -0.112015950  0.8220285  -3.834754 0.0001361468</span></span>
+<span><span class="co">#&gt; 4: -0.128161987  1.0078844  -3.924539 0.0001048288</span></span>
+<span><span class="co">#&gt; 5: -0.004677022  0.1731000  -2.446761 0.0001089415</span></span>
+<span><span class="co">#&gt; 6: -0.116014107  0.6802832  -3.242524 0.0001485585</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="historical-model-fit-assessments">Historical Model Fit Assessments<a class="anchor" aria-label="anchor" href="#historical-model-fit-assessments"></a>
+</h2>
+<p>We provide a table of diagnostics for the historical model fit in
+Appendix C of our manuscript. The core of the calculation is in
+leave-one-out cross validation (LOO-CV). Here, we show how to calculate
+these diagnostics.</p>
+<p>First, we must fit the historical model to 65 trials, leaving one out
+at a time. Please note that you should do this leave-one-out things
+using historical trials only. The purpose of this section is evaluating
+how well each left out trials are predicted by the historical model.
+This assumes exchangeability between the 65 and the held-out trial,
+which is not the case if you are predicting MBE for a “new” trial. We
+point out in the manuscript that we cannot assume exchangeability
+between the historical trials and the new trial, which is why we use a
+diffuse prior for the new trial. The LOO-CV is used under the assumption
+that the exchangeability holds.</p>
+<p>We then calculate few things and combine them to produce the table in
+the appendiex.</p>
+<p>As in the case with the manuscript, we will use subscript <span class="math inline">0</span> to indicate that the variable belongs to
+the held-out trial.</p>
+<div class="section level3">
+<h3 id="root-mean-squared-error-rmse">Root mean squared error (RMSE)<a class="anchor" aria-label="anchor" href="#root-mean-squared-error-rmse"></a>
+</h3>
+<p>For each left out trial, we should calculate root mean squared error.
+We first estimate the posterior distribution of the held out true
+clinical effect. The mean of the distribution is approximated by the
+sample mean. The squared difference between the approximated sample mean
+and the observed treatment effect on the clinical endpoint is computed.
+The LOO-CV RMSE is then average this quantity over all 66 trials.</p>
+<p>Below, we show one</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#Demonstration for a single trial.</span></span>
+<span></span>
+<span><span class="co">#Previously, we've mbe_fit.</span></span>
+<span><span class="co">#The mbe_fit was fit with a diffuse prior on the surrogate endpoints.</span></span>
+<span><span class="co">#Here, we want to fit with a non-diffuse prior, because we are assuming exchangeability between the held-out trial and the historical trials.</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">mbe_fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MBE.html">MBE</a></span><span class="op">(</span></span>
+<span>  mcmc_dat <span class="op">=</span> <span class="va">historical_posterior</span>,</span>
+<span>  sample_dat <span class="op">=</span> <span class="va">new_trial</span>,</span>
+<span>  diffuse <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  intercept0 <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="co">#squared difference between the approximated sample mean and the observed treatment effect on the clinical endpoint for trial 1.</span></span>
+<span><span class="op">(</span><span class="va">mbe_fit2</span><span class="op">$</span><span class="va">post_mean</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">new_trial</span><span class="op">$</span><span class="va">ClnEst</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>
+<span><span class="co">#&gt;    clinical </span></span>
+<span><span class="co">#&gt; 0.001411957</span></span></code></pre></div>
+<p>We repeat the process for all 66 trials. And then take mean of these
+values.</p>
+</div>
+<div class="section level3">
+<h3 id="leave-one-out-expected-log-pointwise-predictive-density-loo-pd-and-widely-applicable-information-criterion-waic">Leave-one-out expected log pointwise predictive density (LOO-PD) and
+widely applicable information criterion (WAIC)<a class="anchor" aria-label="anchor" href="#leave-one-out-expected-log-pointwise-predictive-density-loo-pd-and-widely-applicable-information-criterion-waic"></a>
+</h3>
+<p>The LOO-PD and WAIC are approximated via Pareto-smoothed importance
+sampling in the R package loo. It is part of the output of the function
+<code><a href="../reference/historical_model_fit_2surrogates.html">historical_model_fit_2surrogates()</a></code>. The output is stored in
+the <code>loo</code> element of the list returned by the function. The
+<code>loo</code> element is a list with two elements:
+<code>pointwise</code> and <code>estimates</code>. The
+<code>pointwise</code> element is a matrix with 66 rows and 4 columns.
+The first column is the log-likelihood of the held-out trial, the second
+column is the Pareto-smoothed importance sampling estimate of the
+log-likelihood, the third column is the standard error of the estimate,
+and the fourth column is the Pareto k diagnostic. The
+<code>estimates</code> element is a list with three elements:
+<code>elpd_loo</code>, <code>p_loo</code>, and <code>looic</code>. The
+<code>elpd_loo</code> element is the expected log pointwise predictive
+density, the <code>p_loo</code> element is the effective number of
+parameters, and the <code>looic</code> element is the widely applicable
+information criterion.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#LOO-PD is the 1st row of the below output</span></span>
+<span><span class="co">#WAIC is the last rwo of the below output</span></span>
+<span><span class="va">historical_fit</span><span class="op">$</span><span class="va">loo</span><span class="op">$</span><span class="va">estimates</span></span>
+<span><span class="co">#&gt;            Estimate        SE</span></span>
+<span><span class="co">#&gt; elpd_loo -230.27067 17.692972</span></span>
+<span><span class="co">#&gt; p_loo      95.87234  6.474361</span></span>
+<span><span class="co">#&gt; looic     460.54134 35.385945</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="loo-cv-tolerance-coverage">LOO-CV tolerance coverage<a class="anchor" aria-label="anchor" href="#loo-cv-tolerance-coverage"></a>
+</h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">tolerance_coverage</span><span class="op">&lt;-</span></span>
+<span><span class="fu"><a href="../reference/tolerance_interval_coverage.html">tolerance_interval_coverage</a></span><span class="op">(</span></span>
+<span>   observed <span class="op">=</span> <span class="va">trial_sim_dat</span><span class="op">$</span><span class="va">CE_est</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>   mcmc_dat <span class="op">=</span> <span class="va">historical_posterior</span>,</span>
+<span>   sample_dat <span class="op">=</span> <span class="va">new_trial</span>,</span>
+<span>   probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span>,  <span class="co"># 95% interval</span></span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span> <span class="co"># 90% interval</span></span>
+<span>                 <span class="op">)</span>,</span>
+<span>   seed <span class="op">=</span> <span class="fl">2026</span></span>
+<span> <span class="op">)</span></span>
+<span><span class="va">tolerance_coverage</span></span>
+<span><span class="co">#&gt;   lower_prob upper_prob level   observed      lower     upper covered</span></span>
+<span><span class="co">#&gt; 1      0.025      0.975    95 -0.1337531 -0.4198020 0.2698390    TRUE</span></span>
+<span><span class="co">#&gt; 2      0.050      0.950    90 -0.1337531 -0.3601754 0.2153133    TRUE</span></span></code></pre></div>
+<p>The 95% tolerance interval is -0.420 to 0.270. The observed clinical
+treatment effect is -0.134 as indicated in the <code>covered</code>
+column of the output. Similarly, the observed treatment effect is
+captured in the 90% tolerance interval.</p>
+<p>To calculate the coverage, we repeat this process for all 66 trials.
+The coverage is the proportion of trials for which the observed clinical
+treatment effect is captured in the tolerance interval.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -41,12 +41,18 @@ several minutes of computation.
 
 ``` r
 
+
+#Define columns to use.
 historical_fields <- c(
   "CE_est", "CE_se", "Sur1_est", "Sur1_se", "Sur2_est", "Sur2_se",
   "Cor_CE_Sur1", "Cor_CE_Sur2", "Cor_Sur1_Sur2"
 )
+
+
+#Fit the model on the 'historical' data.
+#It's all data except for the first trial.
 historical_fit <- historical_model_fit_2surrogates(
-  data = as.data.frame(trial_sim_dat)[-1, historical_fields],
+  data = trial_sim_dat[-1, ..historical_fields],
   random_intercept = TRUE,
   prior_for_uncertainty = "inverse_gamma",
   nchains = 4,
@@ -57,9 +63,199 @@ historical_fit <- historical_model_fit_2surrogates(
   adapt_delta = 0.95,
   max_treedepth = 15
 )
+#> Running MCMC with 4 parallel chains...
+#> 
+#> Chain 1 Iteration:    1 / 3000 [  0%]  (Warmup)
+#> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
+#> Chain 1 Exception: multi_normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/jq/7fxxv0ms713f8bdmdppmknnw0000gp/T/RtmpME9LOn/working_dir/RtmpwoXdfg/model-134831da161ee.stan', line 73, column 4 to column 51)
+#> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
+#> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
+#> Chain 1
+#> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
+#> Chain 1 Exception: multi_normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/jq/7fxxv0ms713f8bdmdppmknnw0000gp/T/RtmpME9LOn/working_dir/RtmpwoXdfg/model-134831da161ee.stan', line 73, column 4 to column 51)
+#> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
+#> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
+#> Chain 1
+#> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
+#> Chain 1 Exception: multi_normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/jq/7fxxv0ms713f8bdmdppmknnw0000gp/T/RtmpME9LOn/working_dir/RtmpwoXdfg/model-134831da161ee.stan', line 73, column 4 to column 51)
+#> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
+#> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
+#> Chain 1
+#> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
+#> Chain 1 Exception: multi_normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/jq/7fxxv0ms713f8bdmdppmknnw0000gp/T/RtmpME9LOn/working_dir/RtmpwoXdfg/model-134831da161ee.stan', line 73, column 4 to column 51)
+#> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
+#> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
+#> Chain 1
+#> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
+#> Chain 1 Exception: multi_normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/var/folders/jq/7fxxv0ms713f8bdmdppmknnw0000gp/T/RtmpME9LOn/working_dir/RtmpwoXdfg/model-134831da161ee.stan', line 73, column 4 to column 51)
+#> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
+#> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
+#> Chain 1
+#> Chain 2 Iteration:    1 / 3000 [  0%]  (Warmup) 
+#> Chain 3 Iteration:    1 / 3000 [  0%]  (Warmup) 
+#> Chain 4 Iteration:    1 / 3000 [  0%]  (Warmup) 
+#> Chain 1 Iteration:  100 / 3000 [  3%]  (Warmup) 
+#> Chain 4 Iteration:  100 / 3000 [  3%]  (Warmup) 
+#> Chain 1 Iteration:  200 / 3000 [  6%]  (Warmup) 
+#> Chain 3 Iteration:  100 / 3000 [  3%]  (Warmup) 
+#> Chain 2 Iteration:  100 / 3000 [  3%]  (Warmup) 
+#> Chain 4 Iteration:  200 / 3000 [  6%]  (Warmup) 
+#> Chain 1 Iteration:  300 / 3000 [ 10%]  (Warmup) 
+#> Chain 3 Iteration:  200 / 3000 [  6%]  (Warmup) 
+#> Chain 1 Iteration:  400 / 3000 [ 13%]  (Warmup) 
+#> Chain 3 Iteration:  300 / 3000 [ 10%]  (Warmup) 
+#> Chain 4 Iteration:  300 / 3000 [ 10%]  (Warmup) 
+#> Chain 1 Iteration:  500 / 3000 [ 16%]  (Warmup) 
+#> Chain 2 Iteration:  200 / 3000 [  6%]  (Warmup) 
+#> Chain 3 Iteration:  400 / 3000 [ 13%]  (Warmup) 
+#> Chain 4 Iteration:  400 / 3000 [ 13%]  (Warmup) 
+#> Chain 1 Iteration:  600 / 3000 [ 20%]  (Warmup) 
+#> Chain 2 Iteration:  300 / 3000 [ 10%]  (Warmup) 
+#> Chain 4 Iteration:  500 / 3000 [ 16%]  (Warmup) 
+#> Chain 1 Iteration:  700 / 3000 [ 23%]  (Warmup) 
+#> Chain 2 Iteration:  400 / 3000 [ 13%]  (Warmup) 
+#> Chain 3 Iteration:  500 / 3000 [ 16%]  (Warmup) 
+#> Chain 4 Iteration:  600 / 3000 [ 20%]  (Warmup) 
+#> Chain 1 Iteration:  800 / 3000 [ 26%]  (Warmup) 
+#> Chain 2 Iteration:  500 / 3000 [ 16%]  (Warmup) 
+#> Chain 3 Iteration:  600 / 3000 [ 20%]  (Warmup) 
+#> Chain 4 Iteration:  700 / 3000 [ 23%]  (Warmup) 
+#> Chain 1 Iteration:  900 / 3000 [ 30%]  (Warmup) 
+#> Chain 2 Iteration:  600 / 3000 [ 20%]  (Warmup) 
+#> Chain 3 Iteration:  700 / 3000 [ 23%]  (Warmup) 
+#> Chain 3 Iteration:  800 / 3000 [ 26%]  (Warmup) 
+#> Chain 4 Iteration:  800 / 3000 [ 26%]  (Warmup) 
+#> Chain 1 Iteration: 1000 / 3000 [ 33%]  (Warmup) 
+#> Chain 1 Iteration: 1001 / 3000 [ 33%]  (Sampling) 
+#> Chain 2 Iteration:  700 / 3000 [ 23%]  (Warmup) 
+#> Chain 3 Iteration:  900 / 3000 [ 30%]  (Warmup) 
+#> Chain 4 Iteration:  900 / 3000 [ 30%]  (Warmup) 
+#> Chain 1 Iteration: 1100 / 3000 [ 36%]  (Sampling) 
+#> Chain 2 Iteration:  800 / 3000 [ 26%]  (Warmup) 
+#> Chain 3 Iteration: 1000 / 3000 [ 33%]  (Warmup) 
+#> Chain 3 Iteration: 1001 / 3000 [ 33%]  (Sampling) 
+#> Chain 4 Iteration: 1000 / 3000 [ 33%]  (Warmup) 
+#> Chain 4 Iteration: 1001 / 3000 [ 33%]  (Sampling) 
+#> Chain 1 Iteration: 1200 / 3000 [ 40%]  (Sampling) 
+#> Chain 2 Iteration:  900 / 3000 [ 30%]  (Warmup) 
+#> Chain 3 Iteration: 1100 / 3000 [ 36%]  (Sampling) 
+#> Chain 4 Iteration: 1100 / 3000 [ 36%]  (Sampling) 
+#> Chain 3 Iteration: 1200 / 3000 [ 40%]  (Sampling) 
+#> Chain 4 Iteration: 1200 / 3000 [ 40%]  (Sampling) 
+#> Chain 1 Iteration: 1300 / 3000 [ 43%]  (Sampling) 
+#> Chain 2 Iteration: 1000 / 3000 [ 33%]  (Warmup) 
+#> Chain 2 Iteration: 1001 / 3000 [ 33%]  (Sampling) 
+#> Chain 3 Iteration: 1300 / 3000 [ 43%]  (Sampling) 
+#> Chain 4 Iteration: 1300 / 3000 [ 43%]  (Sampling) 
+#> Chain 1 Iteration: 1400 / 3000 [ 46%]  (Sampling) 
+#> Chain 2 Iteration: 1100 / 3000 [ 36%]  (Sampling) 
+#> Chain 3 Iteration: 1400 / 3000 [ 46%]  (Sampling) 
+#> Chain 4 Iteration: 1400 / 3000 [ 46%]  (Sampling) 
+#> Chain 1 Iteration: 1500 / 3000 [ 50%]  (Sampling) 
+#> Chain 2 Iteration: 1200 / 3000 [ 40%]  (Sampling) 
+#> Chain 3 Iteration: 1500 / 3000 [ 50%]  (Sampling) 
+#> Chain 4 Iteration: 1500 / 3000 [ 50%]  (Sampling) 
+#> Chain 2 Iteration: 1300 / 3000 [ 43%]  (Sampling) 
+#> Chain 3 Iteration: 1600 / 3000 [ 53%]  (Sampling) 
+#> Chain 4 Iteration: 1600 / 3000 [ 53%]  (Sampling) 
+#> Chain 1 Iteration: 1600 / 3000 [ 53%]  (Sampling) 
+#> Chain 2 Iteration: 1400 / 3000 [ 46%]  (Sampling) 
+#> Chain 3 Iteration: 1700 / 3000 [ 56%]  (Sampling) 
+#> Chain 4 Iteration: 1700 / 3000 [ 56%]  (Sampling) 
+#> Chain 1 Iteration: 1700 / 3000 [ 56%]  (Sampling) 
+#> Chain 2 Iteration: 1500 / 3000 [ 50%]  (Sampling) 
+#> Chain 3 Iteration: 1800 / 3000 [ 60%]  (Sampling) 
+#> Chain 4 Iteration: 1800 / 3000 [ 60%]  (Sampling) 
+#> Chain 1 Iteration: 1800 / 3000 [ 60%]  (Sampling) 
+#> Chain 2 Iteration: 1600 / 3000 [ 53%]  (Sampling) 
+#> Chain 2 Iteration: 1700 / 3000 [ 56%]  (Sampling) 
+#> Chain 3 Iteration: 1900 / 3000 [ 63%]  (Sampling) 
+#> Chain 4 Iteration: 1900 / 3000 [ 63%]  (Sampling) 
+#> Chain 2 Iteration: 1800 / 3000 [ 60%]  (Sampling) 
+#> Chain 3 Iteration: 2000 / 3000 [ 66%]  (Sampling) 
+#> Chain 3 Iteration: 2100 / 3000 [ 70%]  (Sampling) 
+#> Chain 4 Iteration: 2000 / 3000 [ 66%]  (Sampling) 
+#> Chain 1 Iteration: 1900 / 3000 [ 63%]  (Sampling) 
+#> Chain 3 Iteration: 2200 / 3000 [ 73%]  (Sampling) 
+#> Chain 4 Iteration: 2100 / 3000 [ 70%]  (Sampling) 
+#> Chain 1 Iteration: 2000 / 3000 [ 66%]  (Sampling) 
+#> Chain 2 Iteration: 1900 / 3000 [ 63%]  (Sampling) 
+#> Chain 2 Iteration: 2000 / 3000 [ 66%]  (Sampling) 
+#> Chain 3 Iteration: 2300 / 3000 [ 76%]  (Sampling) 
+#> Chain 4 Iteration: 2200 / 3000 [ 73%]  (Sampling) 
+#> Chain 1 Iteration: 2100 / 3000 [ 70%]  (Sampling) 
+#> Chain 3 Iteration: 2400 / 3000 [ 80%]  (Sampling) 
+#> Chain 4 Iteration: 2300 / 3000 [ 76%]  (Sampling) 
+#> Chain 2 Iteration: 2100 / 3000 [ 70%]  (Sampling) 
+#> Chain 2 Iteration: 2200 / 3000 [ 73%]  (Sampling) 
+#> Chain 3 Iteration: 2500 / 3000 [ 83%]  (Sampling) 
+#> Chain 4 Iteration: 2400 / 3000 [ 80%]  (Sampling) 
+#> Chain 1 Iteration: 2200 / 3000 [ 73%]  (Sampling) 
+#> Chain 3 Iteration: 2600 / 3000 [ 86%]  (Sampling) 
+#> Chain 4 Iteration: 2500 / 3000 [ 83%]  (Sampling) 
+#> Chain 1 Iteration: 2300 / 3000 [ 76%]  (Sampling) 
+#> Chain 2 Iteration: 2300 / 3000 [ 76%]  (Sampling) 
+#> Chain 2 Iteration: 2400 / 3000 [ 80%]  (Sampling) 
+#> Chain 3 Iteration: 2700 / 3000 [ 90%]  (Sampling) 
+#> Chain 4 Iteration: 2600 / 3000 [ 86%]  (Sampling) 
+#> Chain 2 Iteration: 2500 / 3000 [ 83%]  (Sampling) 
+#> Chain 3 Iteration: 2800 / 3000 [ 93%]  (Sampling) 
+#> Chain 4 Iteration: 2700 / 3000 [ 90%]  (Sampling) 
+#> Chain 1 Iteration: 2400 / 3000 [ 80%]  (Sampling) 
+#> Chain 2 Iteration: 2600 / 3000 [ 86%]  (Sampling) 
+#> Chain 3 Iteration: 2900 / 3000 [ 96%]  (Sampling) 
+#> Chain 4 Iteration: 2800 / 3000 [ 93%]  (Sampling) 
+#> Chain 1 Iteration: 2500 / 3000 [ 83%]  (Sampling) 
+#> Chain 2 Iteration: 2700 / 3000 [ 90%]  (Sampling) 
+#> Chain 3 Iteration: 3000 / 3000 [100%]  (Sampling) 
+#> Chain 4 Iteration: 2900 / 3000 [ 96%]  (Sampling) 
+#> Chain 3 finished in 7.0 seconds.
+#> Chain 1 Iteration: 2600 / 3000 [ 86%]  (Sampling) 
+#> Chain 2 Iteration: 2800 / 3000 [ 93%]  (Sampling) 
+#> Chain 4 Iteration: 3000 / 3000 [100%]  (Sampling) 
+#> Chain 4 finished in 7.2 seconds.
+#> Chain 1 Iteration: 2700 / 3000 [ 90%]  (Sampling) 
+#> Chain 2 Iteration: 2900 / 3000 [ 96%]  (Sampling) 
+#> Chain 2 Iteration: 3000 / 3000 [100%]  (Sampling) 
+#> Chain 2 finished in 7.4 seconds.
+#> Chain 1 Iteration: 2800 / 3000 [ 93%]  (Sampling) 
+#> Chain 1 Iteration: 2900 / 3000 [ 96%]  (Sampling) 
+#> Chain 1 Iteration: 3000 / 3000 [100%]  (Sampling) 
+#> Chain 1 finished in 7.7 seconds.
+#> 
+#> All 4 chains finished successfully.
+#> Mean chain execution time: 7.3 seconds.
+#> Total execution time: 7.8 seconds.
+#> Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.
+#> Warning: 
+#> 59 (90.8%) p_waic estimates greater than 0.4. We recommend trying loo instead.
 
 historical_fit$diagnostics
+#> $num_divergent
+#> [1] 0 0 0 0
+#> 
+#> $num_max_treedepth
+#> [1] 0 0 0 0
+#> 
+#> $ebfmi
+#> [1] 0.7055957 0.8008495 0.7332177 0.7392627
 historical_fit$summary
+#> # A tibble: 11 × 14
+#>    variable             mean   median      sd     mad   `2.5%`     `5%`    `10%`
+#>    <chr>               <dbl>    <dbl>   <dbl>   <dbl>    <dbl>    <dbl>    <dbl>
+#>  1 alphaCEonSur1Su… -0.0672  -0.0672  0.0480  0.0476  -1.61e-1 -1.45e-1 -1.29e-1
+#>  2 b1CEonSur1Sur2   -0.295   -0.296   0.0627  0.0606  -4.16e-1 -3.97e-1 -3.73e-1
+#>  3 b2CEonSur1Sur2   -0.0353  -0.0353  0.00493 0.00491 -4.49e-2 -4.34e-2 -4.16e-2
+#>  4 SigSqCEonSur1Su…  0.00398  0.00267 0.00401 0.00278  2.24e-4  3.05e-4  4.63e-4
+#>  5 alphaSur1onSur2   0.644    0.643   0.0888  0.0878   4.69e-1  5.01e-1  5.32e-1
+#>  6 bSur1onSur2       0.0237   0.0239  0.0161  0.0159  -7.83e-3 -2.80e-3  2.89e-3
+#>  7 SigSqSur1onSur2   0.256    0.243   0.0812  0.0740   1.31e-1  1.47e-1  1.64e-1
+#>  8 muSur2           -2.52    -2.52    0.741   0.732   -3.95e+0 -3.70e+0 -3.43e+0
+#>  9 sigSqSur2        29.8     29.0     6.37    6.09     1.95e+1  2.08e+1  2.24e+1
+#> 10 R2CEonSur1Sur2    0.949    0.966   0.0521  0.0359   8.08e-1  8.43e-1  8.79e-1
+#> 11 RMSECEonSur1Sur2  0.0560   0.0517  0.0290  0.0304   1.50e-2  1.75e-2  2.15e-2
+#> # ℹ 6 more variables: `90%` <dbl>, `95%` <dbl>, `97.5%` <dbl>, rhat <dbl>,
+#> #   ess_bulk <dbl>, ess_tail <dbl>
 
 historical_posterior <- as.data.frame(historical_fit$posterior_samples)[, c(
   "alphaCEonSur1Sur2",
@@ -110,25 +306,25 @@ mbe_fit <- MBE(
 )
 
 mbe_fit$post_mean
-#>                  [,1]
-#> clinical   -0.1013294
-#> surrogate1  0.6837417
-#> surrogate2 -5.4760921
+#>                   [,1]
+#> clinical   -0.05425464
+#> surrogate1  0.67469003
+#> surrogate2 -5.04103222
 mbe_fit$post_var
 #>               clinical   surrogate1   surrogate2
-#> clinical    0.01196417 -0.019592518 -0.091338433
-#> surrogate1 -0.01959252  0.060139164 -0.009146439
-#> surrogate2 -0.09133843 -0.009146439  3.981621682
+#> clinical    0.01212002 -0.018442933 -0.109817889
+#> surrogate1 -0.01844293  0.060857682 -0.005088661
+#> surrogate2 -0.10981789 -0.005088661  3.798687086
 mbe_fit$post_quantiles_clinical
 #> quantile_0.025  quantile_0.05   quantile_0.1  quantile_0.25   quantile_0.5 
-#>    -0.31485836    -0.28123031    -0.24074706    -0.17402273    -0.09799387 
+#>    -0.27319424    -0.23671208    -0.19579364    -0.12941497    -0.05465971 
 #>  quantile_0.75   quantile_0.9  quantile_0.95 quantile_0.975 
-#>    -0.02681263     0.03707755     0.07905239     0.12341721
+#>     0.01970057     0.08628304     0.12682206     0.15939645
 mbe_fit$importance_diagnostics
 #>          effective_sample_size relative_effective_sample_size 
-#>                   3.943574e+03                   9.858936e-01 
+#>                   7.661266e+03                   9.576583e-01 
 #>      maximum_normalized_weight 
-#>                   3.262557e-04
+#>                   2.141063e-04
 ```
 
 The rows of `post_mean` and `post_var` are ordered as the clinical
@@ -143,19 +339,141 @@ Posterior samples and normalized importance weights are also available:
 
 head(mbe_fit$post_psi0)
 #>         clinical surrogate1 surrogate2
-#> [1,]  0.08370764  0.3990721  -7.852443
-#> [2,] -0.11376674  0.8685964  -5.930684
-#> [3,] -0.17713234  0.7999603  -7.862937
-#> [4,] -0.02946255  0.2816377  -5.191110
-#> [5,]  0.06848906  0.3584364  -5.859788
-#> [6,] -0.17410827  0.7329111  -2.059854
+#> [1,]  0.10792259  0.6569066  -6.336729
+#> [2,]  0.29543096  0.3573118 -10.023518
+#> [3,] -0.08000168  0.6793235  -4.675862
+#> [4,] -0.27791087  1.1322496  -4.258685
+#> [5,] -0.14274296  0.8725093  -2.355490
+#> [6,] -0.06552635  0.6479029  -4.284622
 head(mbe_fit$weight_data[, c("clinical", "surrogate1", "surrogate2", "norm_w")])
-#>       clinical surrogate1 surrogate2       norm_w
-#>          <num>      <num>      <num>        <num>
-#> 1: -0.10720750  0.7560167  -7.127875 0.0002672069
-#> 2:  0.01877278  0.6573292  -7.300413 0.0002656093
-#> 3: -0.11400997  0.8274257  -4.235286 0.0002099456
-#> 4: -0.21420967  1.0618332  -4.698719 0.0002687302
-#> 5: -0.04365231  0.1859734  -3.115996 0.0002484868
-#> 6: -0.14840752  0.6815660  -3.572072 0.0002695261
+#>        clinical surrogate1 surrogate2       norm_w
+#>           <num>      <num>      <num>        <num>
+#> 1: -0.082376373  0.7857092  -6.840365 0.0001959049
+#> 2:  0.056911766  0.6510819  -6.480940 0.0001352181
+#> 3: -0.112015950  0.8220285  -3.834754 0.0001361468
+#> 4: -0.128161987  1.0078844  -3.924539 0.0001048288
+#> 5: -0.004677022  0.1731000  -2.446761 0.0001089415
+#> 6: -0.116014107  0.6802832  -3.242524 0.0001485585
 ```
+
+## Historical Model Fit Assessments
+
+We provide a table of diagnostics for the historical model fit in
+Appendix C of our manuscript. The core of the calculation is in
+leave-one-out cross validation (LOO-CV). Here, we show how to calculate
+these diagnostics.
+
+First, we must fit the historical model to 65 trials, leaving one out at
+a time. Please note that you should do this leave-one-out things using
+historical trials only. The purpose of this section is evaluating how
+well each left out trials are predicted by the historical model. This
+assumes exchangeability between the 65 and the held-out trial, which is
+not the case if you are predicting MBE for a “new” trial. We point out
+in the manuscript that we cannot assume exchangeability between the
+historical trials and the new trial, which is why we use a diffuse prior
+for the new trial. The LOO-CV is used under the assumption that the
+exchangeability holds.
+
+We then calculate few things and combine them to produce the table in
+the appendiex.
+
+As in the case with the manuscript, we will use subscript 0 to indicate
+that the variable belongs to the held-out trial.
+
+### Root mean squared error (RMSE)
+
+For each left out trial, we should calculate root mean squared error. We
+first estimate the posterior distribution of the held out true clinical
+effect. The mean of the distribution is approximated by the sample mean.
+The squared difference between the approximated sample mean and the
+observed treatment effect on the clinical endpoint is computed. The
+LOO-CV RMSE is then average this quantity over all 66 trials.
+
+Below, we show one
+
+``` r
+
+
+#Demonstration for a single trial.
+
+#Previously, we've mbe_fit.
+#The mbe_fit was fit with a diffuse prior on the surrogate endpoints.
+#Here, we want to fit with a non-diffuse prior, because we are assuming exchangeability between the held-out trial and the historical trials.
+
+set.seed(1)
+mbe_fit2 <- MBE(
+  mcmc_dat = historical_posterior,
+  sample_dat = new_trial,
+  diffuse = FALSE,
+  intercept0 = FALSE
+)
+
+
+#squared difference between the approximated sample mean and the observed treatment effect on the clinical endpoint for trial 1.
+(mbe_fit2$post_mean[1,1] - new_trial$ClnEst)^2
+#>    clinical 
+#> 0.001411957
+```
+
+We repeat the process for all 66 trials. And then take mean of these
+values.
+
+### Leave-one-out expected log pointwise predictive density (LOO-PD) and widely applicable information criterion (WAIC)
+
+The LOO-PD and WAIC are approximated via Pareto-smoothed importance
+sampling in the R package loo. It is part of the output of the function
+[`historical_model_fit_2surrogates()`](https://hyejung0.github.io/MBE/reference/historical_model_fit_2surrogates.md).
+The output is stored in the `loo` element of the list returned by the
+function. The `loo` element is a list with two elements: `pointwise` and
+`estimates`. The `pointwise` element is a matrix with 66 rows and 4
+columns. The first column is the log-likelihood of the held-out trial,
+the second column is the Pareto-smoothed importance sampling estimate of
+the log-likelihood, the third column is the standard error of the
+estimate, and the fourth column is the Pareto k diagnostic. The
+`estimates` element is a list with three elements: `elpd_loo`, `p_loo`,
+and `looic`. The `elpd_loo` element is the expected log pointwise
+predictive density, the `p_loo` element is the effective number of
+parameters, and the `looic` element is the widely applicable information
+criterion.
+
+``` r
+
+
+#LOO-PD is the 1st row of the below output
+#WAIC is the last rwo of the below output
+historical_fit$loo$estimates
+#>            Estimate        SE
+#> elpd_loo -230.27067 17.692972
+#> p_loo      95.87234  6.474361
+#> looic     460.54134 35.385945
+```
+
+### LOO-CV tolerance coverage
+
+``` r
+
+
+tolerance_coverage<-
+tolerance_interval_coverage(
+   observed = trial_sim_dat$CE_est[1],
+   mcmc_dat = historical_posterior,
+   sample_dat = new_trial,
+   probs = rbind(c(0.025, 0.975),  # 95% interval
+                 c(0.05, 0.95) # 90% interval
+                 ),
+   seed = 2026
+ )
+tolerance_coverage
+#>   lower_prob upper_prob level   observed      lower     upper covered
+#> 1      0.025      0.975    95 -0.1337531 -0.4198020 0.2698390    TRUE
+#> 2      0.050      0.950    90 -0.1337531 -0.3601754 0.2153133    TRUE
+```
+
+The 95% tolerance interval is -0.420 to 0.270. The observed clinical
+treatment effect is -0.134 as indicated in the `covered` column of the
+output. Similarly, the observed treatment effect is captured in the 90%
+tolerance interval.
+
+To calculate the coverage, we repeat this process for all 66 trials. The
+coverage is the proportion of trials for which the observed clinical
+treatment effect is captured in the tolerance interval.

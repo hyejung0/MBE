@@ -14,8 +14,8 @@ MBE(mcmc_dat, sample_dat, diffuse = TRUE, diffuse_se = 100, intercept0 = TRUE)
 
 - mcmc_dat:
 
-  A data frame or matrix containing posterior draws from the
-  two-surrogate historical model.
+  A data frame, matrix, or data.table containing posterior draws from
+  the two-surrogate historical model.
 
 - sample_dat:
 
@@ -94,10 +94,10 @@ intercept0 = TRUE
 
 head(MBE_distribution$post_psi0)
 #>         clinical surrogate1 surrogate2
-#> [1,] -0.01742418  0.4358344  -7.647448
-#> [2,] -0.05070114  0.3625249  -5.290546
-#> [3,] -0.21549799  0.9284195  -4.653444
-#> [4,] -0.22270912  1.0586468  -4.846612
-#> [5,] -0.02885444  0.6432777  -8.217527
-#> [6,] -0.22661395  0.9851503  -4.977536
+#> [1,] -0.11238622  0.6737789 -4.1406016
+#> [2,] -0.18357027  0.4337269 -0.4250345
+#> [3,] -0.13776143  0.6901791 -2.8934831
+#> [4,]  0.06789911  0.5617170 -7.4302513
+#> [5,] -0.02801320  0.4732370 -3.0536031
+#> [6,] -0.01695538  0.4849012 -3.6250911
 ```
