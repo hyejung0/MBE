@@ -75,12 +75,6 @@ with a separate confidence level. Repeat this function across held-out
 trials and average `covered` for each probability pair to obtain
 aggregate coverage.
 
-Earlier development code used empirical percentiles and a different
-predictive simulation. Archived `loo_assessment_by_trial` indicators
-retain that earlier calculation; see
-[`clinical_predictive_distribution()`](https://hyejung0.github.io/MBE/reference/clinical_predictive_distribution.md)
-for the current conditioning and weighting method.
-
 ## Examples
 
 ``` r

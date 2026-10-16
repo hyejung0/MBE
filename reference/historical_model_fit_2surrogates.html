@@ -209,10 +209,7 @@ the posterior distribution of the model parameters.</p>
 the manuscript's Stan log-likelihood. They are distinct from the explicit
 internal leave-one-trial-out assessment. For that assessment, call this
 fitting function separately for each set of training trials, omitting the
-held-out trial. Then use <code><a href="loo_cv_rmse.html">loo_cv_rmse()</a></code> on paired effects and
-<code><a href="tolerance_interval_coverage.html">tolerance_interval_coverage()</a></code> with the already fitted posterior draws and
-held-out sampling inputs. The latter calls <code><a href="clinical_predictive_distribution.html">clinical_predictive_distribution()</a></code>.
-The assessment functions do not fit models or choose priors.</p>
+held-out trial.</p>
     </div>
 
     <div class="section level2">

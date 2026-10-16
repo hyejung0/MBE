@@ -208,14 +208,7 @@ The `loo` and `waic` components are conditional model-fit measures based
 on the manuscript's Stan log-likelihood. They are distinct from the
 explicit internal leave-one-trial-out assessment. For that assessment,
 call this fitting function separately for each set of training trials,
-omitting the held-out trial. Then use
-[`loo_cv_rmse()`](https://hyejung0.github.io/MBE/reference/loo_cv_rmse.md)
-on paired effects and
-[`tolerance_interval_coverage()`](https://hyejung0.github.io/MBE/reference/tolerance_interval_coverage.md)
-with the already fitted posterior draws and held-out sampling inputs.
-The latter calls
-[`clinical_predictive_distribution()`](https://hyejung0.github.io/MBE/reference/clinical_predictive_distribution.md).
-The assessment functions do not fit models or choose priors.
+omitting the held-out trial.
 
 ## Examples
 

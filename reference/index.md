@@ -12,8 +12,6 @@
 
 ## Historical-model assessment
 
-- [`loo_cv_rmse()`](https://hyejung0.github.io/MBE/reference/loo_cv_rmse.md)
-  : Calculate RMSE from Paired Observed and Estimated Clinical Effects
 - [`clinical_predictive_distribution()`](https://hyejung0.github.io/MBE/reference/clinical_predictive_distribution.md)
   : Predict an Observed Clinical Effect from Two Observed Surrogate
   Effects
@@ -26,7 +24,3 @@
   : Historical Posterior for Two Surrogate Endpoints
 - [`trial_sim_dat`](https://hyejung0.github.io/MBE/reference/trial_sim_dat.md)
   : Simulated Trial-Level Data for Two Surrogate Endpoints
-- [`loo_assessment_summary`](https://hyejung0.github.io/MBE/reference/loo_assessment_summary.md)
-  : Aggregate Leave-One-Out Historical-Model Assessment
-- [`loo_assessment_by_trial`](https://hyejung0.github.io/MBE/reference/loo_assessment_by_trial.md)
-  : Trial-Level Leave-One-Out Historical-Model Assessment
