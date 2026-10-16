@@ -3,7 +3,6 @@
 export(MBE)
 export(clinical_predictive_distribution)
 export(historical_model_fit_2surrogates)
-export(loo_cv_rmse)
 export(surrogate_MBE)
 export(tolerance_interval_coverage)
 import(data.table)

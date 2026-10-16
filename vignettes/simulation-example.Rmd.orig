@@ -16,7 +16,6 @@ knitr::opts_chunk$set(
 library(MBE)
 data("trial_sim_dat", package = "MBE")
 data("historical_posterior", package = "MBE")
-data("loo_assessment_by_trial", package = "MBE")
 
 ```
 

@@ -118,10 +118,7 @@ The \code{loo} and \code{waic} components are conditional model-fit measures bas
 the manuscript's Stan log-likelihood. They are distinct from the explicit
 internal leave-one-trial-out assessment. For that assessment, call this
 fitting function separately for each set of training trials, omitting the
-held-out trial. Then use \code{\link[=loo_cv_rmse]{loo_cv_rmse()}} on paired effects and
-\code{\link[=tolerance_interval_coverage]{tolerance_interval_coverage()}} with the already fitted posterior draws and
-held-out sampling inputs. The latter calls \code{\link[=clinical_predictive_distribution]{clinical_predictive_distribution()}}.
-The assessment functions do not fit models or choose priors.
+held-out trial.
 }
 \examples{
 \dontrun{

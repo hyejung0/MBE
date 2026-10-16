@@ -110,10 +110,7 @@ get_cmdstan_model <- function(model_name) {
 #' the manuscript's Stan log-likelihood. They are distinct from the explicit
 #' internal leave-one-trial-out assessment. For that assessment, call this
 #' fitting function separately for each set of training trials, omitting the
-#' held-out trial. Then use [loo_cv_rmse()] on paired effects and
-#' [tolerance_interval_coverage()] with the already fitted posterior draws and
-#' held-out sampling inputs. The latter calls [clinical_predictive_distribution()].
-#' The assessment functions do not fit models or choose priors.
+#' held-out trial.
 #'
 #' @return A list containing the fitted model object and other relevant information:
 #' \describe{

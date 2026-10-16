@@ -26,11 +26,6 @@
 #' separate confidence level. Repeat this function across held-out trials and
 #' average `covered` for each probability pair to obtain aggregate coverage.
 #'
-#' Earlier development code used empirical percentiles and a different
-#' predictive simulation. Archived `loo_assessment_by_trial` indicators retain
-#' that earlier calculation; see [clinical_predictive_distribution()] for the
-#' current conditioning and weighting method.
-#'
 #' @return A data frame with one row per interval: `lower_prob`, `upper_prob`,
 #'   `level` (100 times their difference), `observed`, interval bounds `lower`
 #'   and `upper`, and logical `covered`. For one trial, `covered` is a capture

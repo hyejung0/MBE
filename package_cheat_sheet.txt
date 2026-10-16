@@ -180,7 +180,8 @@ Suppose the vignette is called name.Rmd.
 
 3. Knit from inside vignettes/ so figure paths come out relative to the
    vignette:
-     old <- setwd("vignettes")
+     old <- getwd()
+     setwd("./vignettes/")
      knitr::knit("name.Rmd.orig", output = "name.Rmd")
      setwd(old)
    (Knitting from the package root with

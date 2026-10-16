@@ -21,22 +21,14 @@ standard errors, sampling correlations, and the corresponding simulation truths.
 
 ``` r
 head(trial_sim_dat)
-#>    trial_id     CE_est   Sur1_est  Sur2_est     CE_se    Sur1_se   Sur2_se
-#>       <int>      <num>      <num>     <num>     <num>      <num>     <num>
-#> 1:        1 -0.1337531  0.6746282 -5.616994 0.1345275 0.24675735 2.0208922
-#> 2:        2  0.3126354  0.9536621 -7.708984 0.1812155 0.37357333 2.9033496
-#> 3:        3 -0.7966332  1.6220178  3.565406 0.1539254 0.26112209 2.0994112
-#> 4:        4 -0.3433848  1.3337097  3.450051 0.4338270 0.43152790 4.8085586
-#> 5:        5 -0.1624861 -0.4845420  3.818558 0.4265650 0.43311521 4.8014942
-#> 6:        6 -0.5146880  0.5651871  5.729746 0.1156836 0.08444745 0.8259361
-#>    Cor_CE_Sur1 Cor_CE_Sur2 Cor_Sur1_Sur2    theta_CE theta_Sur1 theta_Sur2
-#>          <num>       <num>         <num>       <num>      <num>      <num>
-#> 1:  -0.5432718  -0.2525332       -0.0045 -0.18937028  0.7879757  -6.431669
-#> 2:  -0.5444478  -0.2921709        0.0206  0.13645441  0.4905083  -6.672995
-#> 3:  -0.5455985  -0.2470125        0.0052 -0.31625150  0.8574721   2.082759
-#> 4:  -0.5474905  -0.0928973       -0.2283 -0.54795430  1.4566659   1.017808
-#> 5:  -0.5228790  -0.1340568       -0.2185 -0.06528294 -0.7109980   5.768145
-#> 6:  -0.1667742  -0.1519148       -0.1580 -0.32536177  0.4891863   4.465707
+#>    trial_id     CE_est   Sur1_est  Sur2_est     CE_se    Sur1_se   Sur2_se Cor_CE_Sur1 Cor_CE_Sur2 Cor_Sur1_Sur2    theta_CE theta_Sur1 theta_Sur2
+#>       <int>      <num>      <num>     <num>     <num>      <num>     <num>       <num>       <num>         <num>       <num>      <num>      <num>
+#> 1:        1 -0.1337531  0.6746282 -5.616994 0.1345275 0.24675735 2.0208922  -0.5432718  -0.2525332       -0.0045 -0.18937028  0.7879757  -6.431669
+#> 2:        2  0.3126354  0.9536621 -7.708984 0.1812155 0.37357333 2.9033496  -0.5444478  -0.2921709        0.0206  0.13645441  0.4905083  -6.672995
+#> 3:        3 -0.7966332  1.6220178  3.565406 0.1539254 0.26112209 2.0994112  -0.5455985  -0.2470125        0.0052 -0.31625150  0.8574721   2.082759
+#> 4:        4 -0.3433848  1.3337097  3.450051 0.4338270 0.43152790 4.8085586  -0.5474905  -0.0928973       -0.2283 -0.54795430  1.4566659   1.017808
+#> 5:        5 -0.1624861 -0.4845420  3.818558 0.4265650 0.43311521 4.8014942  -0.5228790  -0.1340568       -0.2185 -0.06528294 -0.7109980   5.768145
+#> 6:        6 -0.5146880  0.5651871  5.729746 0.1156836 0.08444745 0.8259361  -0.1667742  -0.1519148       -0.1580 -0.32536177  0.4891863   4.465707
 ```
 
 The column definitions are available with `?trial_sim_dat`.
@@ -107,17 +99,17 @@ historical_fit <- historical_model_fit_2surrogates(
 #> Chain 4 Iteration:  100 / 3000 [  3%]  (Warmup) 
 #> Chain 1 Iteration:  200 / 3000 [  6%]  (Warmup) 
 #> Chain 3 Iteration:  100 / 3000 [  3%]  (Warmup) 
+#> Chain 1 Iteration:  300 / 3000 [ 10%]  (Warmup) 
 #> Chain 2 Iteration:  100 / 3000 [  3%]  (Warmup) 
 #> Chain 4 Iteration:  200 / 3000 [  6%]  (Warmup) 
-#> Chain 1 Iteration:  300 / 3000 [ 10%]  (Warmup) 
-#> Chain 3 Iteration:  200 / 3000 [  6%]  (Warmup) 
 #> Chain 1 Iteration:  400 / 3000 [ 13%]  (Warmup) 
-#> Chain 3 Iteration:  300 / 3000 [ 10%]  (Warmup) 
+#> Chain 3 Iteration:  200 / 3000 [  6%]  (Warmup) 
 #> Chain 4 Iteration:  300 / 3000 [ 10%]  (Warmup) 
+#> Chain 3 Iteration:  300 / 3000 [ 10%]  (Warmup) 
+#> Chain 4 Iteration:  400 / 3000 [ 13%]  (Warmup) 
 #> Chain 1 Iteration:  500 / 3000 [ 16%]  (Warmup) 
 #> Chain 2 Iteration:  200 / 3000 [  6%]  (Warmup) 
 #> Chain 3 Iteration:  400 / 3000 [ 13%]  (Warmup) 
-#> Chain 4 Iteration:  400 / 3000 [ 13%]  (Warmup) 
 #> Chain 1 Iteration:  600 / 3000 [ 20%]  (Warmup) 
 #> Chain 2 Iteration:  300 / 3000 [ 10%]  (Warmup) 
 #> Chain 4 Iteration:  500 / 3000 [ 16%]  (Warmup) 
@@ -132,10 +124,10 @@ historical_fit <- historical_model_fit_2surrogates(
 #> Chain 1 Iteration:  900 / 3000 [ 30%]  (Warmup) 
 #> Chain 2 Iteration:  600 / 3000 [ 20%]  (Warmup) 
 #> Chain 3 Iteration:  700 / 3000 [ 23%]  (Warmup) 
-#> Chain 3 Iteration:  800 / 3000 [ 26%]  (Warmup) 
 #> Chain 4 Iteration:  800 / 3000 [ 26%]  (Warmup) 
 #> Chain 1 Iteration: 1000 / 3000 [ 33%]  (Warmup) 
 #> Chain 1 Iteration: 1001 / 3000 [ 33%]  (Sampling) 
+#> Chain 3 Iteration:  800 / 3000 [ 26%]  (Warmup) 
 #> Chain 2 Iteration:  700 / 3000 [ 23%]  (Warmup) 
 #> Chain 3 Iteration:  900 / 3000 [ 30%]  (Warmup) 
 #> Chain 4 Iteration:  900 / 3000 [ 30%]  (Warmup) 
@@ -149,9 +141,9 @@ historical_fit <- historical_model_fit_2surrogates(
 #> Chain 2 Iteration:  900 / 3000 [ 30%]  (Warmup) 
 #> Chain 3 Iteration: 1100 / 3000 [ 36%]  (Sampling) 
 #> Chain 4 Iteration: 1100 / 3000 [ 36%]  (Sampling) 
+#> Chain 1 Iteration: 1300 / 3000 [ 43%]  (Sampling) 
 #> Chain 3 Iteration: 1200 / 3000 [ 40%]  (Sampling) 
 #> Chain 4 Iteration: 1200 / 3000 [ 40%]  (Sampling) 
-#> Chain 1 Iteration: 1300 / 3000 [ 43%]  (Sampling) 
 #> Chain 2 Iteration: 1000 / 3000 [ 33%]  (Warmup) 
 #> Chain 2 Iteration: 1001 / 3000 [ 33%]  (Sampling) 
 #> Chain 3 Iteration: 1300 / 3000 [ 43%]  (Sampling) 
@@ -177,64 +169,64 @@ historical_fit <- historical_model_fit_2surrogates(
 #> Chain 4 Iteration: 1800 / 3000 [ 60%]  (Sampling) 
 #> Chain 1 Iteration: 1800 / 3000 [ 60%]  (Sampling) 
 #> Chain 2 Iteration: 1600 / 3000 [ 53%]  (Sampling) 
-#> Chain 2 Iteration: 1700 / 3000 [ 56%]  (Sampling) 
 #> Chain 3 Iteration: 1900 / 3000 [ 63%]  (Sampling) 
 #> Chain 4 Iteration: 1900 / 3000 [ 63%]  (Sampling) 
-#> Chain 2 Iteration: 1800 / 3000 [ 60%]  (Sampling) 
-#> Chain 3 Iteration: 2000 / 3000 [ 66%]  (Sampling) 
-#> Chain 3 Iteration: 2100 / 3000 [ 70%]  (Sampling) 
-#> Chain 4 Iteration: 2000 / 3000 [ 66%]  (Sampling) 
 #> Chain 1 Iteration: 1900 / 3000 [ 63%]  (Sampling) 
-#> Chain 3 Iteration: 2200 / 3000 [ 73%]  (Sampling) 
+#> Chain 2 Iteration: 1700 / 3000 [ 56%]  (Sampling) 
+#> Chain 3 Iteration: 2000 / 3000 [ 66%]  (Sampling) 
+#> Chain 4 Iteration: 2000 / 3000 [ 66%]  (Sampling) 
+#> Chain 2 Iteration: 1800 / 3000 [ 60%]  (Sampling) 
+#> Chain 3 Iteration: 2100 / 3000 [ 70%]  (Sampling) 
 #> Chain 4 Iteration: 2100 / 3000 [ 70%]  (Sampling) 
 #> Chain 1 Iteration: 2000 / 3000 [ 66%]  (Sampling) 
 #> Chain 2 Iteration: 1900 / 3000 [ 63%]  (Sampling) 
-#> Chain 2 Iteration: 2000 / 3000 [ 66%]  (Sampling) 
-#> Chain 3 Iteration: 2300 / 3000 [ 76%]  (Sampling) 
+#> Chain 3 Iteration: 2200 / 3000 [ 73%]  (Sampling) 
 #> Chain 4 Iteration: 2200 / 3000 [ 73%]  (Sampling) 
 #> Chain 1 Iteration: 2100 / 3000 [ 70%]  (Sampling) 
-#> Chain 3 Iteration: 2400 / 3000 [ 80%]  (Sampling) 
+#> Chain 2 Iteration: 2000 / 3000 [ 66%]  (Sampling) 
+#> Chain 3 Iteration: 2300 / 3000 [ 76%]  (Sampling) 
 #> Chain 4 Iteration: 2300 / 3000 [ 76%]  (Sampling) 
 #> Chain 2 Iteration: 2100 / 3000 [ 70%]  (Sampling) 
-#> Chain 2 Iteration: 2200 / 3000 [ 73%]  (Sampling) 
-#> Chain 3 Iteration: 2500 / 3000 [ 83%]  (Sampling) 
+#> Chain 3 Iteration: 2400 / 3000 [ 80%]  (Sampling) 
 #> Chain 4 Iteration: 2400 / 3000 [ 80%]  (Sampling) 
 #> Chain 1 Iteration: 2200 / 3000 [ 73%]  (Sampling) 
-#> Chain 3 Iteration: 2600 / 3000 [ 86%]  (Sampling) 
+#> Chain 2 Iteration: 2200 / 3000 [ 73%]  (Sampling) 
+#> Chain 3 Iteration: 2500 / 3000 [ 83%]  (Sampling) 
 #> Chain 4 Iteration: 2500 / 3000 [ 83%]  (Sampling) 
 #> Chain 1 Iteration: 2300 / 3000 [ 76%]  (Sampling) 
 #> Chain 2 Iteration: 2300 / 3000 [ 76%]  (Sampling) 
+#> Chain 3 Iteration: 2600 / 3000 [ 86%]  (Sampling) 
+#> Chain 4 Iteration: 2600 / 3000 [ 86%]  (Sampling) 
+#> Chain 1 Iteration: 2400 / 3000 [ 80%]  (Sampling) 
 #> Chain 2 Iteration: 2400 / 3000 [ 80%]  (Sampling) 
 #> Chain 3 Iteration: 2700 / 3000 [ 90%]  (Sampling) 
-#> Chain 4 Iteration: 2600 / 3000 [ 86%]  (Sampling) 
+#> Chain 4 Iteration: 2700 / 3000 [ 90%]  (Sampling) 
 #> Chain 2 Iteration: 2500 / 3000 [ 83%]  (Sampling) 
 #> Chain 3 Iteration: 2800 / 3000 [ 93%]  (Sampling) 
-#> Chain 4 Iteration: 2700 / 3000 [ 90%]  (Sampling) 
-#> Chain 1 Iteration: 2400 / 3000 [ 80%]  (Sampling) 
-#> Chain 2 Iteration: 2600 / 3000 [ 86%]  (Sampling) 
-#> Chain 3 Iteration: 2900 / 3000 [ 96%]  (Sampling) 
 #> Chain 4 Iteration: 2800 / 3000 [ 93%]  (Sampling) 
 #> Chain 1 Iteration: 2500 / 3000 [ 83%]  (Sampling) 
+#> Chain 2 Iteration: 2600 / 3000 [ 86%]  (Sampling) 
+#> Chain 3 Iteration: 2900 / 3000 [ 96%]  (Sampling) 
+#> Chain 4 Iteration: 2900 / 3000 [ 96%]  (Sampling) 
+#> Chain 1 Iteration: 2600 / 3000 [ 86%]  (Sampling) 
 #> Chain 2 Iteration: 2700 / 3000 [ 90%]  (Sampling) 
 #> Chain 3 Iteration: 3000 / 3000 [100%]  (Sampling) 
-#> Chain 4 Iteration: 2900 / 3000 [ 96%]  (Sampling) 
-#> Chain 3 finished in 7.0 seconds.
-#> Chain 1 Iteration: 2600 / 3000 [ 86%]  (Sampling) 
-#> Chain 2 Iteration: 2800 / 3000 [ 93%]  (Sampling) 
 #> Chain 4 Iteration: 3000 / 3000 [100%]  (Sampling) 
-#> Chain 4 finished in 7.2 seconds.
+#> Chain 3 finished in 7.2 seconds.
+#> Chain 4 finished in 7.3 seconds.
 #> Chain 1 Iteration: 2700 / 3000 [ 90%]  (Sampling) 
+#> Chain 2 Iteration: 2800 / 3000 [ 93%]  (Sampling) 
 #> Chain 2 Iteration: 2900 / 3000 [ 96%]  (Sampling) 
-#> Chain 2 Iteration: 3000 / 3000 [100%]  (Sampling) 
-#> Chain 2 finished in 7.4 seconds.
 #> Chain 1 Iteration: 2800 / 3000 [ 93%]  (Sampling) 
+#> Chain 2 Iteration: 3000 / 3000 [100%]  (Sampling) 
+#> Chain 2 finished in 7.6 seconds.
 #> Chain 1 Iteration: 2900 / 3000 [ 96%]  (Sampling) 
 #> Chain 1 Iteration: 3000 / 3000 [100%]  (Sampling) 
-#> Chain 1 finished in 7.7 seconds.
+#> Chain 1 finished in 7.8 seconds.
 #> 
 #> All 4 chains finished successfully.
-#> Mean chain execution time: 7.3 seconds.
-#> Total execution time: 7.8 seconds.
+#> Mean chain execution time: 7.5 seconds.
+#> Total execution time: 7.9 seconds.
 #> Warning: Some Pareto k diagnostic values are too high. See help('pareto-k-diagnostic') for details.
 #> Warning: 
 #> 59 (90.8%) p_waic estimates greater than 0.4. We recommend trying loo instead.
@@ -250,21 +242,19 @@ historical_fit$diagnostics
 #> [1] 0.7055957 0.8008495 0.7332177 0.7392627
 historical_fit$summary
 #> # A tibble: 11 × 14
-#>    variable             mean   median      sd     mad   `2.5%`     `5%`    `10%`
-#>    <chr>               <dbl>    <dbl>   <dbl>   <dbl>    <dbl>    <dbl>    <dbl>
-#>  1 alphaCEonSur1Su… -0.0672  -0.0672  0.0480  0.0476  -1.61e-1 -1.45e-1 -1.29e-1
-#>  2 b1CEonSur1Sur2   -0.295   -0.296   0.0627  0.0606  -4.16e-1 -3.97e-1 -3.73e-1
-#>  3 b2CEonSur1Sur2   -0.0353  -0.0353  0.00493 0.00491 -4.49e-2 -4.34e-2 -4.16e-2
-#>  4 SigSqCEonSur1Su…  0.00398  0.00267 0.00401 0.00278  2.24e-4  3.05e-4  4.63e-4
-#>  5 alphaSur1onSur2   0.644    0.643   0.0888  0.0878   4.69e-1  5.01e-1  5.32e-1
-#>  6 bSur1onSur2       0.0237   0.0239  0.0161  0.0159  -7.83e-3 -2.80e-3  2.89e-3
-#>  7 SigSqSur1onSur2   0.256    0.243   0.0812  0.0740   1.31e-1  1.47e-1  1.64e-1
-#>  8 muSur2           -2.52    -2.52    0.741   0.732   -3.95e+0 -3.70e+0 -3.43e+0
-#>  9 sigSqSur2        29.8     29.0     6.37    6.09     1.95e+1  2.08e+1  2.24e+1
-#> 10 R2CEonSur1Sur2    0.949    0.966   0.0521  0.0359   8.08e-1  8.43e-1  8.79e-1
-#> 11 RMSECEonSur1Sur2  0.0560   0.0517  0.0290  0.0304   1.50e-2  1.75e-2  2.15e-2
-#> # ℹ 6 more variables: `90%` <dbl>, `95%` <dbl>, `97.5%` <dbl>, rhat <dbl>,
-#> #   ess_bulk <dbl>, ess_tail <dbl>
+#>    variable              mean   median      sd     mad    `2.5%`      `5%`     `10%`    `90%`   `95%` `97.5%`  rhat ess_bulk ess_tail
+#>    <chr>                <dbl>    <dbl>   <dbl>   <dbl>     <dbl>     <dbl>     <dbl>    <dbl>   <dbl>   <dbl> <dbl>    <dbl>    <dbl>
+#>  1 alphaCEonSur1Sur2 -0.0672  -0.0672  0.0480  0.0476  -0.161    -0.145    -0.129    -0.00594  0.0111  0.0260  1.00    2490.    4147.
+#>  2 b1CEonSur1Sur2    -0.295   -0.296   0.0627  0.0606  -0.416    -0.397    -0.373    -0.215   -0.189  -0.167   1.00    2301.    3769.
+#>  3 b2CEonSur1Sur2    -0.0353  -0.0353  0.00493 0.00491 -0.0449   -0.0434   -0.0416   -0.0291  -0.0272 -0.0254  1.00    3748.    5340.
+#>  4 SigSqCEonSur1Sur2  0.00398  0.00267 0.00401 0.00278  0.000224  0.000305  0.000463  0.00941  0.0119  0.0148  1.00    1877.    4662.
+#>  5 alphaSur1onSur2    0.644    0.643   0.0888  0.0878   0.469     0.501     0.532     0.757    0.791   0.821   1.00    1029.    1884.
+#>  6 bSur1onSur2        0.0237   0.0239  0.0161  0.0159  -0.00783  -0.00280   0.00289   0.0438   0.0493  0.0548  1.00    1111.    2128.
+#>  7 SigSqSur1onSur2    0.256    0.243   0.0812  0.0740   0.131     0.147     0.164     0.363    0.402   0.443   1.00    1863.    2894.
+#>  8 muSur2            -2.52    -2.52    0.741   0.732   -3.95     -3.70     -3.43     -1.57    -1.29   -1.03    1.00     699.    1347.
+#>  9 sigSqSur2         29.8     29.0     6.37    6.09    19.5      20.8      22.4      38.3     41.4    44.2     1.00    1175.    2022.
+#> 10 R2CEonSur1Sur2     0.949    0.966   0.0521  0.0359   0.808     0.843     0.879     0.994    0.996   0.997   1.00    1801.    4911.
+#> 11 RMSECEonSur1Sur2   0.0560   0.0517  0.0290  0.0304   0.0150    0.0175    0.0215    0.0970   0.109   0.122   1.00    1877.    4662.
 
 historical_posterior <- as.data.frame(historical_fit$posterior_samples)[, c(
   "alphaCEonSur1Sur2",
@@ -325,15 +315,11 @@ mbe_fit$post_var
 #> surrogate1 -0.01844293  0.060857682 -0.005088661
 #> surrogate2 -0.10981789 -0.005088661  3.798687086
 mbe_fit$post_quantiles_clinical
-#> quantile_0.025  quantile_0.05   quantile_0.1  quantile_0.25   quantile_0.5 
-#>    -0.27319424    -0.23671208    -0.19579364    -0.12941497    -0.05465971 
-#>  quantile_0.75   quantile_0.9  quantile_0.95 quantile_0.975 
-#>     0.01970057     0.08628304     0.12682206     0.15939645
+#> quantile_0.025  quantile_0.05   quantile_0.1  quantile_0.25   quantile_0.5  quantile_0.75   quantile_0.9  quantile_0.95 quantile_0.975 
+#>    -0.27319424    -0.23671208    -0.19579364    -0.12941497    -0.05465971     0.01970057     0.08628304     0.12682206     0.15939645
 mbe_fit$importance_diagnostics
-#>          effective_sample_size relative_effective_sample_size 
-#>                   7.661266e+03                   9.576583e-01 
-#>      maximum_normalized_weight 
-#>                   2.141063e-04
+#>          effective_sample_size relative_effective_sample_size      maximum_normalized_weight 
+#>                   7.661266e+03                   9.576583e-01                   2.141063e-04
 ```
 
 The rows of `post_mean` and `post_var` are ordered as the clinical endpoint,

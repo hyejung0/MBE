@@ -54,11 +54,6 @@ The name follows the manuscript's tolerance-interval terminology. These are
 posterior predictive intervals, not classical tolerance intervals with a
 separate confidence level. Repeat this function across held-out trials and
 average \code{covered} for each probability pair to obtain aggregate coverage.
-
-Earlier development code used empirical percentiles and a different
-predictive simulation. Archived \code{loo_assessment_by_trial} indicators retain
-that earlier calculation; see \code{\link[=clinical_predictive_distribution]{clinical_predictive_distribution()}} for the
-current conditioning and weighting method.
 }
 \examples{
 data("historical_posterior")
