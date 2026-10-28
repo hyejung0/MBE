@@ -402,7 +402,7 @@ mbe_fit2 <- MBE(
 ```
 
 We repeat the process for all 66 trials. And then take mean of these
-values.
+values, and then take square root of the mean to get the RMSE.
 
 ### Leave-one-out expected log pointwise predictive density (LOO-PD) and widely applicable information criterion (WAIC)
 
